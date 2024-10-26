@@ -24,6 +24,14 @@ class UserResponse(UserBase):
     id: int
     grade: GradeEnum
     points: int
+    is_active: bool
+
+    class Config:
+        from_attributes = True
+
+class User(UserBase):
+    id: int
+    is_active: bool
 
     class Config:
         from_attributes = True

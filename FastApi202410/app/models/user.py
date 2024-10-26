@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Enum
+from sqlalchemy import Column, Integer, String, Enum, Boolean
 import enum
 from app.db.base import Base
 
@@ -16,4 +16,5 @@ class User(Base):
     email = Column(String, unique=True, index=True)
     hashed_password = Column(String)
     grade = Column(String, default=GradeEnum.BRONZE)
+    is_active = Column(Boolean, default=True)
     points = Column(Integer, default=0)

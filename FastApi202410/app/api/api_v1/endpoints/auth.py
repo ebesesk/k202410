@@ -5,8 +5,8 @@ from datetime import timedelta
 from app.core.config import settings
 from app.core.security import create_access_token
 from app.crud.user import UserCRUD
-from app.utils.dependencies import get_db
-from app.schemas.user import Token
+from app.utils.dependencies import get_db, get_current_active_user
+from app.schemas.user import Token, User
 
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/auth/login")
@@ -24,8 +24,14 @@ async def login(
             headers={"WWW-Authenticate": "Bearer"},
         )
     
+    UserCRUD.update_user_status(db, user.id, True)  # 로그인 시 is_active를 True로 설정
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": user.username}, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
+
+@router.post("/logout")
+def logout_user(current_user: User = Depends(get_current_active_user), db: Session = Depends(get_db)):
+    UserCRUD.update_user_status(db, current_user.id, False)  # 로그아웃 시 is_active를 False로 설정
+    return {"message": "Successfully logged out"}

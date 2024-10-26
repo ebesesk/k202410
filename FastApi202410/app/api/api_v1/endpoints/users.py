@@ -3,8 +3,8 @@ from sqlalchemy.orm import Session
 from typing import List
 from app.crud.user import UserCRUD
 from app.schemas.user import UserCreate, UserResponse
-from app.utils.dependencies import get_db
-from app.models.user import GradeEnum
+from app.utils.dependencies import get_db, get_current_user_with_grade, get_current_user
+from app.models.user import GradeEnum, User
 
 router = APIRouter()
 
@@ -24,7 +24,16 @@ def get_user(user_id: int, db: Session = Depends(get_db)):
     return user
 
 @router.put("/{user_id}/add-points")
-def add_points(user_id: int, points: int, db: Session = Depends(get_db)):
+def add_points(
+    user_id: int, 
+    points: int, 
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user_with_grade(2000)),
+    ):
+    
+    # current_user: User = Depends(get_current_user_with_grade(500))
+    print(current_user.id)
+    
     user = UserCRUD.get_user(db, user_id)
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
@@ -51,5 +60,6 @@ def get_user_grade(user_id: int, db: Session = Depends(get_db)):
         "username": user.username,
         "grade": user.grade,
         "points": user.points,
-        "next_grade": next_grade_info
+        "next_grade": next_grade_info,
+        "is_active": user.is_active
     }

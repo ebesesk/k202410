@@ -14,7 +14,8 @@ class UserCRUD:
             email=user.email,
             hashed_password=hashed_password,
             grade=GradeEnum.BRONZE,
-            points=0
+            is_active=True,  # 사용자가 처음 생성될 때 is_active 설정
+            points=0  # 초기 점수 설정
         )
         db.add(db_user)
         try:
@@ -24,7 +25,11 @@ class UserCRUD:
             db.rollback()
             raise HTTPException(status_code=400, detail="Username or email already exists")
         return db_user
-
+    
+    @staticmethod
+    def get_user_by_username(db: Session, username: str) -> Optional[User]:
+        return db.query(User).filter(User.username == username).first()
+    
     @staticmethod
     def authenticate_user(db: Session, username: str, password: str) -> Optional[User]:
         user = db.query(User).filter(User.username == username).first()
@@ -47,6 +52,20 @@ class UserCRUD:
         db.commit()
         return user
 
+    @staticmethod
+    def update_user_status(db: Session, user_id: int, is_active: bool):
+        db_user = db.query(User).filter(User.id == user_id).first()
+        if db_user:
+            db_user.is_active = is_active
+            db.commit()
+            db.refresh(db_user)
+        return db_user
+
+    @staticmethod
+    def get_user_points(db: Session, user: User) -> int:
+        db_user = db.query(User).filter(User.id == user.id).first()
+        return db_user.points
+    
     @staticmethod
     def calculate_grade(points: int) -> GradeEnum:
         if points >= 1000:
