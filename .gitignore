@@ -1,0 +1,15 @@
+# Python 관련 무시 파일들
+__pycache__/
+*.py[cod]
+*.egg-info/
+.env
+
+# Svelte 관련 무시 파일들
+node_modules/
+*.log
+public/build/
+dist/
+
+# 운영 체제 관련 파일들
+.DS_Store
+*.db
