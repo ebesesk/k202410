@@ -8,11 +8,11 @@ from app.models.user import GradeEnum, User
 
 router = APIRouter()
 
-@router.post("/", response_model=UserResponse)
+@router.post("", response_model=UserResponse)
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
     return UserCRUD.create_user(db, user)
 
-@router.get("/", response_model=List[UserResponse])
+@router.get("", response_model=List[UserResponse])
 def get_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return UserCRUD.get_users(db, skip=skip, limit=limit)
 
@@ -28,7 +28,7 @@ def add_points(
     user_id: int, 
     points: int, 
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user_with_grade(2000)),
+    current_user: User = Depends(get_current_user_with_grade(1000)),
     ):
     
     # current_user: User = Depends(get_current_user_with_grade(500))

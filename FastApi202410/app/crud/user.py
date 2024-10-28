@@ -8,7 +8,7 @@ from typing import List, Optional
 class UserCRUD:
     @staticmethod
     def create_user(db: Session, user: UserCreate) -> User:
-        hashed_password = get_password_hash(user.password)
+        hashed_password = get_password_hash(user.password1)
         db_user = User(
             username=user.username,
             email=user.email,

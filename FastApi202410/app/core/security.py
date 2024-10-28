@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 from datetime import datetime, timedelta
 from typing import Optional
 from jose import JWTError, jwt
@@ -21,3 +22,10 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
+
+def verify_jwt_token(token: str):
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        return payload  # 유효한 경우 payload 반환
+    except JWTError:
+        raise HTTPException(status_code=403, detail="Invalid token")
