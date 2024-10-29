@@ -72,3 +72,5 @@ class PaginatedMangaResponse(BaseModel):
     page: int
     size: int
     pages: int
+    
+    

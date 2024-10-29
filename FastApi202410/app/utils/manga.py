@@ -8,7 +8,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import List, Dict
 import pytz  # 한국 시간대를 설정하기 위한 라이브러리
-
+import json
 # 한국 시간대 설정
 KST = pytz.timezone("Asia/Seoul")
 
@@ -54,7 +54,7 @@ def list_images_from_folders(base_folder_path: str) -> List[Dict]:
                     images = list(sub_folder.glob("*.*"))
                     images = [img for img in images if '@eaDir' not in img.name]
                     page_count = len(images)
-                    images_name = ", ".join([img.name for img in images])
+                    images_name = json.dumps([img.name for img in images])
                     
                     # KST로 시간 설정
                     create_date = datetime.now(KST)

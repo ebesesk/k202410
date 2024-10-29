@@ -10,6 +10,28 @@ class MangaCRUD:
     망가 CRUD 작업을 위한 정적 메서드들을 포함하는 클래스
     모든 데이터베이스 조작 로직을 캡슐화합니다.
     """
+    
+    @staticmethod
+    def bulk_update_manga(db: Session, mangas: List[Dict]):
+        '''
+        manga 데이터 folder_name 이 존재하는 경우 update_date 를 현재 시간으로,
+        images_name 을 일괄 업데이트 합니다.
+        '''
+        existing_folder_names = {manga.folder_name for manga in db.query(Manga.folder_name).all()}
+        manga_updates = []
+        for manga_data in mangas:
+            manga_db = db.query(Manga).filter(Manga.folder_name == manga_data["folder_name"]).first()
+            if manga_db:
+                manga_updates.append({
+                    "id": manga_db.id,
+                    "update_date": datetime.now(),
+                    "images_name": manga_data["images_name"]
+                })
+        if manga_updates:
+            db.bulk_update_mappings(Manga, manga_updates)
+            db.commit()
+        
+    
     @staticmethod
     def bulk_insert_manga(db: Session, mangas: List[Dict]):
         # 이미 DB에 있는 레코드의 folder_name 가져오기

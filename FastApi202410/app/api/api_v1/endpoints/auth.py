@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Request
+from fastapi import APIRouter, Depends, HTTPException, status, Request, Response
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from datetime import timedelta
@@ -46,13 +46,13 @@ def logout_user(current_user: User = Depends(get_current_active_user), db: Sessi
 @router.get("/nginxauth")
 async def auth_jwt(request: Request):
     auth_header = request.headers.get("Authorization")
-    print(auth_header)
+    # print(auth_header)
     if not auth_header:
         raise HTTPException(status_code=401, detail="Authorization header missing")
 
     token = auth_header.split(" ")[1] if len(auth_header.split(" ")) > 1 else ""
-    print(token)
+    # print(token)
     verify_jwt_token(token)
-    
-    return {"status": "200"}  # 성공 시 200 상태 코드 반환
+    # print("nginxauth: ", token, '////////')
+    return {"status": "ok"}  # 성공 시 200 상태 코드 반환
     

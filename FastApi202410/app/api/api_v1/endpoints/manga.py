@@ -31,7 +31,8 @@ def bulk_insert_manga(
     #         print(f"{i} Error inserting manga: {manga['folder_name']}: {e}")
     #         corrupt_images.append(manga)
             
-    MangaCRUD.bulk_insert_manga(db, manga_data)
+    # MangaCRUD.bulk_update_manga(db, manga_data)     # update
+    MangaCRUD.bulk_insert_manga(db, manga_data)   # insert
     return {"detail": "Bulk insert successful"}
 
 @router.get("/mangas/", response_model=PaginatedMangaResponse)

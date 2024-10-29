@@ -165,6 +165,74 @@ server {
         }
 }
 
+
+from fastapi import FastAPI, HTTPException, Request
+from jose import JWTError, jwt
+
+app = FastAPI()
+
+SECRET_KEY = "your_secret_key"
+ALGORITHM = "HS256"
+
+def verify_jwt_token(token: str):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload  # 유효한 경우 payload 반환
+    except JWTError:
+        raise HTTPException(status_code=403, detail="Invalid token")
+
+@app.get("/auth/nginxaux")
+async def auth_jwt(request: Request):
+    auth_header = request.headers.get("Authorization")
+    if not auth_header:
+        raise HTTPException(status_code=401, detail="Authorization header missing")
+
+    token = auth_header.split(" ")[1] if len(auth_header.split(" ")) > 1 else ""
+    verify_jwt_token(token)
+    return {"status": "ok"}  # 성공 시 200 상태 코드 반환
+
+
+
+<script>
+  let imageUrl = '';
+  const jwtToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdIiOiJrZHMiLCJleHAiOjE3MzAwNjYxMTB9.CWzl27YCQBaBrDufRBY7M3e6EmGOEC5PtxaXu19choU"; // JWT 토큰
+
+  async function fetchImage() {
+	let _url = "https://api2410.ebesesk.synology.me/images/1.png";
+	try {
+		const response = await fetch(_url, {
+			mode: "cors",
+			headers: {
+				"Authorization": `Bearer ${$access_token}`,
+			}
+		});
+		console.log(response);
+		if (!response.ok) {
+			throw new Error("이미지 요청 실패: " + response.status);
+		}
+		const blob = await response.blob();
+		imageUrl = URL.createObjectURL(blob);
+	} catch (error) {
+		console.error(error);
+	}
+}
+
+  // 컴포넌트 로드 시 이미지 불러오기
+  fetchImage();
+</script>
+
+<main>
+  {#if imageUrl}
+    <img src={imageUrl} alt="JWT 인증 이미지" />
+  {:else}
+    <p>이미지를 불러오는 중...</p>
+  {/if}
+</main>
+
+
+
+
+
 ### manga 데이터 베이스
 
 id
