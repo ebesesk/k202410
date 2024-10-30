@@ -62,7 +62,7 @@
 
 
 function getImageUrl(item, imageNum=false) {
-	console.log('item:', item)
+	// console.log('item:', item)
 	let folder_name_arr = item['folder_name'].split('/');
 	let folder_name = '';
 	for (let j = 0; j < folder_name_arr.length; j++) {
@@ -83,7 +83,7 @@ function getImageUrl(item, imageNum=false) {
 	}
 
 	let url = 'https://api2410.ebesesk.synology.me/images/' + folder_name + file_name;
-	console.log('url:', url)
+	// console.log('url:', url)
 	return url;
 }
 
@@ -91,74 +91,13 @@ function getImageUrl(item, imageNum=false) {
   // fetchImage 함수 수정
   async function fetchImage(items) {
 		imageUrls.set(Array(items.length).fill().map(() => writable(null)));
-		// console.log('imageUrls:', imageUrls)
-    const accessToken = localStorage.getItem('accessToken');
-    if (!accessToken) {
-        console.error('인증 토큰이 없습니다.');
-        window.location.href = '/login';
-        return;
-    }
 
     for (let i = 0; i < items.length; i++) {
 			try {
 
 				let _url = getImageUrl(items[i]);	
-				// // console.log('folder_name:', items[i]['folder_name'])
-				// let folder_name_arr = items[i]['folder_name'].split('/');
-				// // console.log('folder_name_arr:', folder_name_arr)
-				// // console.log('image_name:', image_name)
-				// let folder_name = '';	
-				// if (items[i]['folder_name'].includes('/')) {
-				// 	for (let j = 0; j < folder_name_arr.length; j++) {
-				// 		folder_name += encodeURIComponent(folder_name_arr[j]) + '/';
-				// 	}
-				// }else {
-				// 	folder_name = encodeURIComponent(items[i]['folder_name']) + '/';
-				// }
-
-				// // console.log('items[i][images_name]:', items[i]['images_name'])
-				// // console.log('images_name:',items[i]['images_name'])
-				// let image_ext = ['jpg', 'png', 'jpeg', 'gif', 'bmp', 'tiff', 'webp'];
-				// let images = JSON.parse(items[i]['images_name']);
-				// // console.log('images:', images)
-				// let file_name = '';
-				// for (let j = 0; j < images.length; j++) {
-				// 	let itemExt = images[j].split('.')[1].toLowerCase();
-				// 	if (image_ext.includes(itemExt)) {
-				// 		// console.log('itemExt:', itemExt)
-				// 		// console.log('items[i][images_name][j]:', images[j])
-				// 		file_name = encodeURIComponent(images[j]);
-				// 		break;
-				// 	}
-				// }
-		
-										
-				// console.log('folder_name + file_name:', folder_name + file_name)
-				// let file_name = '1.png';
-				// let _url = 'https://api2410.ebesesk.synology.me/images/' + folder_name + file_name;
-				// console.log('_url:', _url)
-				const response = await fetch(_url, {
-						mode: "cors", 
-						headers: {
-								"Authorization": `Bearer ${accessToken}`,
-								"Accept": "image/*"
-						}
-				});
 				
-				if (!response.ok) {
-						throw new Error(`이미지 로딩 실패: ${response.status}`);
-				}
-				
-				const blob = await response.blob();
-			
-				if (blob && blob.size > 0) {
-					const url = URL.createObjectURL(blob);
-					// imageUrls[i].set(url);
-					$imageUrls[i] = url;
-				} else {
-					
-					$imageUrls[i] = null;
-				}
+				$imageUrls[i] = await fetchImageData(_url);
 				
 			} catch (error) {
 				continue;
@@ -166,7 +105,34 @@ function getImageUrl(item, imageNum=false) {
 		}
 }
 
+async function fetchImageData(_url) {
+	const accessToken = localStorage.getItem('accessToken');
+    if (!accessToken) {
+        console.error('인증 토큰이 없습니다.');
+        window.location.href = '/login';
+        return;
+    }
+	const response = await fetch(_url, {
+		mode: "cors",
+		headers: {
+			"Authorization": `Bearer ${accessToken}`, 
+			"Accept": "image/*"
+		}
+	});
 
+	if (!response.ok) {
+		throw new Error(`이미지 로딩 실패: ${response.status}`);
+	}
+
+	const blob = await response.blob();
+
+	if (blob && blob.size > 0) {
+		const url = URL.createObjectURL(blob);
+		return url;
+	} else {
+		return null;
+	}
+}
 
 // // 'curl -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJrZHMiLCJleHAiOjE3MzAxOTk5MDZ9.YIHf4Ob3a1KX7SF7aLwReTaVeAZ7FTySTJj8EjfTbe8" https://api2410.ebesesk.synology.me/images/1.png
 
@@ -193,26 +159,65 @@ function getImageUrl(item, imageNum=false) {
 
 
 
-	async function handlePageChange(newPage) {
-    $currentPage = newPage;
-    await fetchGalleries(newPage);  // 새 갤러리 데이터 가져오기
-    await fetchImage($galleries);  // 새 이미지 데이터 가져오기
+async function handlePageChange(newPage) {
+	$currentPage = newPage;
+	await fetchGalleries(newPage);  // 새 갤러리 데이터 가져오기
+	await fetchImage($galleries);  // 새 이미지 데이터 가져오기
 }
 
-function handleImageClick(i) {
-        // 현재 페이지의 마지막 이미지인 경우
-        if (i === $galleries.length - 1) {
-            // 마지막 페이지가 아니면 다음 페이지로
-            if ($currentPage < totalPages) {
-                handlePageChange($currentPage + 1);
-            }
-        } else {
-            // 다음 이미지로 스크롤
-            const nextImage = document.querySelectorAll('.gallery-item')[i + 1];
-            nextImage?.scrollIntoView({ behavior: 'smooth' });
-        }
+
+	let imagesNum = Array($galleries.length).fill(0);	// 이미지 순서 변수
+	async function handleImageClick(i, direction) {
+		console.log('direction:', direction)
+		console.log('i', i)
+		if (direction === 'next') {
+			if (JSON.parse($galleries[i].images_name).length-1 > imagesNum[i]) {
+				imagesNum[i]++;
+			}else {
+				imagesNum[i] = 0;
+			}
+		}else if (direction === 'prev') {
+			if (imagesNum[i] > 0) {
+				imagesNum[i]--;
+			}else {
+				imagesNum[i] = JSON.parse($galleries[i].images_name).length-1;
+			}
+		}
+
+		console.log('imagesNum[i]:', imagesNum[i])
+		let url = getImageUrl($galleries[i], imagesNum[i]);
+		console.log('url:', url)
+		$imageUrls[i] = await fetchImageData(url);
+		// openModal(i)
+	}
+
+	let selectedIndex = 0;
+	let showModal = false;
+    let selectedImage = '';
+
+    function openModal(i) {
+
+        selectedImage = $imageUrls[i];
+				selectedIndex = i;
+        showModal = true;
     }
 
+    function closeModal() {
+        showModal = false;
+        selectedImage = '';
+    }
+	// async function handleImageChange(i) {
+	// 	if (JSON.parse($galleries[i].images_name).length-1 > imagesNum[i]) {
+	// 		imagesNum[i]++;
+	// 	}else {
+	// 		imagesNum[i] = 0;
+	// 	}
+
+	// 	console.log('imagesNum[i]:', imagesNum[i])
+	// 	let url = getImageUrl($galleries[i], imagesNum[i]);
+	// 	console.log('url:', url)
+	// 	$imageUrls[i] = await fetchImageData(url);
+	// }
 
 	onMount(() => {
 			fetchGalleries($currentPage);
@@ -230,7 +235,26 @@ function handleImageClick(i) {
     onPageChange={handlePageChange}
 />
 	
-
+{#if showModal}
+    <div class="modal-backdrop">
+        <div class="modal-content">
+					<img src={$imageUrls[selectedIndex]} alt="확대된 이미지" />
+					<div class="left-area" 
+					role="button"
+					tabindex="0"
+					on:click|stopPropagation={() => handleImageClick(selectedIndex, 'prev')}
+					on:keydown|stopPropagation={e => e.key === 'Enter' && handleImageClick(selectedIndex, 'prev')}
+					></div>
+					<div class="right-area"
+					role="button" 
+					tabindex="0"
+					on:click|stopPropagation={() => handleImageClick(selectedIndex, 'next')} 
+					on:keydown|stopPropagation={e => e.key === 'Enter' && handleImageClick(selectedIndex, 'next')}
+					></div>
+        </div>
+			</div>
+			<button class="close-button" on:click={closeModal}>닫기×</button>
+{/if}
 
 
 
@@ -238,13 +262,30 @@ function handleImageClick(i) {
 	<div class="galleries">
     {#each $galleries as gallery, i}
         <div class="gallery-item">
-					{i + 1}. {(gallery.folder_name ?? '').slice(0, 10)}
-					{#if $imageUrls[i] != null}
-					<button class="image-button" on:click={() => handleImageClick(i)}>
+					<small 
+						role="button"
+						tabindex="0"
+						on:click={() => openModal(i)}
+						on:keydown={e => e.key === 'Enter' && openModal(i)}
+					>{i + 1}. {(gallery.folder_name ?? '').slice(0, 10)}</small>
+					{#if $imageUrls[i] && typeof $imageUrls[i] === 'string'}
+					<button class="image-button">
 						<img 
 							src={$imageUrls[i]} 
 							alt={gallery?.folder_name ?? ''} 
 						/>
+						<div class="left-area" 
+							role="button" 
+							tabindex="0" 
+							on:click|stopPropagation={() => handleImageClick(i, 'prev')}
+							on:keydown|stopPropagation={e => e.key === 'Enter' && handleImageClick(i, 'prev')}
+						></div>
+						<div class="right-area" 
+							role="button" 
+							tabindex="0" 
+							on:click|stopPropagation={() => handleImageClick(i, 'next')}
+							on:keydown|stopPropagation={e => e.key === 'Enter' && handleImageClick(i, 'next')}
+						></div>
 					</button>
 					{:else}
                 <p style="font-size: 0.9em;">이미지 로딩 중...</p>
@@ -344,4 +385,78 @@ function handleImageClick(i) {
 			background: none;
 			cursor: pointer;
 	}
+
+	.image-button {
+        position: relative;  /* 추가 */
+        width: 100%;
+        padding: 0;
+        border: none;
+        background: none;
+        cursor: pointer;
+    }
+
+    .left-area, .right-area {
+        position: absolute;
+        top: 0;
+        height: 100%;
+        width: 50%;
+        cursor: pointer;
+    }
+
+    .left-area {
+        left: 0;
+    }
+
+    .right-area {
+        right: 0;
+    }
+
+    /* 선택사항: 영역을 시각적으로 확인하기 위한 스타일 */
+    /* .left-area:hover, .right-area:hover {
+        background-color: rgba(0, 0, 0, 0.1);
+    } */
+
+		.modal-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+
+    .modal-content {
+        width: 200vw;         /* 90vw → 70vw로 축소 */
+        height: 200vh;        /* 90vh → 80vh로 축소 */
+        max-width: 1500px;   /* 최대 너비 제한 추가 */
+        max-height: 1000px;   /* 최대 높이 제한 추가 */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;   /* close 버튼 위치를 위해 */
+    }
+
+    .modal-content img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+
+    
+		.close-button {
+        position: absolute;
+        top: 10px;          /* -40px에서 10px로 변경 */
+        right: 10px;        /* 0에서 10px로 변경 */
+        padding: 10px;
+        background: rgba(0, 0, 0, 0.5);
+        color: white;
+        border: none;
+        cursor: pointer;
+        z-index: 1001;      /* 이미지 위에 표시되도록 z-index 추가 */
+        border-radius: 4px;  /* 선택적: 모서리를 둥글게 */
+    }
 </style>

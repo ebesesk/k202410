@@ -112,12 +112,6 @@
 </div>
 
 <style>
-	.pagination {
-			display: flex;
-			justify-content: center;
-			gap: 0.5rem;
-			margin: 1rem 0;
-	}
 
 	button {
 			padding: 0.5rem 1rem;
@@ -146,21 +140,35 @@
 			padding: 0.5rem;
 	}
 
-	.page-input {
-        display: flex;
-        gap: 0.5rem;
-        align-items: center;
-        margin-left: 1rem;
-    }
+	.pagination {
+			display: flex;
+			justify-content: center;
+			gap: 5px;
+			margin: 20px 0;
+	}
 
-    .page-input input {
-        width: 60px;
-        padding: 0.5rem;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-    }
+	.pagination button {
+			min-width: 40px;      /* 최소 너비 설정 */
+			height: 40px;         /* 높이 고정 */
+			padding: 0 10px;      /* 좌우 패딩 */
+			border: 1px solid #ddd;
+			background-color: white;
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 14px;      /* 글자 크기 고정 */
+			line-height: 1;       /* 줄 높이 설정 */
+	}
 
-    .page-input button {
-        padding: 0.5rem 1rem;
-    }
+	.pagination button.active {
+			background-color: #007bff;
+			color: white;
+			border-color: #007bff;
+	}
+
+	.pagination button:disabled {
+			background-color: #f5f5f5;
+			cursor: not-allowed;
+	}
 </style>
