@@ -206,18 +206,22 @@ async function handlePageChange(newPage) {
         showModal = false;
         selectedImage = '';
     }
-	// async function handleImageChange(i) {
-	// 	if (JSON.parse($galleries[i].images_name).length-1 > imagesNum[i]) {
-	// 		imagesNum[i]++;
-	// 	}else {
-	// 		imagesNum[i] = 0;
-	// 	}
 
-	// 	console.log('imagesNum[i]:', imagesNum[i])
-	// 	let url = getImageUrl($galleries[i], imagesNum[i]);
-	// 	console.log('url:', url)
-	// 	$imageUrls[i] = await fetchImageData(url);
-	// }
+		function exist_zip(images_name) {
+			const zip_ext = ['zip', 'rar', '7z', 'tar', 'gz', 'bz2', 'xz', 'alz'];
+			images_name = JSON.parse(images_name);
+			console.log('images_name:', images_name)
+			for (let j = 0; j < images_name.length; j++) {
+				for (let k = 0; k < zip_ext.length; k++) {
+					if (images_name[j].endsWith(zip_ext[k])) {
+						return images_name[j];
+					}
+					
+				}
+			}
+			return false;
+		}
+
 
 	onMount(() => {
 			fetchGalleries($currentPage);
@@ -228,7 +232,8 @@ async function handlePageChange(newPage) {
 
 
 
-	<h1>갤러리 목록</h1>
+	<!-- <h1>갤러리 목록</h1> -->
+	<br>
 	<Pagination
     currentPage={$currentPage}
     totalPages={totalPages}
@@ -236,15 +241,18 @@ async function handlePageChange(newPage) {
 />
 	
 {#if showModal}
-    <div class="modal-backdrop">
-        <div class="modal-content">
-					<img src={$imageUrls[selectedIndex]} alt="확대된 이미지" />
-					<div class="left-area" 
-					role="button"
-					tabindex="0"
-					on:click|stopPropagation={() => handleImageClick(selectedIndex, 'prev')}
-					on:keydown|stopPropagation={e => e.key === 'Enter' && handleImageClick(selectedIndex, 'prev')}
-					></div>
+<div class="modal-backdrop">
+	<div class="modal-header">
+			<h2 class="modal-title">{$galleries[selectedIndex].folder_name ?? ''}</h2>
+	</div>
+	<div class="modal-content">
+		<img src={$imageUrls[selectedIndex]} alt="확대된 이미지" />
+		<div class="left-area" 
+		role="button"
+		tabindex="0"
+		on:click|stopPropagation={() => handleImageClick(selectedIndex, 'prev')}
+		on:keydown|stopPropagation={e => e.key === 'Enter' && handleImageClick(selectedIndex, 'prev')}
+		></div>
 					<div class="right-area"
 					role="button" 
 					tabindex="0"
@@ -252,8 +260,8 @@ async function handlePageChange(newPage) {
 					on:keydown|stopPropagation={e => e.key === 'Enter' && handleImageClick(selectedIndex, 'next')}
 					></div>
         </div>
+				<button class="close-button" on:click={closeModal}>닫기×</button>
 			</div>
-			<button class="close-button" on:click={closeModal}>닫기×</button>
 {/if}
 
 
@@ -267,7 +275,7 @@ async function handlePageChange(newPage) {
 						tabindex="0"
 						on:click={() => openModal(i)}
 						on:keydown={e => e.key === 'Enter' && openModal(i)}
-					>{i + 1}. {(gallery.folder_name ?? '').slice(0, 10)}</small>
+					>{i + 1}. {(gallery.folder_name ?? '').slice(0, 15)}</small>
 					{#if $imageUrls[i] && typeof $imageUrls[i] === 'string'}
 					<button class="image-button">
 						<img 
@@ -290,7 +298,11 @@ async function handlePageChange(newPage) {
 					{:else}
                 <p style="font-size: 0.9em;">이미지 로딩 중...</p>
             {/if}
-            <p style="font-size: 0.9em;">{(gallery.file_date ?? '').slice(0, 10)}</p>
+						{#if exist_zip(gallery.images_name) === false}
+							<a href="{'kddddds2://http://' + gallery.folder_name + '/' + exist_zip(gallery.images_name)}" style="font-size: 0.9em;">{(gallery.file_date ?? '').slice(0, 10)}</a>
+						{:else}
+							<a href="{'kddddds2://http://'+ gallery.folder_name + '/' + exist_zip(gallery.images_name)}" style="font-size: 0.9em;">{(gallery.file_date ?? '').slice(0, 10)}</a>
+						{/if}
         </div>
     {/each}
 </div>
@@ -449,14 +461,37 @@ async function handlePageChange(newPage) {
     
 		.close-button {
         position: absolute;
-        top: 10px;          /* -40px에서 10px로 변경 */
-        right: 10px;        /* 0에서 10px로 변경 */
-        padding: 10px;
+        top: 30px;          /* -40px에서 10px로 변경 */
+        right: 30px;        /* 0에서 10px로 변경 */
+        padding: 30px;
         background: rgba(0, 0, 0, 0.5);
         color: white;
         border: none;
         cursor: pointer;
         z-index: 1001;      /* 이미지 위에 표시되도록 z-index 추가 */
         border-radius: 4px;  /* 선택적: 모서리를 둥글게 */
+    }
+
+
+		.modal-header {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1002;
+    }
+
+    .modal-title {
+        color: white;
+        font-size: 1em;
+        text-align: center;
+        margin: 0;
+        padding: 10px;
+        background-color: rgba(0, 0, 0, 0.7);
+        border-radius: 5px;
+        max-width: 80vw;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 </style>

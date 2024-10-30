@@ -149,7 +149,7 @@
 
 	.pagination button {
 			min-width: 40px;      /* 최소 너비 설정 */
-			height: 40px;         /* 높이 고정 */
+			height: 30px;         /* 높이 고정 */
 			padding: 0 10px;      /* 좌우 패딩 */
 			border: 1px solid #ddd;
 			background-color: white;
@@ -171,4 +171,22 @@
 			background-color: #f5f5f5;
 			cursor: not-allowed;
 	}
+	.page-input {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .page-input input {
+        width: 60px;
+        height: 30px;
+        padding: 0 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+
+    .page-input button {
+        height: 30px;
+        white-space: nowrap;
+    }
 </style>
