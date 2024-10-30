@@ -1,106 +1,166 @@
 <script>
-    export let currentPage;
-    export let totalPages;
-    export let onPageChange;
+	export let currentPage;
+	export let totalPages;
+	export let onPageChange;
 
-    function getPageRange(currentPage, pages) {
-        const range = 2;
-        let start = Math.max(1, currentPage - range);
-        let end = Math.min(pages, currentPage + range);
+	function getPageRange(currentPage, pages) {
+			const range = 2;
+			let start = Math.max(1, currentPage - range);
+			let end = Math.min(pages, currentPage + range);
 
-        if (start > 1) start = Math.max(2, start);
-        if (end < pages) end = Math.min(pages - 1, end);
+			if (start > 1) start = Math.max(2, start);
+			if (end < pages) end = Math.min(pages - 1, end);
 
-        return { start, end };
-    }
+			// end가 start보다 작은 경우 처리
+			if (end < start) end = start;
+
+			return { start, end };
+	}
+
+	let inputPage = '';
+
+	function handleSubmit() {
+			const page = parseInt(inputPage);
+			if (!isNaN(page) && page >= 1 && page <= totalPages) {
+					onPageChange(page);
+					inputPage = '';  // 입력 필드 초기화
+			} else {
+					alert('유효한 페이지 번호를 입력해주세요');
+			}
+	}
 </script>
 
 <div class="pagination">
-    <button 
-        disabled={currentPage === 1}
-        on:click={() => onPageChange(1)} 
-        aria-label="첫 페이지"
-    >
-        《
-    </button>
-    <button 
-        disabled={currentPage === 1}
-        on:click={() => onPageChange(currentPage - 1)}
-        aria-label="이전 페이지"
-    >
-        〈
-    </button>
+	<!-- 첫 페이지 버튼 -->
+	<button 
+			disabled={currentPage === 1}
+			on:click={() => onPageChange(1)}
+	>
+			&lt;&lt;
+	</button>
 
-    {#if getPageRange(currentPage, totalPages).start > 2}
-        <button on:click={() => onPageChange(1)}>1</button>
-        <span class="ellipsis">...</span>
-    {/if}
+	<!-- 이전 페이지 버튼 -->
+	<button 
+			disabled={currentPage === 1}
+			on:click={() => onPageChange(currentPage - 1)}
+	>
+			&lt;
+	</button>
 
-    {#each Array(getPageRange(currentPage, totalPages).end - getPageRange(currentPage, totalPages).start + 1) as _, i}
-        {@const pageNum = getPageRange(currentPage, totalPages).start + i}
-        <button 
-            class:active={currentPage === pageNum}
-            on:click={() => onPageChange(pageNum)}
-        >
-            {pageNum}
-        </button>
-    {/each}
+	<!-- 첫 페이지 표시 -->
+	{#if getPageRange(currentPage, totalPages).start > 1}
+			<button 
+					class:active={currentPage === 1}
+					on:click={() => onPageChange(1)}
+			>
+					1
+			</button>
+			{#if getPageRange(currentPage, totalPages).start > 2}
+					<span>...</span>
+			{/if}
+	{/if}
 
-    {#if getPageRange(currentPage, totalPages).end < totalPages - 1}
-        <span class="ellipsis">...</span>
-        <button on:click={() => onPageChange(totalPages)}>{totalPages}</button>
-    {/if}
+	<!-- 페이지 번호들 -->
+	{#each Array.from({length: Math.max(0, getPageRange(currentPage, totalPages).end - getPageRange(currentPage, totalPages).start + 1)}) as _, i}
+			{@const pageNum = getPageRange(currentPage, totalPages).start + i}
+			<button 
+					class:active={currentPage === pageNum}
+					on:click={() => onPageChange(pageNum)}
+			>
+					{pageNum}
+			</button>
+	{/each}
 
-    <button 
-        disabled={currentPage === totalPages}
-        on:click={() => onPageChange(currentPage + 1)}
-        aria-label="다음 페이지"
-    >
-        〉
-    </button>
-    <button 
-        disabled={currentPage === totalPages}
-        on:click={() => onPageChange(totalPages)}
-        aria-label="마지막 페이지"
-    >
-        》
-    </button>
+	<!-- 마지막 페이지 표시 -->
+	{#if getPageRange(currentPage, totalPages).end < totalPages}
+			{#if getPageRange(currentPage, totalPages).end < totalPages - 1}
+					<span>...</span>
+			{/if}
+			<button 
+					class:active={currentPage === totalPages}
+					on:click={() => onPageChange(totalPages)}
+			>
+					{totalPages}
+			</button>
+	{/if}
+
+	<!-- 다음 페이지 버튼 -->
+	<button 
+			disabled={currentPage === totalPages}
+			on:click={() => onPageChange(currentPage + 1)}
+	>
+			&gt;
+	</button>
+
+	<!-- 마지막 페이지 버튼 -->
+	<button 
+			disabled={currentPage === totalPages}
+			on:click={() => onPageChange(totalPages)}
+	>
+			&gt;&gt;
+	</button>
+	<div class="page-input">
+		<input 
+				type="number" 
+				bind:value={inputPage}
+				min="1"
+				max={totalPages}
+				placeholder="페이지"
+		>
+		<button on:click={handleSubmit}>이동</button>
+	</div>
 </div>
 
 <style>
-    .pagination {
-        display: flex;
-        justify-content: center;
-        gap: 10px;
-        margin-top: 20px;
-    }
+	.pagination {
+			display: flex;
+			justify-content: center;
+			gap: 0.5rem;
+			margin: 1rem 0;
+	}
 
-    .ellipsis {
-        padding: 5px 10px;
-        color: #666;
-    }
+	button {
+			padding: 0.5rem 1rem;
+			border: 1px solid #ddd;
+			background: white;
+			cursor: pointer;
+			border-radius: 4px;
+	}
 
-    .pagination button {
-        min-width: 35px;
-        height: 35px;
-        padding: 0 5px;
-        border: 1px solid #ddd;
-        background: white;
-        cursor: pointer;
-        border-radius: 4px;
+	button:hover:not(:disabled) {
+			background: #f0f0f0;
+	}
+
+	button:disabled {
+			cursor: not-allowed;
+			opacity: 0.5;
+	}
+
+	button.active {
+			background: #007bff;
+			color: white;
+			border-color: #0056b3;
+	}
+
+	span {
+			padding: 0.5rem;
+	}
+
+	.page-input {
         display: flex;
+        gap: 0.5rem;
         align-items: center;
-        justify-content: center;
+        margin-left: 1rem;
     }
 
-    .pagination button:disabled {
-        background: #f5f5f5;
-        cursor: not-allowed;
+    .page-input input {
+        width: 60px;
+        padding: 0.5rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
     }
 
-    .pagination button.active {
-        background: #007bff;
-        color: white;
-        border-color: #007bff;
+    .page-input button {
+        padding: 0.5rem 1rem;
     }
 </style>

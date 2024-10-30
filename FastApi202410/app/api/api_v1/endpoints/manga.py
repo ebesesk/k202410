@@ -17,23 +17,20 @@ def bulk_insert_manga(
     db: Session = Depends(get_db)
     ):
     
-    manga_data = list_images_from_folders(base_folder_path)
-    
-    # import pickle
-    # with open('manga_data.pkl', 'wb') as f:
-    #     pickle.dump(manga_data, f)
-    
-    # corrupt_images = []
-    # for i, manga in enumerate(manga_data):
-    #     try:
-    #         MangaCRUD.create_manga(db, manga)
-    #     except Exception as e:
-    #         print(f"{i} Error inserting manga: {manga['folder_name']}: {e}")
-    #         corrupt_images.append(manga)
-            
-    # MangaCRUD.bulk_update_manga(db, manga_data)     # update
+    manga_data = list_images_from_folders(base_folder_path)            
     MangaCRUD.bulk_insert_manga(db, manga_data)   # insert
     return {"detail": "Bulk insert successful"}
+
+@router.post("/bulk-update")
+def bulk_update_manga(
+    base_folder_path: str=settings.IMAGE_DIRECTORY, 
+    db: Session = Depends(get_db)
+    ):
+    
+    manga_data = list_images_from_folders(base_folder_path)            
+    MangaCRUD.bulk_update_manga(db, manga_data)     # update
+    return {"detail": "Bulk insert successful"}
+
 
 @router.get("/mangas/", response_model=PaginatedMangaResponse)
 def read_mangas(

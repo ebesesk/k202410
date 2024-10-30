@@ -3,6 +3,7 @@
 	import { browser } from '$app/environment';
 	import { createClient } from '@supabase/supabase-js';
 	import { goto } from '$app/navigation';  // 이 줄을 상단에 추가
+	import Navbar from '$lib/components/Navbar.svelte';
 
 	let isAuthenticated = false;
 	const supabase = createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_ANON_KEY);
@@ -47,9 +48,9 @@ async function handleLogin() {
         isAuthenticated = true;
         console.log('accessToken: ', accessToken);
         // 로그인 성공 후 리다이렉트
-        // window.location.href = '/';
+        // window.location.href = '/about';
 			  // window.location.href 대신 goto 사용
-				await goto('/main');
+				await goto('/about');
     } catch (error) {
         console.error('로그인 에러:', error);
         errorMsg = error.message;
@@ -58,6 +59,7 @@ async function handleLogin() {
 
 // ... existing code ...
 </script>
+<Navbar />
 
 <div class="login-container">
     <h1>Login</h1>

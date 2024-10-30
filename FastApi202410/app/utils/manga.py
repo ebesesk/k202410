@@ -22,7 +22,9 @@ def list_images_from_folders(base_folder_path: str) -> List[Dict]:
             images = [img for img in images if '@eaDir' not in img.name]
             # 이미지 파일 수가 페이지 수로 사용될 수 있습니다
             page_count = len(images)
-            images_name = ", ".join([img.name for img in images])
+            images_name = json.dumps([img.name for img in images])
+            # print('images_name:', images_name)
+            # print('images_name type:', type(images_name))
             create_date = datetime.now()
 
             # 파일의 최신 수정 날짜를 `file_date`로 설정
@@ -71,7 +73,7 @@ def list_images_from_folders(base_folder_path: str) -> List[Dict]:
                             "update_date": create_date,
                             "file_date": file_date
                         })
-    manga_entries = manga_entries + special_folder_entries
+    # manga_entries = manga_entries + special_folder_entries
     return manga_entries
 
 
