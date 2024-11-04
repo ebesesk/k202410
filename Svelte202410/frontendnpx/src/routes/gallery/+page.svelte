@@ -1,7 +1,16 @@
 <script>
+	
 	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { writable } from 'svelte/store';  // writable import 추가
-	import { galleries, imageUrls, currentPage } from '$lib/stores/galleryStore';
+	import { 
+		galleries, 
+		imageUrls, 
+		currentPage, 
+		genres,
+		folderStates
+	} from '$lib/stores/galleryStore';
+	import { searchStore } from '$lib/stores/searchStore';
 	import Pagination from '$lib/components/Pagination.svelte';
 	import { recommendedMangas, userRatings } from '$lib/stores/recommendationStore';
   import StarRating  from '$lib/components/StarRating.svelte';  // 새로 만들 컴포넌트
@@ -16,49 +25,59 @@
 		
 // 통합된 fetch 함수
 async function fetchData(endpoint, options = {}) {
-    const baseUrl = 'https://api2410.ebesesk.synology.me';
-    const accessToken = localStorage.getItem('accessToken');
-    
-    if (!accessToken && !options.skipAuth) {
-        console.error('인증 토큰이 없습니다.');
-        window.location.href = '/login';
-        return null;
-    }
-
-    const defaultOptions = {
-        headers: {
-            'Authorization': `Bearer ${accessToken}`,
-            'Accept': options.isImage ? 'image/*' : 'application/json',
-            'Content-Type': 'application/json'
-        },
-        mode: 'cors'
-    };
-
-    try {
-        const response = await fetch(
-            `${baseUrl}${endpoint}`, 
-            { ...defaultOptions, ...options }
-        );
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+        const baseUrl = 'https://api2410.ebesesk.synology.me';
+        let accessToken = '';
+        
+        if (browser) {  // browser 체크 추가
+            accessToken = localStorage.getItem('accessToken');
+        }
+        
+        if (!accessToken && !options.skipAuth) {
+            console.error('인증 토큰이 없습니다.');
+            if (browser) {  // browser 체크 추가
+                window.location.href = '/login';
+            }
+            return null;
         }
 
-        if (options.isImage) {
-            const blob = await response.blob();
-            return blob.size > 0 ? URL.createObjectURL(blob) : null;
+        const defaultOptions = {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Accept': options.isImage ? 'image/*' : 'application/json',
+                'Content-Type': 'application/json'
+            },
+            mode: 'cors'
+        };
+
+        try {
+            const response = await fetch(
+                `${baseUrl}${endpoint}`, 
+                { ...defaultOptions, ...options }
+            );
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            if (options.isImage) {
+                const blob = await response.blob();
+                return blob.size > 0 ? URL.createObjectURL(blob) : null;
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error(`Fetch error for ${endpoint}:`, error);
+            throw error;
         }
-
-        return await response.json();
-    } catch (error) {
-        console.error(`Fetch error for ${endpoint}:`, error);
-        throw error;
     }
-}
 
-// 갤러리 데이터 가져오기
+// fetchGalleries 함수 수정
 async function fetchGalleries(page) {
     try {
+        const activeGenres = Object.entries($folderStates)
+            .filter(([_, isActive]) => isActive)
+            .map(([genre]) => genre);
+
         const params = new URLSearchParams({
             page: page,
             size: pageSize,
@@ -66,17 +85,42 @@ async function fetchGalleries(page) {
             order: 'desc'
         });
 
+        if (activeGenres.length > 0) {
+            activeGenres.forEach(genre => {
+                params.append('folders', genre);
+            });
+        }
+
         const data = await fetchData(`/manga/mangas/?${params.toString()}`);
-        galleries.set(data.items);
-        currentPage.set(data.page);
-        totalPages = data.pages;
-        pageSize = data.size;
-        
-        await fetchGalleryImages($galleries);
+        console.log('API 전체 응답:', data); // 전체 응답 데이터 확인
+
+        if (data) {
+            galleries.set(data.items || []);
+            currentPage.set(page);
+            // 전체 페이지 수 계산 (total_items가 있다고 가정)
+            if (data.total_items) {
+                totalPages = Math.ceil(data.total_items / pageSize);
+            } else {
+                totalPages = data.pages || Math.ceil(data.items.length / pageSize);
+            }
+            pageSize = data.size || 20;
+            genres.set(data.genres || []);
+            
+            console.log('페이지 정보 업데이트:', {
+                currentPage: page,
+                totalPages,
+                totalItems: data.total_items,
+                pageSize,
+                itemsCount: data.items.length
+            });
+
+            await fetchGalleryImages($galleries);
+        }
     } catch (error) {
         console.error('갤러리 데이터를 불러오는데 실패했습니다:', error);
     }
 }
+
 
 // 추천 데이터 가져오기
 async function fetchRecommendations() {
@@ -95,36 +139,64 @@ async function fetchRecommendations() {
 
 // 평점 주기
 async function rateGallery(mangaId, rating) {
-        try {
-            if ($userRatings[mangaId] === rating) {
-                await fetchData(`/manga/${mangaId}/rate`, {
-                    method: 'DELETE'
-                });
-                
-                userRatings.update(ratings => {
-                    const newRatings = { ...ratings };
-                    delete newRatings[mangaId];
-                    return newRatings;
-                });
-            } else {
-                await fetchData(`/manga/${mangaId}/rate`, {
-                    method: 'POST',
-                    body: JSON.stringify({ rating })
-                });
+    try {
+        if ($userRatings[mangaId] === rating) {
+            await fetchData(`/manga/${mangaId}/rate`, {
+                method: 'DELETE'
+            });
+            
+            userRatings.update(ratings => {
+                const newRatings = { ...ratings };
+                delete newRatings[mangaId];
+                return newRatings;
+            });
+        } else {
+            await fetchData(`/manga/${mangaId}/rate`, {
+                method: 'POST',
+                body: JSON.stringify({ rating })
+            });
 
-                userRatings.update(ratings => ({
-                    ...ratings,
-                    [mangaId]: rating
-                }));
-            }
-
-            // 갤러리 데이터 새로고침 (평균 평점 업데이트를 위해)
-            await fetchGalleries($currentPage);
-            await fetchRecommendations();
-        } catch (error) {
-            console.error('평점 처리에 실패했습니다:', error);
+            userRatings.update(ratings => ({
+                ...ratings,
+                [mangaId]: rating
+            }));
         }
+
+        // 현재 검색어와 페이지 상태를 유지하면서 갤러리 데이터 새로고침
+        const params = new URLSearchParams({
+            page: $currentPage,
+            size: pageSize,
+            sort_by: 'id',
+            order: 'desc'
+        });
+
+        // 현재 검색어가 있다면 추가
+        if ($searchStore) {
+            params.append('search', $searchStore);
+        }
+
+        // 활성화된 장르/폴더 추가
+        const activeGenres = Object.entries($folderStates)
+            .filter(([_, isActive]) => isActive)
+            .map(([genre]) => genre);
+
+        if (activeGenres.length > 0) {
+            activeGenres.forEach(genre => {
+                params.append('folders', genre);
+            });
+        }
+
+        const data = await fetchData(`/manga/mangas/?${params.toString()}`);
+        if (data) {
+            galleries.set(data.items || []);
+            await fetchGalleryImages($galleries);
+        }
+
+        await fetchRecommendations();
+    } catch (error) {
+        console.error('평점 처리에 실패했습니다:', error);
     }
+}
 
 // 이미지 가져오기
 async function fetchGalleryImages(items) {
@@ -216,7 +288,6 @@ function getImageUrl(item, imageNum = false) {
         return null;
     }
 }
-// // 'curl -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJrZHMiLCJleHAiOjE3MzAxOTk5MDZ9.YIHf4Ob3a1KX7SF7aLwReTaVeAZ7FTySTJj8EjfTbe8" https://api2410.ebesesk.synology.me/images/1.png
 
 //로컬 스토리지 토큰 삭제 로그아웃
 	async function logout() {
@@ -240,16 +311,22 @@ function getImageUrl(item, imageNum = false) {
 	}
 
 
-
+// 페이지 변경 핸들러 수정
 async function handlePageChange(newPage) {
-	$currentPage = newPage;
-	await fetchGalleries(newPage);  // 새 갤러리 데이터 가져오기
-	await fetchImage($galleries);  // 새 이미지 데이터 가져오기
+    try {
+        console.log('페이지 변경 시도:', newPage, '현재 페이지:', $currentPage, '전체 페이지:', totalPages);
+        if (newPage >= 1 && newPage <= totalPages) {
+            currentPage.set(newPage);
+            await fetchGalleries(newPage);
+        }
+    } catch (error) {
+        console.error('페이지 변경 중 오류:', error);
+    }
 }
 
 
-	let currentImageIndexes = Array($galleries.length).fill(0);	// 이미지 순서 변수
-	let imagesNum = Array($galleries.length).fill(0);	// 이미지 순서 변수
+let currentImageIndexes = Array($galleries.length).fill(0);	// 이미지 순서 변수
+let imagesNum = Array($galleries.length).fill(0);	// 이미지 순서 변수
 	
 	async function handleImageClick(galleryIndex, direction) {
     const gallery = $galleries[galleryIndex];
@@ -284,7 +361,7 @@ async function handlePageChange(newPage) {
 function exist_zip(images_name) {
 	const zip_ext = ['zip', 'rar', '7z', 'tar', 'gz', 'bz2', 'xz', 'alz'];
 	images_name = JSON.parse(images_name);
-	console.log('images_name:', images_name)
+	// console.log('images_name:', images_name)
 	for (let j = 0; j < images_name.length; j++) {
 		for (let k = 0; k < zip_ext.length; k++) {
 			if (images_name[j].endsWith(zip_ext[k])) {
@@ -296,34 +373,121 @@ function exist_zip(images_name) {
 	return false;
 }
 
+// 장르 상태 관리
+let selectedGenres = {};
+    
+// 장르 버튼 토글
+function toggleGenre(genre) {
+		folderStates.update(states => ({
+				...states,
+				[genre]: !states[genre] // 선택된 장르의 상태값만 반전시킵니다
+		}));
+		console.log('folderStates:', $folderStates);
+}
 
+// 필터 적용
+// applyFilter 함수 수정
+async function applyFilter() {
+    try {
+        currentPage.set(1);
+        
+        const activeGenres = Object.entries($folderStates)
+            .filter(([_, isActive]) => isActive)
+            .map(([genre]) => genre);
+            
+        const params = new URLSearchParams({
+            page: 1,
+            size: pageSize,
+            sort_by: 'id',
+            order: 'desc'
+        });
 
+        if (activeGenres.length > 0) {
+            activeGenres.forEach(genre => {
+                params.append('folders', genre);
+            });
+        }
 
-let searchTerm = '';
-let searchTimeout;
+        const data = await fetchData(`/manga/mangas/?${params.toString()}`);
+        console.log('필터 적용 API 응답:', data);
 
-	// 검색 함수 수정
-	async function handleSearch() {
-			try {
-					const params = new URLSearchParams({
-							page: 1,  // 검색 시 첫 페이지로 이동
-							size: pageSize,
-							sort_by: 'id',
-							order: 'desc',
-							search: searchTerm
-					});
+        if (data) {
+            galleries.set(data.items || []);
+            // 전체 페이지 수 계산
+            if (data.total_items) {
+                totalPages = Math.ceil(data.total_items / pageSize);
+            } else {
+                totalPages = data.pages || Math.ceil(data.items.length / pageSize);
+            }
+            pageSize = data.size || 20;
+            
+            console.log('필터 적용 후 페이지 정보:', {
+                currentPage: 1,
+                totalPages,
+                totalItems: data.total_items,
+                pageSize,
+                itemsCount: data.items.length
+            });
+            
+            await fetchGalleryImages($galleries);
+        }
+    } catch (error) {
+        console.error('갤러리 데이터를 불러오는데 실패했습니다:', error);
+    }
+}
 
-					const data = await fetchData(`/manga/mangas/?${params.toString()}`);
-					galleries.set(data.items);
-					currentPage.set(data.page);
-					totalPages = data.pages;
-					pageSize = data.size;
-					
-					await fetchGalleryImages($galleries);
-			} catch (error) {
-					console.error('검색 중 오류 발생:', error);
-			}
-	}
+	
+
+// 검색어가 변경될 때마다 갤러리 데이터 다시 불러오기
+$: if ($searchStore !== undefined) {
+        handleSearch($searchStore);
+    }
+// 검색 함수 수정
+async function handleSearch(searchTerm) {
+		try {
+				const activeGenres = Object.entries($folderStates)
+						.filter(([_, isActive]) => isActive)
+						.map(([genre]) => genre);
+
+				const params = new URLSearchParams({
+						page: 1,
+						size: pageSize,
+						sort_by: 'id',
+						order: 'desc'
+				});
+
+				// 검색어가 있는 경우 추가
+				if (searchTerm) {
+						params.append('search', searchTerm);
+				}
+
+				// 활성화된 장르/폴더 추가
+				if (activeGenres.length > 0) {
+						activeGenres.forEach(genre => {
+								params.append('folders', genre);
+						});
+				}
+
+				const data = await fetchData(`/manga/mangas/?${params.toString()}`);
+				
+				if (data) {
+						galleries.set(data.items || []);
+						currentPage.set(1);
+						totalPages = data.pages || 1;
+						pageSize = data.size || 20;
+						
+						console.log('검색 결과:', {
+								searchTerm,
+								totalItems: data.items.length,
+								totalPages: data.pages
+						});
+						
+						await fetchGalleryImages($galleries);
+				}
+		} catch (error) {
+				console.error('검색 중 오류 발생:', error);
+		}
+}
 
 	// 디바운스 처리
 	function debounceSearch() {
@@ -337,23 +501,85 @@ let searchTimeout;
 	let selectedIndex = 0;
 	let showModal = false;
 
+	function openModal(i) {
+			selectedIndex = i;
+			showModal = true;
+	}
 
-    function openModal(i) {
-				selectedIndex = i;
-        showModal = true;
+	function closeModal() {
+			showModal = false;
+	}
+
+	let sortType = 'id';
+    
+    async function handleSort(newSortType, orderType) {
+        try {
+            sortType = newSortType; // 현재 정렬 타입 업데이트
+            
+            const params = new URLSearchParams({
+                page: $currentPage,
+                size: pageSize,
+                sort_by: newSortType,
+                order: orderType
+            });
+
+            // 현재 검색어가 있다면 추가
+            if ($searchStore) {
+                params.append('search', $searchStore);
+            }
+
+            // 활성화된 장르/폴더 추가
+            const activeGenres = Object.entries($folderStates)
+                .filter(([_, isActive]) => isActive)
+                .map(([genre]) => genre);
+
+            if (activeGenres.length > 0) {
+                activeGenres.forEach(genre => {
+                    params.append('folders', genre);
+                });
+            }
+
+            const data = await fetchData(`/manga/mangas/?${params.toString()}`);
+            if (data) {
+                galleries.set(data.items || []);
+                await fetchGalleryImages($galleries);
+            }
+        } catch (error) {
+            console.error('정렬 중 오류 발생:', error);
+        }
     }
 
-    function closeModal() {
-        showModal = false;
-    }
+	const folderVisibility = writable({});
+	function getDisplayFolderName(folderName) {
+        return folderName.split('/').pop();
+	}
+	
 
-		
-
+	// 버튼 상태를 저장할 배열 (true: on, false: off)
+let buttonStates = Array(10).fill(false);
+function handleHeaderButton(buttonNum) {
+	// 해당 버튼의 상태를 토글
+	buttonStates[buttonNum - 1] = !buttonStates[buttonNum - 1];
+	console.log(`버튼 ${buttonNum}: ${buttonStates[buttonNum - 1] ? 'ON' : 'OFF'}`);
+}
+	
 
 	// 초기값 설정
-	galleries.set([]);
-	imageUrls.set([]);
-	currentPage.set(1);
+	// galleries.set([]);
+	// imageUrls.set([]);
+	// currentPage.set(1);
+	$: if ($searchStore !== undefined) {
+        handleSearch($searchStore);
+    }
+  	
+		// 초기 상태 설정
+		$: if ($genres.length > 0 && Object.keys($folderStates).length === 0) {
+			const initialStates = {};
+			$genres.forEach(genre => {
+					initialStates[genre] = false;
+			});
+			folderStates.set(initialStates);
+	}
 
 	onMount(async () => {
 			try {
@@ -369,15 +595,76 @@ let searchTimeout;
 
 
 
-	<!-- <h1>갤러리 목록</h1> -->
-	
+<!-- gallery-header 부분 수정 -->
+<div class="gallery-header">
+	<div class="button-container">
+			<!-- 첫 번째 줄: 정렬 버튼들 -->
+			<div class="button-row sort-buttons">
+					<div class="spacer"></div> <!-- 왼쪽 공간을 채우는 요소 추가 -->
+					<button 
+							class="header-button {sortType === 'update_date' ? 'active' : ''}" 
+							on:click={() => handleSort('update_date', 'desc')}
+					>
+							최신순
+					</button>
+					<button 
+							class="header-button {sortType === 'rating' ? 'active' : ''}" 
+							on:click={() => handleSort('rating', 'desc')}
+					>
+							평점순
+					</button>
+					<button 
+							class="header-button {sortType === 'id' ? 'active' : ''}" 
+							on:click={() => handleSort('id', 'desc')}
+					>
+							기본순
+					</button>
+			</div>
+
+			<!-- 두 번째 줄: 장르 버튼들과 적용 버튼 -->
+			<div class="button-row genre-buttons">
+					<div class="spacer"></div> <!-- 왼쪽 공간을 채우는 요소 추가 -->
+					{#each $genres as genre}
+							<button 
+									class="header-button {$folderStates[genre] ? 'active' : ''}" 
+									on:click={() => toggleGenre(genre)}
+							>
+									{genre}
+									<span class="status-indicator">
+											{$folderStates[genre] ? 'ON' : 'OFF'}
+									</span>
+							</button>
+					{/each}
+					
+					<button 
+							class="header-button submit-button" 
+							on:click={applyFilter}
+					>
+							적용
+					</button>
+			</div>
+			<div>
+				
+			</div>
+	</div>
+</div>
+
+
+
+<div class="pagination-container">
 	<Pagination
-    currentPage={$currentPage}
-    totalPages={totalPages}
-    onPageChange={handlePageChange}
+			totalPages={totalPages}
+			currentPage={$currentPage}
+			on:pageChange={(e) => handlePageChange(e.detail)}
 	/>
+</div>
 
 	
+	
+
+
+
+
 	
 {#if showModal}
 <div 
@@ -414,31 +701,7 @@ let searchTimeout;
 
 
 
-<!-- 추천 망가 섹션 추가 -->
-<section class="recommended-section">
-	<h2>추천 망가</h2>
-	<div class="recommended-galleries">
-			{#each $recommendedMangas as manga, i}
-					<div class="gallery-item">
-							<small>{manga.folder_name}</small>
-							{#if $imageUrls[i] && typeof $imageUrls[i] === 'string'}
-									<button class="image-button">
-											<img src={$imageUrls[i]} alt={manga.folder_name} />
-									</button>
-							{:else}
-									<p>이미지 로딩 중...</p>
-							{/if}
-							<div class="rating-container">
-									<StarRating 
-											value={$userRatings[manga.id] || 0}
-											onChange={(rating) => rateGallery(manga.id, rating)}
-									/>
-									<span class="average-rating">평균: {manga.rating_average.toFixed(1)}</span>
-							</div>
-					</div>
-			{/each}
-	</div>
-</section>
+
 
 <!-- 기존 갤러리 목록에도 평점 기능 추가 -->
 <div class="gallery-container">
@@ -488,16 +751,17 @@ let searchTimeout;
 								<a href="{'kddddds2://http://' + gallery.folder_name}" style="font-size: 0.9em;">
 									<span class="average-rating">
 											평균: {gallery.rating_average ? gallery.rating_average.toFixed(1) : '0.0'}
+											⇒{JSON.parse(gallery.images_name).length}p
 									</span>
 								</a>
 							{:else}
 								<a href="{'kddddds2://http://'+ exist_zip(gallery.images_name)}" style="font-size: 0.9em;">
 									<span class="average-rating">
 											평균: {gallery.rating_average ? gallery.rating_average.toFixed(1) : '0.0'}
-									</span>
+											⇒{JSON.parse(gallery.tags)['size']}		
+										</span>
 								</a>
 							{/if}
-
 					</div>
 				</div>
 			{/each}
@@ -506,11 +770,14 @@ let searchTimeout;
 
 
 
-<Pagination
-    currentPage={$currentPage}
-    totalPages={totalPages}
-    onPageChange={handlePageChange}
-/>
+
+<div class="pagination-container">
+	<Pagination
+			totalPages={totalPages}
+			currentPage={$currentPage}
+			on:pageChange={(e) => handlePageChange(e.detail)}
+	/>
+</div>
 
 
 
@@ -522,6 +789,7 @@ let searchTimeout;
 		width: 100%;
 		padding: 10px;
 		box-sizing: border-box;
+		margin-bottom: 60px;  /* 페이지네이션 높이만큼 마진 */
 	}
 
 	.galleries {
@@ -552,6 +820,16 @@ let searchTimeout;
 	.gallery-item:hover {
 			transform: scale(1.02);  /* 호버시 살짝 확대 */
 	}
+
+	.gallery-header {
+        position: sticky;
+        top: 0;
+        background: white;
+        padding: 0.5rem;
+        z-index: 100;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+		
 	/* 반응형 그리드 */
 	@media (max-width: 1200px) {
 			.galleries {
@@ -639,20 +917,7 @@ let searchTimeout;
 
 
 
-		.recommended-section {
-        margin: 2rem 0;
-        padding: 1rem;
-        background: #f5f5f5;
-        border-radius: 8px;
-    }
-
-    .recommended-galleries {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 1rem;
-        padding: 1rem;
-    }
-
+		
     .rating-container {
         display: flex;
         flex-direction: column;
@@ -853,6 +1118,129 @@ let searchTimeout;
         width: 100%;
         height: 100vh;
     }
-	
+
+
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+
+
+    @media (max-width: 768px) {
+        .gallery-header {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+    }
+
 		
+
+    /* 모바일 반응형 */
+    @media (max-width: 768px) {
+        .button-container {
+            flex-wrap: wrap;
+        }
+    }
+
+		.button-container {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+    }
+
+    .button-row {
+        display: flex;
+        gap: 4px;
+        flex-wrap: wrap;
+        width: 100%;
+    }
+
+    .spacer {
+        flex-grow: 1;  /* 왼쪽 공간을 최대한 차지 */
+    }
+
+    .sort-buttons {
+        justify-content: flex-end;  /* 오른쪽 정렬 */
+        padding-bottom: 4px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .genre-buttons {
+        justify-content: flex-end;  /* 오른쪽 정렬 */
+        overflow-x: auto;
+        padding-bottom: 4px;
+    }
+
+    .header-button {
+        padding: 4px 8px;
+        background: #f0f0f0;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 0.2s;
+        display: flex;
+        gap: 4px;
+        align-items: center;
+        font-size: 0.8rem;
+        flex-shrink: 0;  /* 버튼 크기 유지 */
+    }
+
+    .header-button.active {
+        background: #4CAF50;
+        color: white;
+        border-color: #45a049;
+    }
+
+    .submit-button {
+        background-color: #2196F3;
+        color: white;
+    }
+
+    .submit-button:hover {
+        background-color: #1976D2;
+    }
+
+    .status-indicator {
+        font-size: 0.7em;
+        padding: 1px 4px;
+        border-radius: 2px;
+        background: rgba(0, 0, 0, 0.1);
+    }
+
+    .active .status-indicator {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    @media (max-width: 768px) {
+        .button-row {
+            justify-content: flex-end;
+        }
+        
+        .sort-buttons {
+            border-bottom: none;
+        }
+        
+        .spacer {
+            display: none;  /* 모바일에서는 spacer 숨김 */
+        }
+    }
+		.pagination-container {
+        display: flex;
+        justify-content: center;  /* 가운데 정렬 */
+        align-items: center;
+        width: 100%;
+        padding: 1rem 0;
+        margin: 1rem 0;
+    }
 </style>

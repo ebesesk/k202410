@@ -1,22 +1,29 @@
 <script>
     import { page } from '$app/stores';  // Svelte의 페이지 스토어 추가
     import { createEventDispatcher } from 'svelte';
-    
+    import { searchStore } from '$lib/stores/searchStore';
+
     let isOpen = false;
-    let searchTerm = '';
     const dispatch = createEventDispatcher();
     
     function toggleMenu() {
         isOpen = !isOpen;
     }
-
+    
     function handleSearch(event) {
         dispatch('search', { term: searchTerm });
     }
 
-    // 검색어 입력 시 디바운스 처리
+    
+    let searchTerm = '';
+    let searchTimeout;
+    let isGalleryPage = true; // 또는 현재 페이지 확인 로직
+
     function debounceSearch() {
-        dispatch('search', { term: searchTerm });
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            searchStore.set(searchTerm);
+        }, 300);
     }
 
     $: isGalleryPage = $page.url.pathname === '/gallery';

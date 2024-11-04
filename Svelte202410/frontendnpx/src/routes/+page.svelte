@@ -3,11 +3,16 @@
 	import { browser } from '$app/environment';
 	import { createClient } from '@supabase/supabase-js';
 	import { goto } from '$app/navigation';  // 이 줄을 상단에 추가
-	import Navbar from '$lib/components/Navbar.svelte';
+	import { redirect } from '@sveltejs/kit';
+    import Navbar from '$lib/components/Navbar.svelte';
 
 	let isAuthenticated = false;
 	const supabase = createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_ANON_KEY);
 	onMount(() => {
+        const accessToken = localStorage.getItem('accessToken');
+        if (accessToken) {
+            window.location.href = '/about';  // accessToken이 있으면 about 페이지로 리다이렉트
+        }
         // 브라우저 환경에서만 localStorage 접근
         if (browser) {
             const token = localStorage.getItem('accessToken');

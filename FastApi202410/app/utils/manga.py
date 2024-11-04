@@ -10,9 +10,11 @@ from typing import List, Dict
 import pytz  # 한국 시간대를 설정하기 위한 라이브러리
 import json
 import re, glob, shutil
+from math import ceil
 # 한국 시간대 설정
 KST = pytz.timezone("Asia/Seoul")
 img_extensions = ['jpg', 'png', 'jpeg', 'gif', 'bmp', 'tiff', 'webp', 'zip', 'rar', '7z', 'tar', '.gz', 'bz2', 'xz', 'alz']
+zip_extensions = ['zip', 'rar', '7z', 'tar', '.gz', 'bz2', 'xz', 'alz']
 MANGA_PATH = '/home/manga'
 
 
@@ -134,20 +136,25 @@ def list_images_from_folders(MANGA_PATH: str) -> List[Dict]:
         folder_name = manga_folder.replace(MANGA_PATH + '/', '')
         file_date = datetime.now(KST)
         images_name = []
+        tags = {'size': 0}
         for img in glob.glob(manga_folder+'/*'):
             if '@eaDir' not in img \
                 and 'svg%3E' not in img \
                     and os.path.isfile(img) \
                         and img[img.rfind('.')+1:].lower() in img_extensions:
                 images_name.append(img)
+                if img[img.rfind('.')+1:].lower() in zip_extensions:
+                    size = float(os.path.getsize(img)) / 1024 / 1024
+                    tags['size'] += size
+                    # print(img, size)
                 file_stat = os.stat(img)
                 file_date_new = datetime.fromtimestamp(file_stat.st_mtime, KST)
                 if file_date_new < file_date:
                     file_date = file_date_new
-                
+        tags['size'] = str(int(ceil(tags['size']))) + 'MB'
         manga_dict = {
             'folder_name': folder_name,
-            'tags': "",
+            'tags': tags,
             'images_name': images_name,
             'file_date': file_date,
             'page': len(images_name),
@@ -159,7 +166,9 @@ def list_images_from_folders(MANGA_PATH: str) -> List[Dict]:
     print("list_images_from_folders:", len(manga_list))
     return manga_list
 
-
+def get_genres_list():
+    genres_list = [i for i in os.listdir(MANGA_PATH) if os.path.isdir(os.path.join(MANGA_PATH, i))]
+    return genres_list
 
 
 def rename_images_name(folder_name, images_name):

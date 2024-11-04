@@ -67,7 +67,7 @@ class MangaResponse(BaseModel):
     view_count: int = 0
     create_date: Optional[datetime] = None
     update_date: Optional[datetime] = None
-
+    
     class Config:
         from_attributes = True
 
@@ -87,5 +87,5 @@ class PaginatedMangaResponse(BaseModel):
     page: int
     size: int
     pages: int
-    
+    genres: Optional[List[str]] = None
     

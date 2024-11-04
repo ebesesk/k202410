@@ -35,11 +35,12 @@ class MangaCRUD:
         
         for manga_data in mangas:
             manga_db = db.query(Manga).filter(Manga.folder_name == manga_data["folder_name"]).first()
-            if manga_db and manga_data["page"] != manga_db.page:
+            if manga_db and (manga_data["page"] != manga_db.page or json.dumps(manga_data["tags"]) != manga_db.tags):
                 # print(f"업데이트할 manga 찾음: {manga_data['folder_name']}")
                 manga_updates.append({
                     "id": manga_db.id,
                     "page": len(manga_data["images_name"]),
+                    "tags": json.dumps(manga_data["tags"]),
                     "images_name": json.dumps(manga_data["images_name"]),
                     "update_date": datetime.now(KST),
                     "file_date": manga_data["file_date"]
@@ -138,26 +139,61 @@ class MangaCRUD:
             sort_by: str = "id",
             order: str = "desc",
             search: Optional[str] = None,
-            user_id: Optional[int] = None
-        ):
-        query = db.query(Manga)
+            user_id: Optional[int] = None,
+            folders: Optional[List[str]] = None
+        ) -> List[Manga]:
+        # 평균 평점 계산을 위해 외부 조인 적용
+        query = db.query(
+                Manga,
+                func.avg(UserMangaRating.rating).label('avg_rating')
+            ).outerjoin(UserMangaRating)
         
+        # 검색 조건과 폴더 조건을 하나의 or_ 조건으로 통합
+        conditions = []
+
+        # 검색어 조건 추가
         if search:
             search = search.replace(" ", "_")
             search_term = f"%{search}%"
-            query = query.filter(
-                or_(
-                    Manga.folder_name.ilike(search_term),
-                    Manga.tags.ilike(search_term)
-                )
-            )
-        
-        if order == "asc":
-            query = query.order_by(asc(getattr(Manga, sort_by)))
+            conditions.extend([
+                Manga.folder_name.ilike(search_term),
+                Manga.tags.ilike(search_term)
+            ])
+
+        print(folders)
+        # 폴더 조건 추가
+        if folders:
+            conditions.extend([
+                Manga.folder_name.ilike(f"%{folder}%") 
+                for folder in folders
+            ])
+
+        # 조건이 있는 경우에만 필터 적용
+        if conditions:
+            query = query.filter(or_(*conditions))
+            
+        # Group by 추가
+        query = query.group_by(Manga.id)
+                    
+        # 정렬 적용
+        if sort_by == "rating":
+            # 평점 기준 정렬
+            if order == "asc":
+                query = query.order_by(asc('avg_rating'), asc(Manga.id))
+            else:
+                query = query.order_by(desc('avg_rating'), desc(Manga.id))
         else:
-            query = query.order_by(desc(getattr(Manga, sort_by)))
+            # 다른 필드 기준 정렬
+            if order == "asc":
+                query = query.order_by(asc(getattr(Manga, sort_by)))
+            else:
+                query = query.order_by(desc(getattr(Manga, sort_by)))
         
-        mangas = query.offset(skip).limit(limit).all()
+        # 페이지네이션 적용 및 결과 추출
+        results = query.offset(skip).limit(limit).all()
+    
+        # 결과에서 Manga 객체만 추출
+        mangas = [result[0] for result in results]
         
         if user_id:
             for manga in mangas:
@@ -168,16 +204,18 @@ class MangaCRUD:
                 ).first()
                 manga.user_rating = rating.rating if rating else None
                 
-                # 평균 평점 계산
-                avg_rating = db.query(func.avg(UserMangaRating.rating)).filter(
-                    UserMangaRating.manga_id == manga.id
-                ).scalar()
+                # 평균 평점 설정
+                avg_rating = next((r[1] for r in results if r[0].id == manga.id), None)
                 manga.rating_average = float(avg_rating) if avg_rating else 0.0
-        
+            
         return mangas
 
     @staticmethod
-    def get_total_manga_count(db: Session, search: Optional[str] = None) -> int:
+    def get_total_manga_count(
+            db: Session,
+            search: Optional[str] = None,
+            folders: Optional[List[str]] = None
+        ) -> int:
         """
         전체 망가 수를 조회합니다.
         
@@ -189,13 +227,27 @@ class MangaCRUD:
             int: 전체 망가 수
         """
         query = db.query(Manga)
+        # 검색 조건과 폴더 조건을 하나의 리스트로 통합
+        conditions = []
+        
         if search:
-            query = query.filter(
-                or_(
-                    Manga.folder_name.ilike(f"%{search}%"),
-                    Manga.tags.ilike(f"%{search}%")
-                )
-            )
+            # 검색어 관련 조건 추가
+            conditions.extend([
+                Manga.folder_name.ilike(f"%{search}%"),
+                Manga.tags.ilike(f"%{search}%")
+            ])
+        
+        if folders:
+            # 폴더 관련 조건 추가
+            conditions.extend([
+                Manga.folder_name.ilike(f"%{folder}%") 
+                for folder in folders
+            ])
+        
+        # 조건이 있는 경우에만 필터 적용
+        if conditions:
+            query = query.filter(or_(*conditions))
+        
         return query.count()
 
     @staticmethod
