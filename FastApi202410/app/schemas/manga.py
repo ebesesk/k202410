@@ -56,6 +56,21 @@ class Manga(MangaBase):
     class Config:
         from_attributes = True
 
+class MangaResponse(BaseModel):
+    id: int
+    folder_name: str
+    images_name: Optional[str] = None
+    tags: Optional[str] = None
+    page: Optional[int] = None
+    rating_average: float = 0.0
+    user_rating: Optional[float] = None
+    view_count: int = 0
+    create_date: Optional[datetime] = None
+    update_date: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
 class PaginatedMangaResponse(BaseModel):
     """
     페이지네이션된 망가 목록 응답 스키마
@@ -67,7 +82,7 @@ class PaginatedMangaResponse(BaseModel):
         size (int): 페이지당 아이템 수
         pages (int): 전체 페이지 수
     """
-    items: List[Manga]
+    items: List[MangaResponse]
     total: int
     page: int
     size: int

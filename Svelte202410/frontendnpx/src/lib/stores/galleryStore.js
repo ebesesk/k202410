@@ -1,12 +1,14 @@
-
+import { writable } from 'svelte/store';
 import { persistStore } from '$lib/persistStore';
 
-// 갤러리 목록을 저장하는 store (배열)
-export const galleries = persistStore('galleries', []);
+// 초기값을 빈 배열로 설정
+export const galleries = writable([]);
+export const imageUrls = writable([]);
+export const currentPage = writable(1);
 
-// 각 갤러리의 이미지 URL을 저장하는 store (배열)
-export const imageUrls = persistStore('imageUrls', []);
-
-// 현재 페이지 번호를 저장하는 store
-export const currentPage = persistStore('currentPage', 1);
-
+// 브라우저 환경에서만 로컬 스토리지를 사용하도록 수정
+if (typeof window !== 'undefined') {
+    persistStore('galleries', galleries);
+    persistStore('imageUrls', imageUrls);
+    persistStore('currentPage', currentPage);
+}

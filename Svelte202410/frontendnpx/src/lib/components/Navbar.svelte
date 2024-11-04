@@ -1,29 +1,62 @@
 <script>
+    import { page } from '$app/stores';  // Svelte의 페이지 스토어 추가
+    import { createEventDispatcher } from 'svelte';
+    
     let isOpen = false;
+    let searchTerm = '';
+    const dispatch = createEventDispatcher();
     
     function toggleMenu() {
         isOpen = !isOpen;
     }
+
+    function handleSearch(event) {
+        dispatch('search', { term: searchTerm });
+    }
+
+    // 검색어 입력 시 디바운스 처리
+    function debounceSearch() {
+        dispatch('search', { term: searchTerm });
+    }
+
+    $: isGalleryPage = $page.url.pathname === '/gallery';
 </script>
 
 <nav>
     <div class="nav-container">
-        <div class="logo">
-            <a href="/">K2410</a>
+        <div class="left-section">
+            <div class="logo">
+                <a href="/">K2410</a>
+            </div>
+            
+            {#if isGalleryPage}
+                <div class="search-container">
+                    <input 
+                        type="text" 
+                        bind:value={searchTerm}
+                        on:input={debounceSearch}
+                        placeholder="제목 또는 태그로 검색..."
+                        class="search-input"
+                    />
+                </div>
+            {/if}
         </div>
-        
-        <button class="mobile-menu" on:click={toggleMenu} aria-label="메뉴 버튼">
-            <span class="hamburger"></span>
-        </button>
 
-        <ul class={`nav-links ${isOpen ? 'active' : ''}`}>
-            <li><a href="/">홈</a></li>
-            <li><a href="/gallery">갤러리</a></li>
-            <li><a href="/about">소개</a></li>
-            <li><a href="/contact">연락처</a></li>
-        </ul>
+        <div class="right-section">
+            <button class="mobile-menu" on:click={toggleMenu} aria-label="메뉴 버튼">
+                <span class="hamburger"></span>
+            </button>
+
+            <ul class={`nav-links ${isOpen ? 'active' : ''}`}>
+                <li><a href="/">홈</a></li>
+                <li><a href="/gallery">갤러리</a></li>
+                <li><a href="/about">소개</a></li>
+                <li><a href="/contact">연락처</a></li>
+            </ul>
+        </div>
     </div>
 </nav>
+
 
 <style>
     nav {
@@ -36,12 +69,9 @@
     }
 
     .nav-container {
-        max-width: 1200px;
-        margin: 0 auto;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 0 2rem;
     }
 
     .logo a {
@@ -130,6 +160,54 @@
 
         .nav-links li {
             margin: 1rem 2rem;
+        }
+    }
+    .left-section {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+    }
+
+    .search-container {
+        display: flex;
+        align-items: center;
+    }
+
+    .search-input {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        font-size: 0.9rem;
+        width: 300px;
+        transition: all 0.3s ease;
+    }
+
+    .search-input::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    .search-input:focus {
+        background: rgba(255, 255, 255, 0.2);
+        outline: none;
+    }
+
+    @media (max-width: 768px) {
+        .left-section {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .search-container {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+
+        .search-input {
+            width: 100%;
+            max-width: none;
         }
     }
 </style>

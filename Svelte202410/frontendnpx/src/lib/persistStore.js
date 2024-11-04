@@ -1,21 +1,26 @@
-import { writable } from 'svelte/store';
-
-export const persistStore = (key, initial) => {
+export function persistStore(key, store) {
     // 브라우저 환경인지 확인
-    const isBrowser = typeof window !== 'undefined';
+    if (typeof window === 'undefined') return;
+
+    // 로컬 스토리지에서 데이터 가져오기
+    const storedValue = localStorage.getItem(key);
     
-    // localStorage는 브라우저에서만 접근
-    const stored = isBrowser ? localStorage.getItem(key) : null;
-    const initial_value = stored ? JSON.parse(stored) : initial;
-    
-    const store = writable(initial_value);
-    
-    // 브라우저에서만 localStorage 저장
-    if (isBrowser) {
-        store.subscribe(value => {
-            localStorage.setItem(key, JSON.stringify(value));
-        });
+    if (storedValue) {
+        try {
+            store.set(JSON.parse(storedValue));
+        } catch (e) {
+            console.warn(`Failed to parse stored value for ${key}:`, e);
+            store.set(null);
+        }
     }
-    
-    return store;
+
+    // 스토어 값이 변경될 때마다 로컬 스토리지에 저장
+    store.subscribe(value => {
+        if (value === undefined) return;
+        try {
+            localStorage.setItem(key, JSON.stringify(value));
+        } catch (e) {
+            console.warn(`Failed to store value for ${key}:`, e);
+        }
+    });
 }

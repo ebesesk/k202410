@@ -4,6 +4,13 @@ from app.models.manga import Manga
 # from app.schemas.manga import MangaCreat
 from typing import List, Dict, Optional, Any
 from datetime import datetime
+import json
+from zoneinfo import ZoneInfo  # 새로운 import 추가
+from sqlalchemy import func, asc, desc
+from app.schemas.manga import MangaResponse
+from app.models.rating import UserMangaRating
+# import ces
+KST = ZoneInfo("Asia/Seoul")  # KST 정의
 
 class MangaCRUD:
     """
@@ -17,100 +24,157 @@ class MangaCRUD:
         manga 데이터 folder_name 이 존재하는 경우 update_date 를 현재 시간으로,
         images_name 을 일괄 업데이트 합니다.
         '''
-        existing_folder_names = {manga.folder_name for manga in db.query(Manga.folder_name).all()}
+        # 먼저 DB에 데이터가 있는지 확인
+        manga_count = db.query(Manga).count()
+        if manga_count == 0:
+            print("DB에 업데이트할 데이터가 없습니다.")
+            return mangas
+        
         manga_updates = []
+        remaining_mangas = []
+        
         for manga_data in mangas:
             manga_db = db.query(Manga).filter(Manga.folder_name == manga_data["folder_name"]).first()
-            if manga_db:
+            if manga_db and manga_data["page"] != manga_db.page:
+                # print(f"업데이트할 manga 찾음: {manga_data['folder_name']}")
                 manga_updates.append({
                     "id": manga_db.id,
-                    "update_date": datetime.now(),
-                    "images_name": manga_data["images_name"]
+                    "page": len(manga_data["images_name"]),
+                    "images_name": json.dumps(manga_data["images_name"]),
+                    "update_date": datetime.now(KST),
+                    "file_date": manga_data["file_date"]
                 })
-        if manga_updates:
-            db.bulk_update_mappings(Manga, manga_updates)
-            db.commit()
+            else:
+                remaining_mangas.append(manga_data)
         
+        if manga_updates:
+            try:
+                db.bulk_update_mappings(Manga, manga_updates)
+                db.commit()
+                print(f"총 {len(manga_updates)}개의 레코드가 업데이트되었습니다.")
+            except Exception as e:
+                print(f"업데이트 중 오류 발생: {str(e)}")
+                db.rollback()
+                raise
+        else:
+            print("업데이트할 데이터가 없습니다.")
+        
+        return remaining_mangas
+    
+    @staticmethod
+    def bulk_delete_nonexistent_manga(db: Session, existing_manga_data: List[Dict]) -> int:
+        """
+        파일시스템에 존재하지 않는 망가 데이터를 데이터베이스에서 삭제합니다.
+        """
+        # 파일시스템의 모든 폴더명 가져오기 (list_images_from_folders의 결과에서)
+        all_folder_names = {manga["folder_name"] for manga in existing_manga_data}
+
+        # DB에서 파일시스템에 없는 레코드 찾기
+        to_delete = db.query(Manga).filter(
+            ~Manga.folder_name.in_(all_folder_names)
+        ).all()
+        
+        delete_count = len(to_delete)
+        
+        # 레코드 삭제
+        for manga in to_delete:
+            db.delete(manga)
+        
+        db.commit()
+
+        return delete_count
+    
+    
     
     @staticmethod
     def bulk_insert_manga(db: Session, mangas: List[Dict]):
+        '''
+        파일 리스트에서 새로운 망가 데이터를 삽입합니다.
+        '''
         # 이미 DB에 있는 레코드의 folder_name 가져오기
         existing_folder_names = {manga.folder_name for manga in db.query(Manga.folder_name).all()}
-
         # 새로운 레코드만 삽입
         new_mangas = []
-        for manga_data in mangas:
+        for i, manga_data in enumerate(mangas):
             # 필요한 데이터 처리 및 유효성 검사
             folder_name = manga_data.get("folder_name")
             page_count = manga_data.get("page")
             images_name = manga_data.get("images_name")
-            create_date = manga_data.get("create_date")
-            update_date = manga_data.get("update_date")
+            # create_date = manga_data.get("create_date")
+            # update_date = manga_data.get("update_date")
             file_date = manga_data.get("file_date")
 
             # 폴더 이름이 기존에 없고, 모든 필요한 데이터가 제공되었는지 확인
-            if folder_name and folder_name not in existing_folder_names and isinstance(page_count, int):
+            if folder_name and folder_name not in existing_folder_names and len(images_name) > 0:
                 # datetime 변환이 필요할 경우
-                if isinstance(create_date, str):
-                    create_date = datetime.fromisoformat(create_date)
-                if isinstance(update_date, str):
-                    update_date = datetime.fromisoformat(update_date)
+                # if isinstance(create_date, str):
+                #     create_date = datetime.fromisoformat(create_date)
+                # if isinstance(update_date, str):
+                #     update_date = datetime.fromisoformat(update_date)
                 if isinstance(file_date, str):
                     file_date = datetime.fromisoformat(file_date)
 
                 new_manga = Manga(
                     folder_name=folder_name,
                     page=int(page_count),
-                    images_name=images_name,
-                    create_date=create_date,
-                    update_date=update_date,
+                    images_name=json.dumps(images_name),
+                    create_date=datetime.now(KST),
+                    update_date=datetime.now(KST),
                     file_date=file_date
                 )
                 new_mangas.append(new_manga)
-
+                mangas.pop(i)
         if new_mangas:
             db.bulk_save_objects(new_mangas)
             db.commit()
+
+        return new_mangas
             
     @staticmethod
     def get_mangas_with_pagination(
-        db: Session,
-        skip: int = 0,
-        limit: int = 10,
-        sort_by: str = "id",
-        order: str = "desc",
-        search: Optional[str] = None
-    ) -> List[Manga]:
-        """
-        페이지네이션과 정렬, 검색이 적용된 망가 목록을 조회합니다.
-        
-        Args:
-            db (Session): 데이터베이스 세션
-            skip (int): 건너뛸 레코드 수
-            limit (int): 반환할 최대 레코드 수
-            sort_by (str): 정렬 기준 필드
-            order (str): 정렬 방향 ('asc' 또는 'desc')
-            search (Optional[str]): 검색어 (폴더명이나 태그에서 검색)
-        
-        Returns:
-            List[Manga]: 페이지네이션된 망가 목록
-        """
+            db: Session,
+            skip: int = 0,
+            limit: int = 10,
+            sort_by: str = "id",
+            order: str = "desc",
+            search: Optional[str] = None,
+            user_id: Optional[int] = None
+        ):
         query = db.query(Manga)
         
         if search:
+            search = search.replace(" ", "_")
+            search_term = f"%{search}%"
             query = query.filter(
                 or_(
-                    Manga.folder_name.ilike(f"%{search}%"),
-                    Manga.tags.ilike(f"%{search}%")
+                    Manga.folder_name.ilike(search_term),
+                    Manga.tags.ilike(search_term)
                 )
             )
         
-        if order.lower() == "desc":
-            query = query.order_by(desc(getattr(Manga, sort_by)))
+        if order == "asc":
+            query = query.order_by(asc(getattr(Manga, sort_by)))
         else:
-            query = query.order_by(getattr(Manga, sort_by))
+            query = query.order_by(desc(getattr(Manga, sort_by)))
         
-        return query.offset(skip).limit(limit).all()
+        mangas = query.offset(skip).limit(limit).all()
+        
+        if user_id:
+            for manga in mangas:
+                # 사용자 평점 조회
+                rating = db.query(UserMangaRating).filter(
+                    UserMangaRating.manga_id == manga.id,
+                    UserMangaRating.user_id == user_id
+                ).first()
+                manga.user_rating = rating.rating if rating else None
+                
+                # 평균 평점 계산
+                avg_rating = db.query(func.avg(UserMangaRating.rating)).filter(
+                    UserMangaRating.manga_id == manga.id
+                ).scalar()
+                manga.rating_average = float(avg_rating) if avg_rating else 0.0
+        
+        return mangas
 
     @staticmethod
     def get_total_manga_count(db: Session, search: Optional[str] = None) -> int:
@@ -182,10 +246,10 @@ class MangaCRUD:
 
     @staticmethod
     def update_manga(
-        db: Session,
-        manga_id: int,
-        manga_data: Dict[str, Any]
-    ) -> Optional[Manga]:
+            db: Session,
+            manga_id: int,
+            manga_data: Dict[str, Any]
+        ) -> Optional[Manga]:
         """
         기존 망가 정보를 업데이트합니다.
         
@@ -227,11 +291,11 @@ class MangaCRUD:
 
     @staticmethod
     def search_mangas(
-        db: Session,
-        search_term: str,
-        skip: int = 0,
-        limit: int = 10
-    ) -> List[Manga]:
+                        db: Session,
+                        search_term: str,
+                        skip: int = 0,
+                        limit: int = 10
+                    ) -> List[Manga]:
         """
         망가를 검색합니다.
         
@@ -251,37 +315,5 @@ class MangaCRUD:
             )
         ).offset(skip).limit(limit).all()
 
-    # app/api/api_v1/endpoints/manga.py에서 사용 예시:
-    # @router.get("/mangas/", response_model=PaginatedMangaResponse)
-    # def read_mangas(
-    #     db: Session = Depends(get_db),
-    #     page: int = Query(1, ge=1, description="페이지 번호"),
-    #     size: int = Query(10, ge=1, le=100, description="페이지당 아이템 수"),
-    #     sort_by: str = Query("id", description="정렬 기준 필드"),
-    #     order: str = Query("desc", description="정렬 방향 (asc/desc)"),
-    #     search: Optional[str] = Query(None, description="검색어")
-    # ):
-        """
-        페이지네이션된 망가 목록을 조회하는 API 엔드포인트
-        """
-        skip = (page - 1) * size
-        
-        mangas = MangaCRUD.get_mangas_with_pagination(
-            db,
-            skip=skip,
-            limit=size,
-            sort_by=sort_by,
-            order=order,
-            search=search
-        )
-        
-        total = MangaCRUD.get_total_manga_count(db, search=search)
-        total_pages = ceil(total / size)
-        
-        return PaginatedMangaResponse(
-            items=mangas,
-            total=total,
-            page=page,
-            size=size,
-            pages=total_pages
-        )
+    
+    
