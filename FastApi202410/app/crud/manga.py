@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import desc, or_
+from sqlalchemy import desc, or_, and_
 from app.models.manga import Manga
 # from app.schemas.manga import MangaCreat
 from typing import List, Dict, Optional, Any
@@ -155,22 +155,17 @@ class MangaCRUD:
         if search:
             search = search.replace(" ", "_")
             search_term = f"%{search}%"
-            conditions.extend([
-                Manga.folder_name.ilike(search_term),
-                Manga.tags.ilike(search_term)
-            ])
+            conditions.append(Manga.folder_name.ilike(search_term) | Manga.tags.ilike(search_term))
 
         print(folders)
         # 폴더 조건 추가
         if folders:
-            conditions.extend([
-                Manga.folder_name.ilike(f"%{folder}%") 
-                for folder in folders
-            ])
+            querys = [Manga.folder_name.ilike(f"%{folder}%") for folder in folders if isinstance(folder, str)]
+            conditions.append(or_(*querys))
 
         # 조건이 있는 경우에만 필터 적용
         if conditions:
-            query = query.filter(or_(*conditions))
+            query = query.filter(and_(*conditions))
             
         # Group by 추가
         query = query.group_by(Manga.id)
@@ -178,7 +173,7 @@ class MangaCRUD:
         # 정렬 적용
         if sort_by == "rating":
             # 평점 기준 정렬
-            if order == "asc":
+            if order == "asc": 
                 query = query.order_by(asc('avg_rating'), asc(Manga.id))
             else:
                 query = query.order_by(desc('avg_rating'), desc(Manga.id))
@@ -231,22 +226,17 @@ class MangaCRUD:
         conditions = []
         
         if search:
-            # 검색어 관련 조건 추가
-            conditions.extend([
-                Manga.folder_name.ilike(f"%{search}%"),
-                Manga.tags.ilike(f"%{search}%")
-            ])
+            search = search.replace(" ", "_")
+            search_term = f"%{search}%"
+            conditions.append(Manga.folder_name.ilike(search_term) | Manga.tags.ilike(search_term))
         
         if folders:
-            # 폴더 관련 조건 추가
-            conditions.extend([
-                Manga.folder_name.ilike(f"%{folder}%") 
-                for folder in folders
-            ])
+            querys = [Manga.folder_name.ilike(f"%{folder}%") for folder in folders if isinstance(folder, str)]
+            conditions.append(or_(*querys))
         
         # 조건이 있는 경우에만 필터 적용
         if conditions:
-            query = query.filter(or_(*conditions))
+            query = query.filter(and_(*conditions))
         
         return query.count()
 

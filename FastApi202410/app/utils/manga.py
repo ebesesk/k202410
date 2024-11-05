@@ -141,8 +141,8 @@ def list_images_from_folders(MANGA_PATH: str) -> List[Dict]:
             if '@eaDir' not in img \
                 and 'svg%3E' not in img \
                     and os.path.isfile(img) \
-                        and img[img.rfind('.')+1:].lower() in img_extensions:
-                images_name.append(img)
+                        and img[img.rfind('.')+1:].lower() in img_extensions:    
+                images_name.append(os.path.basename(img))
                 if img[img.rfind('.')+1:].lower() in zip_extensions:
                     size = float(os.path.getsize(img)) / 1024 / 1024
                     tags['size'] += size

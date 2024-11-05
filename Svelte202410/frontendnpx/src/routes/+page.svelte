@@ -1,69 +1,141 @@
 <script>
-	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
-	import { createClient } from '@supabase/supabase-js';
-	import { goto } from '$app/navigation';  // 이 줄을 상단에 추가
-	import { redirect } from '@sveltejs/kit';
+    import { onMount } from 'svelte';
+    import { browser } from '$app/environment';
+    import { createClient } from '@supabase/supabase-js';
+    import { goto } from '$app/navigation';
+    import { redirect } from '@sveltejs/kit';
     import Navbar from '$lib/components/Navbar.svelte';
 
-	let isAuthenticated = false;
-	const supabase = createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_ANON_KEY);
-	onMount(() => {
-        const accessToken = localStorage.getItem('accessToken');
-        if (accessToken) {
-            window.location.href = '/about';  // accessToken이 있으면 about 페이지로 리다이렉트
+    let isAuthenticated = false;
+    const supabase = createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_ANON_KEY);
+
+    // JWT 토큰 검증 함수
+    function checkTokenExpiration() {
+        if (!browser) return false;
+
+        const token = localStorage.getItem('accessToken');
+        if (!token) return false;
+
+        try {
+            // JWT 토큰 디코딩 (Base64)
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            const expirationTime = payload.exp * 1000; // JWT exp는 초 단위, JS는 밀리초 단위
+            const currentTime = Date.now();
+
+            // 만료 10분 전부터는 토큰 갱신 필요
+            const refreshThreshold = 10 * 60 * 1000; // 10분
+            
+            if (currentTime >= expirationTime) {
+                // 토큰이 만료된 경우
+                localStorage.removeItem('accessToken');
+                isAuthenticated = false;
+                return false;
+            } else if (expirationTime - currentTime <= refreshThreshold) {
+                // 만료 10분 전이면 토큰 갱신 시도
+                refreshToken();
+            }
+
+            return true;
+        } catch (error) {
+            console.error('Token validation error:', error);
+            localStorage.removeItem('accessToken');
+            isAuthenticated = false;
+            return false;
         }
-        // 브라우저 환경에서만 localStorage 접근
-        if (browser) {
-            const token = localStorage.getItem('accessToken');
-            isAuthenticated = !!token;
-        }
-    });
-	// 폼 데이터를 저장할 변수들
-	let id = '';
-	let password = '';
-	let errorMsg = '';
-
-	// 로그인 처리 함수
-	// ... existing code ...
-
-async function handleLogin() {
-    try {
-        const formData = new URLSearchParams();
-        formData.append('username', id);
-        formData.append('password', password);
-
-        const response = await fetch('https://api2410.ebesesk.synology.me/auth/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: formData
-        });
-
-        const result = await response.json();
-        
-        if (!response.ok) {
-            throw new Error(result.detail || '로그인 실패');
-        }
-
-        // 로그인 성공 처리
-        const accessToken = result.access_token;
-        localStorage.setItem('accessToken', accessToken);
-        isAuthenticated = true;
-        console.log('accessToken: ', accessToken);
-        // 로그인 성공 후 리다이렉트
-        // window.location.href = '/about';
-			  // window.location.href 대신 goto 사용
-				await goto('/about');
-    } catch (error) {
-        console.error('로그인 에러:', error);
-        errorMsg = error.message;
     }
-}
 
-// ... existing code ...
+    // 토큰 갱신 함수
+    async function refreshToken() {
+        try {
+            const response = await fetch('https://api2410.ebesesk.synology.me/auth/refresh', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                }
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                localStorage.setItem('accessToken', result.access_token);
+                isAuthenticated = true;
+            } else {
+                throw new Error('Token refresh failed');
+            }
+        } catch (error) {
+            console.error('Token refresh error:', error);
+            localStorage.removeItem('accessToken');
+            isAuthenticated = false;
+            goto('/login');
+        }
+    }
+
+    // 주기적으로 토큰 상태 확인 (1분마다)
+    let tokenCheckInterval;
+
+    onMount(() => {
+        if (browser) {
+            // 초기 토큰 확인
+            isAuthenticated = checkTokenExpiration();
+
+            if (isAuthenticated) {
+                goto('/about');
+            }
+
+            // 주기적 토큰 확인 설정
+            tokenCheckInterval = setInterval(() => {
+                isAuthenticated = checkTokenExpiration();
+                if (!isAuthenticated) {
+                    goto('/login');
+                }
+            }, 60000); // 1분마다 체크
+        }
+
+        // 컴포넌트 언마운트 시 인터벌 정리
+        return () => {
+            if (tokenCheckInterval) {
+                clearInterval(tokenCheckInterval);
+            }
+        };
+    });
+
+    let id = '';
+    let password = '';
+    let errorMsg = '';
+
+    async function handleLogin() {
+        try {
+            const formData = new URLSearchParams();
+            formData.append('username', id);
+            formData.append('password', password);
+
+            const response = await fetch('https://api2410.ebesesk.synology.me/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: formData
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.detail || '로그인 실패');
+            }
+
+            const accessToken = result.access_token;
+            localStorage.setItem('accessToken', accessToken);
+            isAuthenticated = true;
+            
+            // 토큰 유효성 확인 시작
+            checkTokenExpiration();
+            await goto('/about');
+        } catch (error) {
+            console.error('로그인 에러:', error);
+            errorMsg = error.message;
+        }
+    }
 </script>
+
 <Navbar />
 
 <div class="login-container">
@@ -72,8 +144,8 @@ async function handleLogin() {
     <form on:submit|preventDefault={handleLogin}>
         <div class="form-group">
             <label for="id">아이디</label>
-            <input 
-                type="text" 
+            <input
+                type="text"
                 id="id"
                 bind:value={id}
                 required
@@ -82,8 +154,8 @@ async function handleLogin() {
 
         <div class="form-group">
             <label for="password">비밀번호</label>
-            <input 
-                type="password" 
+            <input
+                type="password"
                 id="password"
                 bind:value={password}
                 required
@@ -140,4 +212,3 @@ async function handleLogin() {
         margin-top: 10px;
     }
 </style>
-    

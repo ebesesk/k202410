@@ -1,7 +1,7 @@
 <script>
     import { page } from '$app/stores';  // Svelte의 페이지 스토어 추가
     import { createEventDispatcher } from 'svelte';
-    import { searchStore } from '$lib/stores/searchStore';
+    import { searchStore } from '$lib/stores/galleryStore';
 
     let isOpen = false;
     const dispatch = createEventDispatcher();

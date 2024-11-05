@@ -92,7 +92,14 @@ def read_mangas(
     
     total_pages = ceil(total / size)
     genres = get_genres_list()
-    
+    print(PaginatedMangaResponse(
+            items=mangas,
+            total=total,
+            page=page,
+            size=size,
+            pages=total_pages,
+            genres=genres
+        ))
     return PaginatedMangaResponse(
         items=mangas,
         total=total,
