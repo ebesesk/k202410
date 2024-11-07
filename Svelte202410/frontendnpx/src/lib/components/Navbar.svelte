@@ -39,11 +39,12 @@
             {#if isGalleryPage}
                 <div class="search-container">
                     <input 
-                        type="text" 
-                        bind:value={searchTerm}
-                        on:input={debounceSearch}
-                        placeholder="제목 또는 태그로 검색..."
-                        class="search-input"
+                    type="text" 
+                    bind:value={searchTerm}
+                    on:input={debounceSearch}
+                    on:search={handleSearch}
+                    placeholder="제목 또는 태그로 검색..."
+                    class="search-input"
                     />
                 </div>
             {/if}

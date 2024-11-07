@@ -15,8 +15,8 @@
 	} from '$lib/stores/galleryStore';
 	import Pagination from '$lib/components/Pagination.svelte';
 	import { recommendedMangas, userRatings } from '$lib/stores/recommendationStore';
-  import StarRating  from '$lib/components/StarRating.svelte';  // 새로 만들 컴포넌트
-
+    import StarRating  from '$lib/components/StarRating.svelte';  // 새로 만들 컴포넌트
+    import { delSpecialCharacter } from '$lib/util';
     
 
 	// 전체 페이지 수 (서버에서 받은 총 아이템 수를 pageSize로 나눈 값)
@@ -37,7 +37,7 @@ async function fetchData(endpoint, options = {}) {
         if (!accessToken && !options.skipAuth) {
             console.error('인증 토큰이 없습니다.');
             if (browser) {  // browser 체크 추가
-                window.location.href = '/login';
+                window.location.href = '/';
             }
             return null;
         }
@@ -254,7 +254,8 @@ async function fetchUserRatings() {
         }
     });
 
-// 이미지 URL 생성
+
+    // 이미지 URL 생성
 function getImageUrl(item, imageNum = false) {
     try {
         // 폴더 경로에서 /home/manga/ 부분 제거
@@ -295,26 +296,25 @@ function getImageUrl(item, imageNum = false) {
 }
 
 //로컬 스토리지 토큰 삭제 로그아웃
-	async function logout() {
-		try {
-			const response = await fetch('https://api2410.ebesesk.synology.me/auth/logout', {
-				method: 'POST',
-				headers: {
-					'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-				}
-			});
+async function logout() {
+    try {
+        const response = await fetch('https://api2410.ebesesk.synology.me/auth/logout', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            }
+        });
 
-			if (response.ok) {
-				localStorage.removeItem('access_token');
-				window.location.href = '/login';
-			} else {
-				console.error('로그아웃 실패');
-			}
-		} catch (error) {
-			console.error('로그아웃 중 오류 발생:', error);
-		}
-	}
-
+        if (response.ok) {
+            localStorage.removeItem('access_token');
+            window.location.href = '/login';
+        } else {
+            console.error('로그아웃 실패');
+        }
+    } catch (error) {
+        console.error('로그아웃 중 오류 발생:', error);
+    }
+}
 
 // 페이지 변경 핸들러 수정
 async function handlePageChange(newPage) {
@@ -333,7 +333,7 @@ async function handlePageChange(newPage) {
 let currentImageIndexes = Array($galleries.length).fill(0);	// 이미지 순서 변수
 let imagesNum = Array($galleries.length).fill(0);	// 이미지 순서 변수
 	
-	async function handleImageClick(galleryIndex, direction) {
+async function handleImageClick(galleryIndex, direction) {
     const gallery = $galleries[galleryIndex];
     const images = JSON.parse(gallery.images_name);
     
@@ -357,7 +357,7 @@ let imagesNum = Array($galleries.length).fill(0);	// 이미지 순서 변수
         imageUrls.update(urls => {
             const newUrls = [...urls];
             newUrls[galleryIndex] = newImageUrl;
-						// $imageUrls[galleryIndex] = newImageUrl;
+                        // $imageUrls[galleryIndex] = newImageUrl;
             return newUrls;
         });
     }
@@ -443,55 +443,53 @@ async function applyFilter() {
 
 	
 
-// 검색어가 변경될 때마다 갤러리 데이터 다시 불러오기
-$: if ($searchStore !== undefined) {
-        handleSearch($searchStore);
-    }
-// 검색 함수 수정
+
+
+    // 검색 함수 수정
 async function handleSearch(searchTerm) {
-		try {
-				const activeGenres = Object.entries($folderStates)
-						.filter(([_, isActive]) => isActive)
-						.map(([genre]) => genre);
+    try {
+            const activeGenres = Object.entries($folderStates)
+                    .filter(([_, isActive]) => isActive)
+                    .map(([genre]) => genre);
 
-				const params = new URLSearchParams({
-						page: 1,
-						size: pageSize,
-						sort_by: 'id',
-						order: 'desc'
-				});
+            const params = new URLSearchParams({
+                    page: 1,
+                    size: pageSize,
+                    sort_by: 'id',
+                    order: 'desc'
+            });
 
-				// 검색어가 있는 경우 추가
-				if (searchTerm) {
-						params.append('search', searchTerm);
-				}
+            // 검색어가 있는 경우 추가
+            if (searchTerm) {
+                    params.append('search', searchTerm);
+            }
 
-				// 활성화된 장르/폴더 추가
-				if (activeGenres.length > 0) {
-						activeGenres.forEach(genre => {
-								params.append('folders', genre);
-						});
-				}
+            // 활성화된 장르/폴더 추가
+            if (activeGenres.length > 0) {
+                    activeGenres.forEach(genre => {
+                            params.append('folders', genre);
+                    });
+            }
 
-				const data = await fetchData(`/manga/mangas/?${params.toString()}`);
-				
-				if (data) {
-						galleries.set(data.items || []);
-						currentPage.set(1);
-						totalPages = data.pages || 1;
-						pageSize = data.size || 20;
-						
-						console.log('검색 결과:', {
-								searchTerm,
-								totalItems: data.items.length,
-								totalPages: data.pages
-						});
-						
-						await fetchGalleryImages($galleries);
-				}
-		} catch (error) {
-				console.error('검색 중 오류 발생:', error);
-		}
+            const data = await fetchData(`/manga/mangas/?${params.toString()}`);
+            
+            if (data) {
+                    galleries.set(data.items || []);
+                    currentPage.set(1);
+                    totalPages = data.pages || 1;
+                    pageSize = data.size || 20;
+                    
+                    console.log('검색 결과:', {
+                            searchTerm,
+                            totalItems: data.items.length,
+                            totalPages: data.pages
+                    });
+                    
+                    await fetchGalleryImages($galleries);
+            }
+    } catch (error) {
+            console.error('검색 중 오류 발생:', error);
+    }
 }
 
 // 디바운스 처리
@@ -503,61 +501,61 @@ function debounceSearch() {
 }
 
 
-	let selectedIndex = 0;
-	let showModal = false;
+let selectedIndex = 0;
+let showModal = false;
 
-	function openModal(i) {
-			selectedIndex = i;
-			showModal = true;
-	}
+function openModal(i) {
+    selectedIndex = i;
+    showModal = true;
+}
 
-	function closeModal() {
-			showModal = false;
-	}
+function closeModal() {
+    showModal = false;
+}
 
-	let sortType = 'id';
-    
-    async function handleSort(newSortType, orderType) {
-        try {
-            sortType = newSortType; // 현재 정렬 타입 업데이트
-            
-            const params = new URLSearchParams({
-                page: $currentPage,
-                size: pageSize,
-                sort_by: newSortType,
-                order: orderType
-            });
+let sortType = 'id';
 
-            // 현재 검색어가 있다면 추가
-            if ($searchStore) {
-                params.append('search', $searchStore);
-            }
+async function handleSort(newSortType, orderType) {
+    try {
+        sortType = newSortType; // 현재 정렬 타입 업데이트
+        
+        const params = new URLSearchParams({
+            page: $currentPage,
+            size: pageSize,
+            sort_by: newSortType,
+            order: orderType
+        });
 
-            // 활성화된 장르/폴더 추가
-            const activeGenres = Object.entries($folderStates)
-                .filter(([_, isActive]) => isActive)
-                .map(([genre]) => genre);
-
-            if (activeGenres.length > 0) {
-                activeGenres.forEach(genre => {
-                    params.append('folders', genre);
-                });
-            }
-
-            const data = await fetchData(`/manga/mangas/?${params.toString()}`);
-            if (data) {
-                galleries.set(data.items || []);
-                await fetchGalleryImages($galleries);
-            }
-        } catch (error) {
-            console.error('정렬 중 오류 발생:', error);
+        // 현재 검색어가 있다면 추가
+        if ($searchStore) {
+            params.append('search', $searchStore);
         }
-    }
 
-	const folderVisibility = writable({});
-	function getDisplayFolderName(folderName) {
-        return folderName.split('/').pop();
-	}
+        // 활성화된 장르/폴더 추가
+        const activeGenres = Object.entries($folderStates)
+            .filter(([_, isActive]) => isActive)
+            .map(([genre]) => genre);
+
+        if (activeGenres.length > 0) {
+            activeGenres.forEach(genre => {
+                params.append('folders', genre);
+            });
+        }
+
+        const data = await fetchData(`/manga/mangas/?${params.toString()}`);
+        if (data) {
+            galleries.set(data.items || []);
+            await fetchGalleryImages($galleries);
+        }
+    } catch (error) {
+        console.error('정렬 중 오류 발생:', error);
+    }
+}
+
+const folderVisibility = writable({});
+function getDisplayFolderName(folderName) {
+    return folderName.split('/').pop();
+}
 	
 
 // 버튼 상태를 저장할 배열 (true: on, false: off)
@@ -571,26 +569,92 @@ function handleHeaderButton(buttonNum) {
 
 // 스크립트 상단에 추가
 let selectedAction = null; // 이동 & 병합
-let targetFolderName = ''; // 대상 폴더 이름
+let targetGenre = ''; // 대상 장르 폴더 이름
+let targetTitle = ''; // 대상 서브 폴더 이름
+$: targetFolderName = targetTitle? `${targetGenre}/${targetTitle}` : targetGenre; // 대상 폴더 이름
 
-function handleFolderSelect(event) {
-    // targetFolderName = event.target.value;\
-    console.log('event.target.value:', event.target.value);
-    console.log('targetFolderName:', targetFolderName);
-    targetFolderName = event.target.value + '/' + targetFolderName.split('/').pop();
+// 폴더 이름 검증 함수
+async function validateFolderName(folderName=null) {
+    try {
+        folderName
+        if (folderName) {
+            targetGenre = folderName.split('/')[0];
+            targetTitle = folderName.split('/')[1];
+        }
+        
+        if (!targetGenre || !targetTitle) {
+            return false;
+        }
+
+        const cleanedFolderName = delSpecialCharacter(targetGenre) + '/' + delSpecialCharacter(targetTitle);
+        const parts = cleanedFolderName.split('/');
+        
+        if (parts.length > 2) {
+            targetGenre = "서브 폴더는 최대 1개까지 가능합니다.";
+            return false;
+        }
+        
+        // 장르 검증
+        // try {
+        //     const response = await fetchData('/manga/genres/');
+        //     const genres = await response;
+        //     if (!genres.includes(parts[0])) {
+        //         targetGenre = "장르 선택 오류";
+        //         return false;
+        //     }
+        // } catch (error) {
+        //     console.error('장르 검증 중 오류:', error);
+        //     return false;
+        // }
+        
+        if (targetTitle !== delSpecialCharacter(targetTitle)) {
+            targetTitle = delSpecialCharacter(targetTitle);
+            return false;
+        }
+        
+        if (selectedAction === 'move' || selectedAction === 'merge') {
+            targetGenre = parts[0];
+            targetTitle = parts[1] || '';
+            targetFolderName = `${targetGenre}/${targetTitle}`;
+            return true;
+        }
+        
+        targetGenre = parts[0];
+        targetTitle = parts[1] || '';
+        targetFolderName = `${targetGenre}/${targetTitle}`;
+        return false;
+        
+    } catch (error) {
+        console.error('폴더명 검증 중 오류:', error);
+        return false;
+    }
 }
+
 
 	// 파일 이름 업데이트 함수
 	function updateTargetFolderName(selectedIds) {
         if (selectedIds.length > 0) {
             const firstGallery = $galleries.find(g => g.id === selectedIds[0]);
             if (firstGallery) {
-                    targetFolderName = firstGallery.folder_name.split('/').pop();
+                targetGenre = firstGallery.folder_name.split('/')[0];
+                targetTitle = firstGallery.folder_name.split('/')[1];
             }
         } else {
-            targetFolderName = '';
+            targetTitle = '';
         }
 	}
+
+    // galleries 에서 폴더이름 추출
+    function getFolderName() {
+        console.log('mangaId:', $selectedMangaStore[0]);
+        let manga = $galleries.find(gallery => gallery.id === $selectedMangaStore[0]);
+        console.log('manga:', manga);
+        if (manga) {
+            return manga.folder_name;
+        }
+        
+    }
+
 
 	// 라디오 버튼 핸들러 함수 수정
 	function selectManga(mangaId) {
@@ -614,43 +678,33 @@ function getOriginalName(folderName) {
         return parts[parts.length - 1] || '';
     }
 // manga 합치거나 폴더 이동 함수, 액션 처리 함수 파일 관리
+let mangasActionResult = [];
+
 async function handleAction() {
     //selectedMangaStore manga 선택
     if (!selectedAction || !targetFolderName || $selectedMangaStore.length === 0) return;
 
     try {
+        const endpoint = '/manga/manga-actions/';
         console.log('selectedAction:', selectedAction);
         console.log('targetFolderName:', targetFolderName);
         console.log('selectedMangaStore:', $selectedMangaStore);
-        const endpoint = selectedAction === 'move' ? '/manga/move' : '/manga/merge';
-        console.log('endpoint:', endpoint);
-        // 유효한 manga만 필터링
-        // const validMangas = $selectedMangaStore.filter(manga => manga?.folder_name);
-        const validMangas = $galleries.filter(manga => $selectedMangaStore.includes(manga.id));
-        console.log('validMangas:', validMangas);
-        if (validMangas.length === 0) {
-            console.error('유효한 manga가 없습니다.');
-            return;
-        }
 
-        const newPath = selectedAction === 'move' 
-            ? `${targetFolderName}/${getOriginalName(validMangas[0].folder_name)}`
-            : `${targetFolderName}/${validMangas
-                .map(manga => getOriginalName(manga.folder_name))
-                .join(' + ')}`;
-
-        await fetchData(endpoint, {
+        const rsult = await fetchData(endpoint, {
             method: 'POST',
             body: JSON.stringify({
-                manga_ids: validMangas.map(manga => manga.id),
-                target_folder: newPath
+                action: selectedAction,
+                target_folder_name: targetFolderName,
+                manga_ids: $selectedMangaStore,
             })
         });
-
+        mangasActionResult = rsult;
+        console.log('mangasActionResult:', mangasActionResult);
         // 성공 후 상태 초기화
         selectedMangaStore.set([]);
-        selectedAction = '';
-        targetFolderName = '';
+        selectedAction = null; // 이동 & 병합
+        targetGenre = ''; // 대상 장르 폴더 이름
+        targetTitle = ''; // 대상 서브 폴더 이름
         
         // 갤러리 목록 새로고침
         await fetchGalleries($currentPage);
@@ -660,20 +714,26 @@ async function handleAction() {
     }
 }
 
-	// 초기값 설정
-	// galleries.set([]);
-	// imageUrls.set([]);
-	// currentPage.set(1);
-	// $: if ($searchStore !== undefined) {
-    //     handleSearch($searchStore);
-    // }
-  	// selectedMangaStore 구독하여 첫 선택 시 이름 설정
-    $: if ($selectedMangaStore.length > 0 && !targetFolderName) {
-        const firstGallery = $galleries.find(g => g.id === $selectedMangaStore[0]);
-        if (firstGallery) {
-                targetFolderName = firstGallery.folder_name.split('/').pop();
-        }
+    
+    // 검색어가 변경될 때마다 갤러리 데이터 다시 불러오기
+    $: if ($searchStore !== undefined) {
+        handleSearch($searchStore);
     }
+  	// selectedMangaStore 구독하여 첫 선택 시 이름 설정
+    $: if ($selectedMangaStore.length > 0) {
+            const selectedManga = $galleries.find(g => g.id === $selectedMangaStore[0]);
+            if (selectedManga){
+                const folderName = selectedManga.folder_name;
+                if (selectedAction==='move') {
+                    targetGenre = folderName.split('/')[0];
+                    targetTitle = '';
+                }else{
+                    targetGenre = folderName.split('/')[0];
+                    targetTitle = folderName.split('/')[1];
+                }
+            }   
+        }
+    
     // 초기 상태 설정
     $: if ($genres.length > 0 && Object.keys($folderStates).length === 0) {
         const initialStates = {};
@@ -748,19 +808,16 @@ async function handleAction() {
 <!-- 선택된 항목이 있을 때 표시할 작업 선택 영역 -->
 <div class="button-row genre-buttons">
 	<div class="selected-items">
-			{#if $selectedMangaStore.length > 0}
+			{#if $selectedMangaStore.length > 0 || mangasActionResult.length > 0}
 					<div class="selection-info">
-
-
-							
-
 							<div class="button-row action-panel">
+                                <!-- 폴더 이동 병합할 manga 선택 영역 -->
 								{#if $selectedMangaStore.length > 0}
 								<div class="action-container">
-
                                     <!-- 텍스트 입력 영역 추가 -->
                                     <div class="name-input-area">
                                         <div class="input-wrapper">
+                                            <!-- 대상 폴더 이름 입력 영역 -->
                                                 <input 
                                                         type="text"
                                                         class="folder-name-input"
@@ -772,13 +829,15 @@ async function handleAction() {
                                                 <button 
                                                     class="reset-name-button"
                                                     on:click={() => {
-                                                            const firstSelectedId = $selectedMangaStore[0];
-                                                            if (firstSelectedId) {
-                                                                    const firstGallery = $galleries.find(g => g.id === firstSelectedId);
-                                                                    if (firstGallery) {
-                                                                            targetFolderName = firstGallery.folder_name.split('/').pop();
-                                                                    }
-                                                            }
+                                                        const selectedManga = $galleries.find(g => g.id === $selectedMangaStore[0]);
+                                                        const folderName = selectedManga.folder_name;
+                                                        if (selectedManga && selectedAction==='move') {
+                                                            targetGenre = folderName.split('/')[0];
+                                                            targetTitle = '';
+                                                        }else{
+                                                            targetGenre = folderName.split('/')[0];
+                                                            targetTitle = folderName.split('/')[1];
+                                                        }
                                                     }}
                                                 >
                                                     원래 이름으로
@@ -790,101 +849,137 @@ async function handleAction() {
 
 							
 									<div class="folder-selection">
-										{#if targetFolderName && $selectedMangaStore.length > 1}
+										{#if targetGenre && $selectedMangaStore.length > 1}
+
 												<div class="merge-preview">
-														<small>병합 후 경로: {targetFolderName}/{$selectedMangaStore
-																.filter(manga => manga?.folder_name)
-																.map(manga => getOriginalName(manga.folder_name))
-																.join(' + ')}</small>
+													<small>
+                                                        {#if selectedAction === 'move'}
+                                                            병합 후 경로: {targetGenre}
+                                                        {:else}
+                                                            이동 후 경로: {targetGenre}/{targetTitle}
+                                                        {/if}
+                                                    </small>
 												</div>
 											{/if}
 											<div class="radio-group">
+                                                <!-- 이동 병합 라디오 버튼 -->
 													<label class="radio-label">
 															<input 
-																	type="radio" 
-																	name="action" 
-																	value="move"
-																	bind:group={selectedAction}
+                                                                type="radio" 
+                                                                name="action" 
+                                                                value="move"
+                                                                bind:group={selectedAction}
+                                                                on:click={() => {
+                                                                    selectedAction = 'move';
+                                                                }}
 															>
 															<span class="radio-text">이동</span>
 													</label>
 													<label class="radio-label">
 															<input 
-																	type="radio" 
-																	name="action" 
-																	value="merge"
-																	bind:group={selectedAction}
-																	disabled={$selectedMangaStore.length < 2}
+                                                                type="radio" 
+                                                                name="action" 
+                                                                value="merge"
+                                                                bind:group={selectedAction}
+                                                                on:click={() => {
+                                                                    selectedAction = 'merge';
+                                                                    let folderName = {targetGenre}/{targetTitle};
+                                                                }}  
 															>
 															<span class="radio-text">병합</span>
 													</label>
 											</div>
 											
-											<select 
-												class="folder-select"
-												on:change={handleFolderSelect}
-										>
-												<option value="">폴더 선택</option>
-												{#each $genres as genre}
-														<option value={genre}>{genre}</option>
-												{/each}
-										</select>
-
-										
-							
+                                                <select 
+                                                    class="folder-select"
+                                                    bind:value={targetGenre}
+                                                >
+                                                    <option value="">폴더 선택</option>
+                                                    {#each $genres as genre}
+                                                            <option value={genre}>{genre}</option>
+                                                    {/each}
+                                                </select>
 											<div class="action-buttons">
-													<button 
-															class="action-button"
-															disabled={!selectedAction || !targetFolderName}
-															on:click={handleAction}
-													>
-															실행
-													</button>
-													<button 
-															class="cancel-button"
-															on:click={() => {
-																	selectedMangaStore.set([]);
-																	selectedAction = '';
-																	targetFolderName = '';
-															}}
-													>
-															취소
-													</button>
+                                                <button 
+                                                        class="action-button"
+                                                        disabled={!selectedAction || !targetFolderName}
+                                                        on:click={handleAction}
+                                                >
+                                                        실행
+                                                </button>
+                                                <button 
+                                                    class="cancel-button"
+                                                    on:click={() => {
+                                                        selectedMangaStore.set([]);
+                                                        selectedAction = '';
+                                                        targetGenre = '';
+                                                        targetTitle = '';
+                                                    }}
+                                                >
+                                                        취소
+                                                </button>
 											</div>
 									</div>
 							    </div>
 								{/if}
 
 
-                                <div class="selected-files">
-									{#each $selectedMangaStore as mangaId, i}
-											<div class="selected-file">
-                                                <button 
-                                                class="selected-source-file-name"
-                                                type="button"
-                                                on:click={() => targetFolderName = $galleries.find(gallery => gallery.id === mangaId)?.folder_name}
-                                                on:keydown={(e) => e.key === 'Enter' && (targetFolderName = $galleries.find(gallery => gallery.id === mangaId)?.folder_name)}
-                                            >
-													{i+1}. {$galleries.find(gallery => gallery.id === mangaId)?.folder_name}
-												</button>
-													<button 
-														class="remove-selection"
-														on:click={() => {
-																selectedMangaStore.update(items => {
-																		const newItems = items.filter(id => id !== mangaId);
-																		// 남은 항목들 중에서 이름 업데이트
-																		updateTargetFolderName(newItems);
-																		return newItems;
-																});
-														}}
-												>
-														×
-												</button>
-											</div>
-                                            {/each}
-                                    </div>
-                                </div>
                             </div>
+                            {#each $selectedMangaStore as mangaId, i}
+                            <div class="selected-files3">
+                                <!-- 원본 폴더 이름 선택 버튼 -->
+                                <button 
+                                    class="selected-source-file-name"
+                                    type="button"
+                                    on:click={() => {
+                                        let folderName = $galleries.find(gallery => gallery.id === mangaId)?.folder_name;
+                                        if (selectedAction === 'move'){
+                                            targetGenre = folderName.split('/')[0];
+                                            targetTitle = '';
+                                        }else{
+                                            targetGenre = folderName.split('/')[0];
+                                            targetTitle = folderName.split('/')[1];
+                                        }
+                                    }}
+                                    on:keydown={(e) => e.key === 'Enter' && (targetTitle = $galleries.find(gallery => gallery.id === mangaId)?.folder_name)}
+                                >
+                                    {mangaId}. {$galleries.find(gallery => gallery.id === mangaId)?.folder_name}
+                                </button>
+                                <!-- 선택 항목 제거 버튼 -->
+                                <button 
+                                    class="remove-selection"
+                                    on:click={() => {
+                                        selectedMangaStore.update(items => {
+                                        const newItems = items.filter(id => id !== mangaId);
+                                        // 남은 항목들 중에서 이름 업데이트
+                                        updateTargetFolderName(newItems);
+                                        return newItems;
+                                        });
+                                    }}
+                                >
+                                    ×
+                                </button>
+                                    
+                            </div>
+                            {/each}
+                            {#if mangasActionResult.length > 0}
+                            <div class="selected-files3 manga-action-result">
+                                {#each mangasActionResult as manga}
+                                    <div class="manga-action-result-item">
+                                        {manga.manga.id} {manga.manga.folder_name} {manga.msg}
+                                    </div>
+                                    <button 
+                                    class="remove-selection"
+                                    on:click={() => {
+                                        mangasActionResult = []
+                                    }}
+                                >
+                                    ×
+                                </button>
+                                {/each}
+                            </div>
+                            {/if}
+                        </div>
                     {/if}
                 </div>
             </div>
@@ -908,32 +1003,30 @@ async function handleAction() {
 
 	
 {#if showModal}
-<div 
-    class="modal-backdrop" 
-    on:click={closeModal}
-    on:keydown={e => e.key === 'Escape' && closeModal()}
-    role="dialog"
-    aria-modal="true">
+<div class="modal-backdrop">
     <div 
         class="modal-content" 
         on:click|stopPropagation
         on:keydown|stopPropagation
         role="presentation">
         {#if $imageUrls[selectedIndex] && typeof $imageUrls[selectedIndex] === 'string'}
-            <div class="modal-image-wrapper">
-                <img src={$imageUrls[selectedIndex]} alt={$galleries[selectedIndex].folder_name} class="modal-image" />
-								<button type="button" class="close-button" on:click={closeModal}>닫기×</button>
-                <button
-                    type="button"
-                    class="modal-nav-button prev"
-                    on:click|stopPropagation={() => handleImageClick(selectedIndex, 'prev')}
-                >◀</button>
-                <button 
-                    type="button"
-                    class="modal-nav-button next"
-                    on:click|stopPropagation={() => handleImageClick(selectedIndex, 'next')}
-                >▶</button>
+        <div class="modal-image-wrapper">
+            <div class="folder-name-wrapper">
+                <div class="folder-name" style="position: absolute; z-index: 1; top: 0;">{$galleries[selectedIndex].folder_name}</div>
             </div>
+            <img src={$imageUrls[selectedIndex]} alt={$galleries[selectedIndex].folder_name} class="modal-image" />
+            <button type="button" class="close-button" on:click={closeModal}>닫기×</button>
+            <button
+                type="button"
+                class="modal-nav-button prev"
+                on:click|stopPropagation={() => handleImageClick(selectedIndex, 'prev')}
+            >◀</button>
+            <button 
+                type="button"
+                class="modal-nav-button next"
+                on:click|stopPropagation={() => handleImageClick(selectedIndex, 'next')}
+            >▶</button>
+        </div>
         {/if}
     </div>
 </div>
@@ -950,8 +1043,8 @@ async function handleAction() {
 			{#each $galleries as gallery, i}
 			<div class="gallery-item {$selectedMangaStore.includes(gallery.id) ? 'selected' : ''}">
 				<button class="image-button" on:click={() => openModal(i)}>
-					<small>{gallery.id} {gallery.folder_name.split('/')[0]}<br></small>	
-                    <small>{gallery.folder_name.split('/')[1].slice(0, 12)}</small>
+					<small>{gallery.id}. {gallery.folder_name.split('/')[0]}<br></small>	
+                    <small>{gallery.folder_name.split('/')[1].slice(0, 21)}</small>
 				</button>
 					{#if $imageUrls[i] && typeof $imageUrls[i] === 'string'}
 							<div class="image-container">
@@ -1005,6 +1098,7 @@ async function handleAction() {
 								</a>
 							{/if}
 							<small>
+                                <!-- 폴더 작업 추가하기 -->
 								<label class="radio-label">
 									<input
 											type="checkbox"
@@ -1366,16 +1460,20 @@ async function handleAction() {
     }
 		.modal-image-wrapper {
         position: relative;
-        display: inline-block;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         height: 100vh;  /* 추가: 뷰포트 높이만큼 설정 */
     }
 
     .modal-image {
         max-width: 50%;
-        height: 100vh;  /* 수정: 뷰포트 높이로 설정 */
+        height: 80vh;  /* 수정: 뷰포트 높이로 설정 */
         object-fit: contain;  /* 이미지 비율 유지 */
-        display: block;
-        margin: 0 auto;
+        display: flex;
+        margin: auto;
+        align-items: center;
+        justify-content: center;
     }
     .modal-nav-button {
         position: absolute;
@@ -1399,6 +1497,14 @@ async function handleAction() {
         width: 100%;
         height: 100vh;
     }
+    .folder-name {
+    color: white;
+    font-size: 1.2rem;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 4px;
+    margin: 10px;
+}
 
 
 
@@ -1576,19 +1682,6 @@ async function handleAction() {
     cursor: not-allowed;
 } */
 
-
-
-.selected-file {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.25rem;
-    background: #f8f9fa;
-    padding: 0.25rem 0.5rem;
-    border-radius: 3px;
-    font-size: 0.875rem;
-    overflow: hidden;
-}
 
 
 

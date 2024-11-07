@@ -19,6 +19,36 @@ class MangaCRUD:
     """
     
     @staticmethod
+    def get_manga_by_id(db: Session, manga_id: int) -> Manga:
+        """
+        ID로 특정 망가를 조회합니다.
+        
+        Args:
+            db (Session): 데이터베이스 세션
+            manga_id (int): 망가 ID
+            
+        Returns:
+            Optional[Manga]: 찾은 망가 객체 또는 None
+        """
+        return db.query(Manga).filter(Manga.id == manga_id).first()
+
+    @staticmethod
+    def get_manga_by_folder_name(db: Session, folder_name: str) -> Optional[Manga]:
+        """
+        폴더명으로 특정 망가를 조회합니다.
+        
+        Args:
+            db (Session): 데이터베이스 세션
+            folder_name (str): 망가 폴더명
+            
+        Returns:
+            Optional[Manga]: 찾은 망가 객체 또는 None
+        """
+        return db.query(Manga).filter(Manga.folder_name == folder_name).first()
+    
+    
+    
+    @staticmethod
     def bulk_update_manga(db: Session, mangas: List[Dict]):
         '''
         manga 데이터 folder_name 이 존재하는 경우 update_date 를 현재 시간으로,
@@ -34,8 +64,9 @@ class MangaCRUD:
         remaining_mangas = []
         
         for manga_data in mangas:
-            manga_db = db.query(Manga).filter(Manga.folder_name == manga_data["folder_name"]).first()
-            if manga_db and (manga_data["page"] != manga_db.page or json.dumps(manga_data["tags"]) != manga_db.tags):
+            manga_db = MangaCRUD.get_manga_by_folder_name(db, manga_data["folder_name"])
+            # print(manga_db)
+            if manga_db and manga_data["page"] != manga_db.page:
                 # print(f"업데이트할 manga 찾음: {manga_data['folder_name']}")
                 manga_updates.append({
                     "id": manga_db.id,
@@ -68,7 +99,7 @@ class MangaCRUD:
         파일시스템에 존재하지 않는 망가 데이터를 데이터베이스에서 삭제합니다.
         """
         # 파일시스템의 모든 폴더명 가져오기 (list_images_from_folders의 결과에서)
-        all_folder_names = {manga["folder_name"] for manga in existing_manga_data}
+        all_folder_names = [manga["folder_name"] for manga in existing_manga_data]
 
         # DB에서 파일시스템에 없는 레코드 찾기
         to_delete = db.query(Manga).filter(
@@ -112,8 +143,8 @@ class MangaCRUD:
                 #     create_date = datetime.fromisoformat(create_date)
                 # if isinstance(update_date, str):
                 #     update_date = datetime.fromisoformat(update_date)
-                if isinstance(file_date, str):
-                    file_date = datetime.fromisoformat(file_date)
+                # if isinstance(file_date, str):
+                #     file_date = datetime.fromisoformat(file_date)
 
                 new_manga = Manga(
                     folder_name=folder_name,
@@ -124,7 +155,7 @@ class MangaCRUD:
                     file_date=file_date
                 )
                 new_mangas.append(new_manga)
-                mangas.pop(i)
+                # mangas.pop(i)
         if new_mangas:
             db.bulk_save_objects(new_mangas)
             db.commit()
@@ -157,10 +188,10 @@ class MangaCRUD:
             search_term = f"%{search}%"
             conditions.append(Manga.folder_name.ilike(search_term) | Manga.tags.ilike(search_term))
 
-        print(folders)
+        # print(folders)
         # 폴더 조건 추가
         if folders:
-            querys = [Manga.folder_name.ilike(f"%{folder}%") for folder in folders if isinstance(folder, str)]
+            querys = [Manga.folder_name.ilike(f"{folder}%") for folder in folders if isinstance(folder, str)]
             conditions.append(or_(*querys))
 
         # 조건이 있는 경우에만 필터 적용
@@ -240,33 +271,7 @@ class MangaCRUD:
         
         return query.count()
 
-    @staticmethod
-    def get_manga_by_id(db: Session, manga_id: int) -> Optional[Manga]:
-        """
-        ID로 특정 망가를 조회합니다.
-        
-        Args:
-            db (Session): 데이터베이스 세션
-            manga_id (int): 망가 ID
-            
-        Returns:
-            Optional[Manga]: 찾은 망가 객체 또는 None
-        """
-        return db.query(Manga).filter(Manga.id == manga_id).first()
-
-    @staticmethod
-    def get_manga_by_folder_name(db: Session, folder_name: str) -> Optional[Manga]:
-        """
-        폴더명으로 특정 망가를 조회합니다.
-        
-        Args:
-            db (Session): 데이터베이스 세션
-            folder_name (str): 망가 폴더명
-            
-        Returns:
-            Optional[Manga]: 찾은 망가 객체 또는 None
-        """
-        return db.query(Manga).filter(Manga.folder_name == folder_name).first()
+    
 
     @staticmethod
     def create_manga(db: Session, manga_data: Dict[str, Any]) -> Manga:
@@ -287,7 +292,7 @@ class MangaCRUD:
         return manga
 
     @staticmethod
-    def update_manga(
+    def update_mangas(
             db: Session,
             manga_id: int,
             manga_data: Dict[str, Any]
@@ -305,12 +310,27 @@ class MangaCRUD:
         """
         manga = MangaCRUD.get_manga_by_id(db, manga_id)
         if manga:
-            manga_data["update_date"] = datetime.utcnow()
+            manga_data["update_date"] = datetime.now(KST)
             for key, value in manga_data.items():
                 setattr(manga, key, value)
             db.commit()
             db.refresh(manga)
         return manga
+
+    @staticmethod
+    def update_manga_models(db: Session, manga: Manga) -> Manga:
+        manga.update_date = datetime.now(KST)
+        db.commit()
+        db.refresh(manga)
+        return manga
+    
+    @staticmethod
+    def update_mangas_models(db: Session, mangas: List[Manga]) -> List[Manga]:
+        for manga in mangas:
+            manga.update_date = datetime.now(KST)
+            db.commit()
+            db.refresh(manga)
+        return mangas
 
     @staticmethod
     def delete_manga(db: Session, manga_id: int) -> bool:
@@ -330,6 +350,19 @@ class MangaCRUD:
             db.commit()
             return True
         return False
+
+    @staticmethod
+    def delete_mangas_models(db: Session, mangas: List[Manga]) -> bool:
+        for manga in mangas:
+            db.delete(manga)
+        db.commit()
+        return True
+
+    @staticmethod
+    def delete_manga_models(db: Session, manga: Manga) -> bool:
+        db.delete(manga)
+        db.commit()
+        return True
 
     @staticmethod
     def search_mangas(

@@ -88,4 +88,16 @@ class PaginatedMangaResponse(BaseModel):
     size: int
     pages: int
     genres: Optional[List[str]] = None
+
+
+class MangaActionRequest(BaseModel):
+    manga_ids: List[int]
+    target_folder_name: str
+    action: str
     
+class MangafolderName(BaseModel):
+    id: int
+    folder_name: str
+    
+    class Config:
+        from_attributes = True
