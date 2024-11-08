@@ -43,7 +43,7 @@
                     bind:value={searchTerm}
                     on:input={debounceSearch}
                     on:search={handleSearch}
-                    placeholder="제목 또는 태그로 검색..."
+                    placeholder="제목 또는 태그로 검색... ({$searchStore || ''})"
                     class="search-input"
                     />
                 </div>

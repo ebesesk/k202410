@@ -15,6 +15,8 @@ from app.models.user import User
 import os
 import logging
 import traceback
+from datetime import datetime
+import time
 
 router = APIRouter()
 # 로거 설정
@@ -23,18 +25,20 @@ logger.setLevel(logging.DEBUG)
 
 @router.post("/bulk-update")    # 파일시스템의 망가 데이터를 데이터베이스에 업데이트 합니다.
 def bulk_update_manga(
-    base_folder_path: str=settings.IMAGE_DIRECTORY, 
+    genre_name: str = '', 
     db: Session = Depends(get_db)
     ):
-    
-    manga_data = list_images_from_folders()      # 파일시스템의 망가 데이터 조회
+    # print('bulk_update_manga:', genre_name)
+    manga_data = list_images_from_folders(genre_name)      # 파일시스템의 망가 데이터 조회
     remaining_mangas = MangaCRUD.bulk_update_manga(db, manga_data)     # 데이터베이스의 망가 데이터 업데이트
     print('update remaining_mangas:', len(remaining_mangas))
     inserted_manga = MangaCRUD.bulk_insert_manga(db, manga_data)     # 데이터베이스에 망가 데이터 삽입
     print('insert:', len(inserted_manga))
-    
-    delete_count = MangaCRUD.bulk_delete_nonexistent_manga(db, manga_data) # 파일시스템에 존재하지 않는 망가 데이터 삭제
-    print('bulk_delete:', delete_count)
+    if genre_name:
+        pass
+    else:
+        delete_count = MangaCRUD.bulk_delete_nonexistent_manga(db, manga_data) # 파일시스템에 존재하지 않는 망가 데이터 삭제
+        print('bulk_delete:', delete_count)
     return {"detail": "Bulk update successful"}
 
 
@@ -120,7 +124,7 @@ def manga_action(
     """
     try:
         # 입력값 로깅
-        logger.info(f"Action request - action: {request.action}, manga_ids: {request.manga_ids}, target: {request.target_folder_name}")
+        # logger.info(f"Action request - action: {request.action}, manga_ids: {request.manga_ids}, target: {request.target_folder_name}")
         
         action = request.action
         manga_ids = request.manga_ids
@@ -131,23 +135,23 @@ def manga_action(
         for manga_id in manga_ids:
             manga = MangaCRUD.get_manga_by_id(db, manga_id)
             if manga is None:
-                logger.error(f"Manga not found: id={manga_id}")
+                # logger.error(f"Manga not found: id={manga_id}")
                 raise HTTPException(
                     status_code=404,
                     detail=f"Manga not found: id={manga_id}"
                 )
             mangas.append(manga)
-
+        ################################################################################
         if action == 'move':
             try:
-                logger.info(f"Starting move operation for mangas: {manga_ids}")
+                # logger.info(f"Starting move operation for mangas: {manga_ids}")
                 result = move_manga_folder(mangas, target_folder_name)
-                logger.debug(f"Move result: {result}")
+                # logger.debug(f"Move result: {result}")
                 
                 failures = [r for r in result if not r['success']]
                 if failures:
                     error_messages = [f"{r['msg']}" for r in failures]
-                    logger.error(f"Move failures: {error_messages}")
+                    # logger.error(f"Move failures: {error_messages}")
                     raise HTTPException(
                         status_code=400,
                         detail={
@@ -158,31 +162,36 @@ def manga_action(
                 
                 # 성공한 경우만 DB 업데이트
                 successful_mangas = [r['manga'] for r in result if r['success']]
-                logger.info(f"Updating {len(successful_mangas)} manga records in DB")
+                # logger.info(f"Updating {len(successful_mangas)} manga records in DB")
+                print('successful_mangas:', successful_mangas)
+                for manga in successful_mangas:
+                    print('manga.id:', manga.id)
+                    print('manga.folder_name:', manga.folder_name)
                 MangaCRUD.update_mangas_models(db, successful_mangas)
+                # logger.info(f"Update successful")
                 return result
 
             except ValueError as e:
-                logger.error(f"Value error during move: {str(e)}\n{traceback.format_exc()}")
+                # logger.error(f"Value error during move: {str(e)}\n{traceback.format_exc()}")
                 raise HTTPException(status_code=400, detail=str(e))
             except OSError as e:
-                logger.error(f"OS error during move: {str(e)}\n{traceback.format_exc()}")
+                # logger.error(f"OS error during move: {str(e)}\n{traceback.format_exc()}")
                 raise HTTPException(status_code=500, detail=f"File system error: {str(e)}")
             except Exception as e:
-                logger.error(f"Unexpected error during move: {str(e)}\n{traceback.format_exc()}")
+                # logger.error(f"Unexpected error during move: {str(e)}\n{traceback.format_exc()}")
                 raise
 
         elif action == 'merge':
             try:
-                logger.info(f"Starting merge operation for mangas: {manga_ids}")
+                # logger.info(f"Starting merge operation for mangas: {manga_ids}")
                 mangas.sort(key=lambda x: x.file_date, reverse=True)
                 result = merge_manga_folder(mangas, target_folder_name)
-                logger.debug(f"Merge result: {result}")
+                # logger.debug(f"Merge result: {result}")
                 
-                failures = [r for r in result if not r['success']]
+                failures = [result['success']] if not result['success'] else []
                 if failures:
                     error_messages = [f"{r['msg']}" for r in failures]
-                    logger.error(f"Merge failures: {error_messages}")
+                    # logger.error(f"Merge failures: {error_messages}")
                     raise HTTPException(
                         status_code=400,
                         detail={
@@ -192,32 +201,54 @@ def manga_action(
                     )
 
                 # DB 업데이트
-                try:
-                    # 먼저 삭제될 manga들을 처리
-                    for r in result:
-                        if r['success'] and '(삭제됨)' in r['msg']:
-                            print(f"Deleting manga {r['manga'].id}")
-                            MangaCRUD.delete_manga_models(db, r['manga'])
-                    
-                    # commit으로 삭제 내용을 먼저 반영
-                    db.commit()
-                    
-                    # 그 다음 유지될 manga 업데이트
-                    for r in result:
-                        if r['success'] and '(유지됨)' in r['msg']:
-                            manga = r['manga']
+                t = 0
+                while t<3:
+                    try:
+                        if result['success']:
+                            for manga in mangas[1:]:
+                                manga = db.merge(manga)
+                                MangaCRUD.delete_manga_models(db, manga)
+                                print(f"Deleting manga {manga.id}")
+                            time.sleep(10)
+                            mangas[0] = db.merge(mangas[0])
+                            MangaCRUD.update_manga_models(db, mangas[0])
+                            db.commit()
                             print(f"Updating manga {manga.id}")
-                            MangaCRUD.update_manga_models(db, manga)
+                        return result
+                    except Exception as e:
+                        db.rollback()
+                        print(f"Database error: {str(e)}")
+                        print(traceback.format_exc())
+                        raise HTTPException(status_code=500, detail=f"Database update failed: {str(e)}")
+                        time.sleep(10)
+                    t += 1
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    # # 먼저 삭제될 manga들을 처리
+                    # for r in result:
+                    #     if r['success'] and '(삭제됨)' in r['msg']:
+                    #         print(f"Deleting manga {r['manga'].id}")
+                    #         MangaCRUD.delete_manga_models(db, r['manga'])
+                    
+                    # # commit으로 삭제 내용을 먼저 반영
+                    # db.commit()
+                    
+                    # # 그 다음 유지될 manga 업데이트
+                    # for r in result:
+                    #     if r['success'] and '(유지됨)' in r['msg']:
+                    #         manga = r['manga']
+                    #         print(f"Updating manga {manga.id}")
+                    #         MangaCRUD.update_manga_models(db, manga)
                             
-                    # 업데이트 내용 반영
-                    db.commit()
-                    return result
+                    # # 업데이트 내용 반영
+                    # db.commit()
+                    # return result
                 
-                except Exception as e:
-                    db.rollback()
-                    print(f"Database error: {str(e)}")
-                    print(traceback.format_exc())
-                    raise HTTPException(status_code=500, detail=f"Database update failed: {str(e)}")
             
             except ValueError as e:
                 logger.error(f"Value error during merge: {str(e)}\n{traceback.format_exc()}")

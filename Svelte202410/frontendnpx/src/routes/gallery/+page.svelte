@@ -23,7 +23,16 @@
 	let totalPages = 1;
 	// 한 페이지당 보여줄 갤러리 아이템 수 (API 요청 시 사용)
 	let pageSize = 20;
-
+// function parseJSONSafely(str) {
+//     const escaped = jsonStr
+//         .replace(/&/g, '&amp;')
+//         .replace(/</g, '&lt;')
+//         .replace(/>/g, '&gt;')
+//         .replace(/"/g, '&quot;')
+//         .replace(/'/g, '&#39;');
+    
+//     return escaped;
+// }
 		
 // 통합된 fetch 함수
 async function fetchData(endpoint, options = {}) {
@@ -100,6 +109,9 @@ async function fetchGalleries(page) {
 
         if (data) {
             galleries.set(data.items || []);
+            // $galleries.forEach(manga => {
+            //     manga.images_name = parseJSONSafely(manga.images_name);  
+            // });
             currentPage.set(page);
             // 전체 페이지 수 계산 (total_items가 있다고 가정)
             // if (data.total_items) {
@@ -689,7 +701,7 @@ async function handleAction() {
         console.log('selectedAction:', selectedAction);
         console.log('targetFolderName:', targetFolderName);
         console.log('selectedMangaStore:', $selectedMangaStore);
-
+        // $selectedMangaStore.sort() => a - b);  
         const rsult = await fetchData(endpoint, {
             method: 'POST',
             body: JSON.stringify({
@@ -714,6 +726,23 @@ async function handleAction() {
     }
 }
 
+
+async function dbUpdate(genre_name) {
+    const endpoint = '/manga/bulk-update';
+    const params = new URLSearchParams({
+        genre_name: genre_name
+    });
+    const rsult = await fetchData(`${endpoint}?${params.toString()}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+    console.log('dbUpdate:', rsult);
+    
+    // 갤러리 목록 새로고침
+    // await fetchGalleries($currentPage);
+}
     
     // 검색어가 변경될 때마다 갤러리 데이터 다시 불러오기
     $: if ($searchStore !== undefined) {
@@ -721,18 +750,18 @@ async function handleAction() {
     }
   	// selectedMangaStore 구독하여 첫 선택 시 이름 설정
     $: if ($selectedMangaStore.length > 0) {
-            const selectedManga = $galleries.find(g => g.id === $selectedMangaStore[0]);
-            if (selectedManga){
-                const folderName = selectedManga.folder_name;
-                if (selectedAction==='move') {
-                    targetGenre = folderName.split('/')[0];
-                    targetTitle = '';
-                }else{
-                    targetGenre = folderName.split('/')[0];
-                    targetTitle = folderName.split('/')[1];
-                }
-            }   
-        }
+        const selectedManga = $galleries.find(g => g.id === $selectedMangaStore[0]);
+        if (selectedManga){
+            const folderName = selectedManga.folder_name;
+            if (selectedAction==='move') {
+                targetGenre = folderName.split('/')[0];
+                targetTitle = '';
+            }else{
+                targetGenre = folderName.split('/')[0];
+                targetTitle = folderName.split('/')[1];
+            }
+        }   
+    }
     
     // 초기 상태 설정
     $: if ($genres.length > 0 && Object.keys($folderStates).length === 0) {
@@ -917,6 +946,13 @@ async function handleAction() {
                                                     }}
                                                 >
                                                         취소
+                                                </button>
+                                                <button 
+                                                    class="action-button"
+                                                    disabled={!targetGenre}
+                                                    on:click={() => dbUpdate(targetGenre)}
+                                                >
+                                                        dbUpdate
                                                 </button>
 											</div>
 									</div>

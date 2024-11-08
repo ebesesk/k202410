@@ -87,8 +87,8 @@ def get_manga_info(folder_name: str) -> Dict:
     
     return {
         'folder_name': folder_name,
-        'tags': json.dumps(tags),
-        'images_name': json.dumps(images_name),
+        'tags': tags,
+        'images_name': images_name,
         'file_date': file_date,
         'page': len(images_name)
     }
@@ -96,7 +96,7 @@ def get_manga_info(folder_name: str) -> Dict:
 def get_extension(file_path: str) -> str:
     return file_path[file_path.rfind('.')+1:].lower()
 
-def create_result_dict(manga: Manga, msg: str, success: bool, images_name: List[str] = [], tags: Dict = {}) -> Dict:
+def create_result_dict(manga: List[Manga], msg: str, success: bool) -> Dict:
     """
     결과 딕셔너리를 생성합니다.
     
@@ -104,8 +104,6 @@ def create_result_dict(manga: Manga, msg: str, success: bool, images_name: List[
         manga: 망가 객체
         msg: 결과 메시지
         success: 성공 여부
-        images_name: 이미지 파일 목록 (선택적 인자)
-        tags: 태그 딕셔너리 (선택적 인자)   
     
     Returns:
         Dict: 결과 딕셔너리
@@ -114,8 +112,6 @@ def create_result_dict(manga: Manga, msg: str, success: bool, images_name: List[
         'manga': manga,
         'msg': msg,
         'success': success,
-        'images_name': images_name,
-        'tags': tags
     }
 
 def get_relative_path(full_path: str) -> str:
@@ -144,12 +140,114 @@ def generate_new_filename(index: int, original_filename: str) -> str:
     filename, ext = os.path.splitext(original_filename)
     return f"{str(index+1).zfill(FOLDER_NAME_PREFIX_LENGTH)}{FILE_NAME_SEPARATOR}{filename}{ext}"
 
+ 
+def get_volumes_number(BASE_PATH: str, folder_name: str) -> List[str]:
+    """
+    망가 폴더 내 볼륨 번호 목록을 반환합니다.
+    volume|number
+    volume: 볼륨 번호 2자리수
+    number: 같은 볼륨 있을경우 번호 증가 1자리수
+    """
+    volumes_number = []
+    zfill_count = 0
+    if BASE_PATH in folder_name:
+        folder_name = folder_name.replace(BASE_PATH + os.path.sep, '')
+    manga_path = BASE_PATH + os.path.sep + os.path.dirname(folder_name)
+    for file in os.listdir(manga_path):
+        if os.path.isfile(os.path.join(manga_path, file)) and get_extension(file) in IMG_EXT + ZIP_EXT:
+            basename = os.path.basename(file)
+            name, ext = os.path.splitext(basename)
+            volume_number = re.findall(r'_([\d]+)-', name)  # 볼륨 선택
+            if volume_number:
+                volumes_number.append(volume_number[0])
+                zfill_count = max(zfill_count, len(volume_number[0]))
+    volumes_number.sort()
+    return list(set(volumes_number)), zfill_count
+
+def get_volumes_number_db(manga: Manga) -> Tuple[str, List[str], int, int]:
+    """
+    망가 모델에서 볼륨 번호 목록을 반환합니다.
+    (volume+number)   _010-001 _011-001 _010-002
+    volume: 볼륨 번호 2자리수 이상 000 초기값
+    number: 같은 볼륨 있을경우 번호 증가 1자리수 0 초기값
+    page: 페이지 번호 3자리수 이상 000 초기값
+    """
+    volumes = []
+    volume_zfill_count = 0
+    page_zfill_count = 0
+    
+    for image in json.loads(manga.images_name):
+        name, ext = os.path.splitext(image)
+        page = re.findall(r'-?\d+$', name)   
+        page_zfill_count = max(page_zfill_count, len(page[0]))
+        volume = re.findall(r'_?(\d+)-', name)
+        if volume:
+            volumes.append(volume[0]) if volume[0] not in volumes else None
+            volume_zfill_count = max(volume_zfill_count, len(volume[0])-1)
+    volumes.sort()
+    return volumes, volume_zfill_count, page_zfill_count
+        
+def get_volume(manga: Manga, name: str, volume_zfill: int, volumes: List[str]) -> str:
+    
+    if re.findall(r'_?(\d+)-', name):
+        volume = re.findall(r'_?(\d+)-', name)[0]
+        volume = f"{volume.zfill(volume_zfill)}0"
+        # print('volume1:', volume)
+    elif re.findall(r'[vV][oO][lL][_]?(\d+)$' , manga.folder_name): 
+        volume = re.findall(r'[vV][oO][lL][_]?(\d+)$', manga.folder_name)[0]
+        volume = f"{volume.zfill(volume_zfill)}0"
+        # print('volume2:', volume)
+    else:
+        volume = int(volumes[-1][:2]) + 1
+        volume = f"{str(volume).zfill(2)}0"
+        # print('volume3:', volume)
+    # volume = get_unique_volume(volume, volumes, volume_zfill)
+    # volumes.append(volume) if volume not in volumes else None
+    return volume, volumes
+    
+def get_max_page_number_length(mangas: List[Manga]) -> int:
+    """
+    파일 목록에서 숫자로 시작하는 가장 긴 숫자의 길이를 반환합니다.
+
+    Args:
+        BASE_PATH: 기본 경로
+        folder_name: 폴더명
+        
+    Returns:
+        int: 가장 긴 숫자의 길이
+    """
+    max_page_number_length = 0
+    for manga in mangas:
+        for img in json.loads(manga.images_name):   
+            page = re.findall(r'-?\d+$', img)
+            if page:
+                max_page = max([len(page[0])])
+                max_page_number_length = max(max_page_number_length, max_page)
+    return max_page_number_length   
+
+def get_unique_volume(volume: str, volumes: List[str], volume_zfill: int = 2) -> str:
+    """
+    중복되지 않는 볼륨 번호를 찾아서 반환합니다.
+    volume: 파일명 마지막 vol숫자 vol01 vol1 등
+    """
+    # print('volume:', volume)
+    # print('volumes:', volumes)
+    if volume not in volumes:
+        return volume
+    counter = 1
+    while True:
+        new_volume = f"{volume[:2]}{str(counter)}"
+        print('get_unique_volume:', new_volume)
+        if new_volume not in volumes:
+            return new_volume
+        counter += 1
+    
 def get_genres_list():
     genres_list = [i for i in os.listdir(BASE_PATH) if os.path.isdir(os.path.join(BASE_PATH, i))]
     return genres_list
 
 
-def list_images_from_folders() -> List[Dict]:
+def list_images_from_folders(genre_name: str='') -> List[Dict]:
     '''
     이미지 파일 목록 추출 및 이미지 파일 이름 변경
     출력 예시
@@ -160,9 +258,16 @@ def list_images_from_folders() -> List[Dict]:
         'file_date': '이미지 파일 생성일자'
     }   
     '''
+    # print('genre_name:', genre_name)
     manga_list = []
     manga_folders = []
-    genre_folders = [os.path.join(BASE_PATH, genre) for genre in get_genres_list()]
+    if not genre_name:
+        genre_folders = [os.path.join(BASE_PATH, genre) for genre in get_genres_list()]
+    if genre_name and genre_name in get_genres_list():
+        genre_folders = []
+        if genre_name in get_genres_list():
+            genre_folders.append(os.path.join(BASE_PATH, genre_name))
+    print('genre_folders:', genre_folders)
     for genre in genre_folders:           
         _dir = os.listdir(genre)
         if os.path.isdir(genre):
@@ -201,15 +306,35 @@ def move_manga_folder(mangas: List[Manga], target_folder_name: str) -> List[Dict
     
     for manga in mangas:
         source_path = os.path.join(BASE_PATH, manga.folder_name)
-        target_path = get_unique_path(os.path.join(BASE_PATH, target_folder_name))
-        
-        success, msg = move_folder(source_path, target_path)
+        target_path = os.path.join(BASE_PATH, target_folder_name, os.path.basename(manga.folder_name))
+        if source_path == target_path:
+            msg = f"동일 장르로 이동 금지: {source_path}"
+            print(msg)
+            result.append(create_result_dict(manga, msg, False))
+            continue
+        target_path = get_unique_path(os.path.join(BASE_PATH, target_folder_name, os.path.basename(manga.folder_name)))
+        genre_folder = target_path.split(os.path.sep)[-2]
+        # print("genre_folder", genre_folder, get_genres_list())
+        if genre_folder not in get_genres_list():
+            msg = f"장르 폴더 생성 금지: {genre_folder}"
+            print(msg)
+            result.append(create_result_dict(manga, msg, False))
+            continue
+        else:
+            # print("target_path", target_path)
+            success, msg = move_folder(source_path, target_path)
+            result.append(create_result_dict(manga, msg, success))
         
         if success:
             manga_info = get_manga_info(target_path)
+            if manga.tags:
+                tags_db = json.loads(manga.tags)
+            else:
+                tags_db = {}
+            tags_db['size'] = manga_info['tags']['size']
+            manga.tags = json.dumps(tags_db)
+            manga.images_name = json.dumps(manga_info['images_name'])
             manga.folder_name = manga_info['folder_name']
-            manga.tags = manga_info['tags']
-            manga.images_name = manga_info['images_name']
             manga.file_date = manga_info['file_date']
             manga.page = manga_info['page']
             manga.update_date = datetime.now(KST)
@@ -232,187 +357,112 @@ def merge_manga_folder(mangas: List[Manga], target_folder_name: str) -> List[Dic
         List[Dict]: 병합 결과 목록
     """
     
+   
     
-    def get_volumes_number(BASE_PATH: str, folder_name: str) -> List[str]:
-        """
-        망가 폴더 내 볼륨 번호 목록을 반환합니다.
-        volume|number
-        volume: 볼륨 번호 2자리수
-        number: 같은 볼륨 있을경우 번호 증가 1자리수
-        """
-        volumes_number = []
-        zfill_count = 0
-        if BASE_PATH in folder_name:
-            folder_name = folder_name.replace(BASE_PATH + os.path.sep, '')
-        manga_path = BASE_PATH + os.path.sep + os.path.dirname(folder_name)
-        for file in os.listdir(manga_path):
-            if os.path.isfile(os.path.join(manga_path, file)) and get_extension(file) in IMG_EXT + ZIP_EXT:
-                basename = os.path.basename(file)
-                name, ext = os.path.splitext(basename)
-                volume_number = re.findall(r'_([\d]+)-', name)  # 볼륨 선택
-                if volume_number:
-                    volumes_number.append(volume_number[0])
-                    zfill_count = max(zfill_count, len(volume_number[0]))
-        volumes_number.sort()
-        return list(set(volumes_number)), zfill_count
-    
-    def get_volumes_number_db(manga: Manga) -> Tuple[str, List[str], int, int]:
-        """
-        망가 모델에서 볼륨 번호 목록을 반환합니다.
-        (volume+number)   _010-001 _011-001 _010-002
-        volume: 볼륨 번호 2자리수 이상 000 초기값
-        number: 같은 볼륨 있을경우 번호 증가 1자리수 0 초기값
-        page: 페이지 번호 3자리수 이상 000 초기값
-        """
-        volumes = []
-        volume_zfill_count = 0
-        page_zfill_count = 0
-      
-        for image in json.loads(manga.images_name):
-            name, ext = os.path.splitext(image)
-            page = re.findall(r'-?\d+$', name)   
-            page_zfill_count = max(page_zfill_count, len(page[0]))
-            volume = re.findall(r'_?(\d+)-', name)
-            if volume:
-                volumes.append(volume[0]) if volume[0] not in volumes else None
-                volume_zfill_count = max(volume_zfill_count, len(volume[0][:-2]))
-        volumes.sort()
-        return volumes, volume_zfill_count, page_zfill_count
-            
-    
-    
-    
-    def get_max_page_number_length(mangas: List[Manga]) -> int:
-        """
-        파일 목록에서 숫자로 시작하는 가장 긴 숫자의 길이를 반환합니다.
-    
-        Args:
-            BASE_PATH: 기본 경로
-            folder_name: 폴더명
-            
-        Returns:
-            int: 가장 긴 숫자의 길이
-        """
-        max_page_number_length = 0
-        for manga in mangas:
-            for img in json.loads(manga.images_name):   
-                page = re.findall(r'-?\d+$', img)
-                if page:
-                    max_page = max([len(page[0])])
-                    max_page_number_length = max(max_page_number_length, max_page)
-        return max_page_number_length   
-
-    def get_unique_volume(volume: str, volumes: List[str], volume_zfill: int = 2) -> str:
-        """
-        중복되지 않는 볼륨 번호를 찾아서 반환합니다.
-        volume: 파일명 마지막 vol숫자 vol01 vol1 등
-        """
-        print('volume:', volume)
-        print('volumes:', volumes)
-        if volume not in volumes:
-            return volume
-        counter = 1
-        while True:
-            new_volume = f"{volume[:-1].zfill(volume_zfill)}{str(counter)}"
-            if new_volume not in volumes:
-                return new_volume
-            counter += 1
     
     VOLUME_ZFILL_COUNT = 2    
     PAGE_ZFILL_COUNT = 3
     VOLUME_SEPARATOR = '-'
+    if target_folder_name in [manga.folder_name for manga in mangas]:
+        target_folder_name = mangas[0].folder_name
     dest_path = os.path.join(BASE_PATH, target_folder_name)
     srcs_path = [os.path.join(BASE_PATH, manga.folder_name) for manga in mangas]
     
     if dest_path not in srcs_path:
         ...
         ########################################################################################################
-        # os.makedirs(get_unique_path(os.path.join(dest_path)))    # 병합 시 중복 폴더 생성 방지 
+        os.makedirs(get_unique_path(os.path.join(dest_path)))    # 병합 시 중복 폴더 생성 방지 
         ########################################################################################################
 
     volumes, volume_zfill, page_zfill = get_volumes_number_db(mangas[0])
-    if not volumes:
-        volumes = ['000']
-    if not volume_zfill:
-        volume_zfill = VOLUME_ZFILL_COUNT
-    if page_zfill < PAGE_ZFILL_COUNT:
-        page_zfill = PAGE_ZFILL_COUNT
+    volumes = ['000']
+    volume_zfill = VOLUME_ZFILL_COUNT
+    page_zfill = PAGE_ZFILL_COUNT
         
     max_zfill = get_max_page_number_length(mangas)
     
-    def get_volume(manga: Manga, name: str, volume_zfill: int, volumes: List[str]) -> str:
-        
-        if re.findall(r'_?(\d+)-', name):
-            volume = re.findall(r'_?(\d+)-', name)[0]
-            volume = f"{volume.zfill(volume_zfill)}0"
-            print('volume1:', volume)
-        elif re.findall(r'[vV][oO][lL][_]?(\d+)$' , manga.folder_name): 
-            volume = re.findall(r'[vV][oO][lL][_]?(\d+)$', manga.folder_name)[0]
-            volume = f"{volume.zfill(volume_zfill)}0"
-            print('volume2:', volume)
-        else:
-            volume = int(volumes[-1][:-1]) + 1
-            volume = f"{str(volume).zfill(volume_zfill)}0"
-            print('volume3:', volume)
-        # volume = get_unique_volume(volume, volumes, volume_zfill)
-        # volumes.append(volume) if volume not in volumes else None
-        return volume, volumes
     
+    result = []
     images_name = []
-    tags = {}
-    tags['titles'] = ''        
+    tags = {'titles': '', 'images':''}
     folder_name = ''
     for manga, src_path in zip(mangas, srcs_path):
         volume = ''
+        volume_images = []
         for img in json.loads(manga.images_name):
             name, ext = os.path.splitext(img)
+            name = re.sub(r'[^\n\t]*\d+-', '', name)
             # 정규식 패턴 개선
-            volume1 = re.search(r'(\d+)-', name)  # 파일명에서 숫자- 패턴 찾기
-            volume2 = re.search(r'[Vv][Oo][Ll][UuMmEe]{0,3}[_]?(\d+)$', manga.folder_name)  # 폴더명에서 vol숫자 패턴 찾기
+            volume1 = re.search(r'_?(\d+)-', name)  # 파일명에서 숫자- 패턴 찾기
+            volume2 = re.search(r'[Vv][Oo][Ll][UuMmEe]{0,3}[_]?(\d+)-$', manga.folder_name)  # 폴더명에서 vol숫자 패턴 찾기
             
             if (volume1 or volume2) and folder_name != manga.folder_name:
                 # 볼륨 번호가 있고 새로운 폴더일 때
                 volume, volumes = get_volume(manga, img, volume_zfill, volumes)
+                print('volume1:', volume)
             elif not (volume1 or volume2):
                 # 볼륨 번호가 없을 때
                 volume, volumes = get_volume(manga, img, volume_zfill, volumes)
-                
+                print('volume2:', volume)
             if folder_name != manga.folder_name:
-                volume = get_unique_volume(volume, volumes, volume_zfill)
+                volume = get_unique_volume(volume, volumes)
                 folder_name = manga.folder_name
-            # 파일 경로 생성
+                print('volume3:', volume)
+            print(f"volume: {volume}, name: {name}, ext: {ext}, volumes: {volumes}")
+            # 파일 경로 생성 
             new_filename = f"{volume}-{name.zfill(page_zfill)}{ext}"
             src = os.path.join(src_path, img)
             dst = os.path.join(dest_path, new_filename)
             images_name.append(new_filename)
-            print("src: ", src)
-            print("dst: ", dst)
-            print("================================================")
+            volume_images.append(new_filename)
+            # print("src: ", src)
+            # print("dst: ", dst)
+            # print("================================================")
             try:
                 ...
                 ##############################################################################################
-                # shutil.copy2(src, dst)
+                shutil.copy2(src, dst)
                 ##############################################################################################
+                
+                
             except Exception as e:
                 msg = f"파일 복사 실패: {str(e)}"
                 print(msg)
-                for image in images_name:
-                    os.remove(os.path.join(dest_path, image))
-                return create_result_dict(mangas, msg, True, images_name, tags)
+                # for image in images_name:
+                #     os.remove(os.path.join(dest_path, image))
+                
                 continue
             
             ##############################################################################################
-            # os.remove(src)
+            os.remove(src)
             ##############################################################################################
         volumes.append(volume)
-        tags['title'] = tags['titles'] + manga.folder_name + '_'
+        tags['titles'] = tags['titles'] + manga.folder_name + '_'
+        tags['images'] = volume_images
     srcs_path = [src for src in srcs_path if src != dest_path]
     for src in srcs_path:
         imgs = [i for i in os.listdir(src) if os.path.isfile(os.path.join(src, i)) and get_extension(i) in IMG_EXT + ZIP_EXT]
         if not imgs:
+            ##############################################################################################
             remove_folder(src)
-
-    return create_result_dict(mangas[0], '폴더 병합 성공', True, images_name, tags)      
+            ##############################################################################################
+    if mangas[0].tags:
+        tags_db = json.loads(mangas[0].tags)
+    else:
+        tags_db = {}
+    print("get_relative_path(dest_path)", get_relative_path(dest_path))
+    print('mangas[0].folder_name:', mangas[0].folder_name)
+    print('mangas[0].id:', mangas[0].id)
+    tags_db['titles'] = tags['titles']
+    tags_db['images'] = tags['images']
+    mangas[0].tags = json.dumps(tags_db)
+    mangas[0].folder_name = get_relative_path(dest_path)
+    mangas[0].images_name = json.dumps(images_name)
+    mangas[0].update_date = datetime.now(KST)
+    mangas[0].page = len(images_name)
+    msg = f"폴더 병합 성공 (유지됨): {srcs_path[0]} -> {dest_path}"
+    print(msg)
+    return {"mangas":mangas, "msg":msg, "success":True}     
             
     # srcs_files = []
     # for src_path in srcs_path:

@@ -9,7 +9,8 @@ from zoneinfo import ZoneInfo  # 새로운 import 추가
 from sqlalchemy import func, asc, desc
 from app.schemas.manga import MangaResponse
 from app.models.rating import UserMangaRating
-# import ces
+import time
+
 KST = ZoneInfo("Asia/Seoul")  # KST 정의
 
 class MangaCRUD:
@@ -135,6 +136,7 @@ class MangaCRUD:
             # create_date = manga_data.get("create_date")
             # update_date = manga_data.get("update_date")
             file_date = manga_data.get("file_date")
+            tags = manga_data.get("tags")
 
             # 폴더 이름이 기존에 없고, 모든 필요한 데이터가 제공되었는지 확인
             if folder_name and folder_name not in existing_folder_names and len(images_name) > 0:
@@ -149,6 +151,7 @@ class MangaCRUD:
                 new_manga = Manga(
                     folder_name=folder_name,
                     page=int(page_count),
+                    tags=json.dumps(tags),
                     images_name=json.dumps(images_name),
                     create_date=datetime.now(KST),
                     update_date=datetime.now(KST),
@@ -235,6 +238,9 @@ class MangaCRUD:
                 manga.rating_average = float(avg_rating) if avg_rating else 0.0
             
         return mangas
+
+    
+
 
     @staticmethod
     def get_total_manga_count(
@@ -327,7 +333,6 @@ class MangaCRUD:
     @staticmethod
     def update_mangas_models(db: Session, mangas: List[Manga]) -> List[Manga]:
         for manga in mangas:
-            manga.update_date = datetime.now(KST)
             db.commit()
             db.refresh(manga)
         return mangas
@@ -362,6 +367,8 @@ class MangaCRUD:
     def delete_manga_models(db: Session, manga: Manga) -> bool:
         db.delete(manga)
         db.commit()
+        # db.refresh(manga)
+        # time.sleep(3)
         return True
 
     @staticmethod
