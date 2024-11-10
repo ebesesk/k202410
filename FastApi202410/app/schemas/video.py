@@ -8,7 +8,8 @@ from typing import List
 class Video_dbids(BaseModel):
     dbid: str
     class Config:
-        orm_mode = True
+        from_attributes = True
+
     
 class Scanreturn(BaseModel):
     OverflowError: list[str] = []

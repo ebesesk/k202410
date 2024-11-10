@@ -4,10 +4,10 @@ from sqlalchemy import or_, and_, not_, except_, func
 from sqlalchemy.orm import Session
 from app.schemas import video as video_schema
 
-from app.models.video import Video, User, video_voter, video_dislike
+from app.models.video import Video
 
-def join_Video_voter(db: Session):
-    return db.query(Video).join(video_voter).all()
+# def join_Video_voter(db: Session):
+#     return db.query(Video).join(video_voter).all()
 
 def get_video_id(db:Session, video_id:int):
     return db.query(Video).get(video_id)
@@ -46,21 +46,21 @@ def get_video_list(db: Session, skip:int=0, limit:int=0, keyword:str=""):
     video_list = _video_list.offset(skip).limit(limit).all()
     return total, video_list
     
-def vote_video(db: Session, db_video: Video, db_user:User):
-    db_video.voter.append(db_user)
-    db.commit()
+# def vote_video(db: Session, db_video: Video, db_user:User):
+#     db_video.voter.append(db_user)
+#     db.commit()
     
-def delete_vote(db:Session, db_video: Video, db_user:User):
-    db_video.voter.remove(db_user)
-    db.commit()
+# def delete_vote(db:Session, db_video: Video, db_user:User):
+#     db_video.voter.remove(db_user)
+#     db.commit()
 
-def dislike_video(db: Session, db_video: Video, db_user: User):
-    db_video.dislike.append(db_user)
-    db.commit()
+# def dislike_video(db: Session, db_video: Video, db_user: User):
+#     db_video.dislike.append(db_user)
+#     db.commit()
 
-def delete_dislike(db: Session, db_video: Video, db_user: User):
-    db_video.dislike.remove(db_user)
-    db.commit()
+# def delete_dislike(db: Session, db_video: Video, db_user: User):
+#     db_video.dislike.remove(db_user)
+#     db.commit()
 
 def get_keyword(db:Session):
     return db.query(Video.etc).filter(Video.etc.is_not(None)).all()

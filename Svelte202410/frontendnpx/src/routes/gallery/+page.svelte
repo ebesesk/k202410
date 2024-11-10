@@ -36,51 +36,61 @@
 		
 // 통합된 fetch 함수
 async function fetchData(endpoint, options = {}) {
-        const baseUrl = 'https://api2410.ebesesk.synology.me';
-        let accessToken = '';
-        
+    const baseUrl = 'https://api2410.ebesesk.synology.me';
+    let accessToken = '';
+    
+    if (browser) {  // browser 체크 추가
+        accessToken = localStorage.getItem('accessToken');
+    }
+    
+    if (!accessToken && !options.skipAuth) {
+        console.error('인증 토큰이 없습니다.');
         if (browser) {  // browser 체크 추가
-            accessToken = localStorage.getItem('accessToken');
+            window.location.href = '/';
         }
-        
-        if (!accessToken && !options.skipAuth) {
-            console.error('인증 토큰이 없습니다.');
+        return null;
+    }
+
+    const defaultOptions = {
+        headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Accept': options.isImage ? 'image/*' : 'application/json',
+            'Content-Type': 'application/json'
+        },
+        mode: 'cors'
+    };
+
+    try {
+        const response = await fetch(
+            `${baseUrl}${endpoint}`, 
+            { ...defaultOptions, ...options }
+        );
+
+        if (response.status === 401) {
+            console.error('인증 토큰이 만료되었습니다.');
             if (browser) {  // browser 체크 추가
                 window.location.href = '/';
             }
             return null;
         }
 
-        const defaultOptions = {
-            headers: {
-                'Authorization': `Bearer ${accessToken}`,
-                'Accept': options.isImage ? 'image/*' : 'application/json',
-                'Content-Type': 'application/json'
-            },
-            mode: 'cors'
-        };
 
-        try {
-            const response = await fetch(
-                `${baseUrl}${endpoint}`, 
-                { ...defaultOptions, ...options }
-            );
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            if (options.isImage) {
-                const blob = await response.blob();
-                return blob.size > 0 ? URL.createObjectURL(blob) : null;
-            }
-
-            return await response.json();
-        } catch (error) {
-            console.error(`Fetch error for ${endpoint}:`, error);
-            throw error;
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+
+        if (options.isImage) {
+            const blob = await response.blob();
+            return blob.size > 0 ? URL.createObjectURL(blob) : null;
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error(`Fetch error for ${endpoint}:`, error);
+        throw error;
     }
+}
 
 // fetchGalleries 함수 수정
 async function fetchGalleries(page) {
@@ -526,11 +536,11 @@ function closeModal() {
 }
 
 let sortType = 'id';
-
-async function handleSort(newSortType, orderType) {
+let orderType = 'desc';
+async function handleSort(newSortType, newOrderType) {
     try {
         sortType = newSortType; // 현재 정렬 타입 업데이트
-        
+        orderType = newOrderType;
         const params = new URLSearchParams({
             page: $currentPage,
             size: pageSize,
@@ -793,6 +803,12 @@ async function dbUpdate(genre_name) {
 			<div class="button-row sort-buttons">
 					<div class="spacer"></div> <!-- 왼쪽 공간을 채우는 요소 추가 -->
 					<button 
+							class="header-button {sortType === 'file_date' ? 'active' : ''}" 
+							on:click={() => handleSort('file_date', 'desc')}
+					>
+							파일 날짜순
+					</button>
+                    <button 
 							class="header-button {sortType === 'update_date' ? 'active' : ''}" 
 							on:click={() => handleSort('update_date', 'desc')}
 					>
@@ -809,6 +825,18 @@ async function dbUpdate(genre_name) {
 							on:click={() => handleSort('id', 'desc')}
 					>
 							기본순
+					</button>
+                    <button 
+							class="header-button {orderType === 'asc' ? 'active' : ''}" 
+							on:click={() => handleSort(sortType, 'asc')}
+					>
+						오름차순
+					</button>
+                    <button 
+							class="header-button {orderType === 'random' ? 'active' : ''}" 
+							on:click={() => handleSort(sortType, 'random')}
+					>
+							랜덤
 					</button>
 			</div>
 

@@ -11,13 +11,13 @@ from sqlalchemy.orm import Session
 
 from app.crud.video import (get_all_videos, get_video_list, get_video_id, 
                          input_videoinfo, del_dbid, search_video, get_keyword,
-                         vote_video, delete_vote, dislike_video, delete_dislike)
+                         )
 from app.schemas.video import (Video_info, Video_info_list, Video_update, Video_etckey,
-                           Video_dbids, VideoVote, Scanreturn, VideoDislike)
+                           Video_dbids, Scanreturn)
 # from models import Video
 # from db.repository.users import create_new_user
-from . import video_util
-from core.config import settings
+from app.utils import video 
+from app.core.config import settings
 from sqlalchemy.orm import Session
 # from .stream_mp4 import range_requests_response
 

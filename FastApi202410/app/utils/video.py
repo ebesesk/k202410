@@ -7,7 +7,7 @@ from PIL import Image
 import cv2
 import ffmpeg
 from app.core.config import settings
-from . import video_crud
+from app.crud import video as video_crud
 
 
 GIF_FRAMES_MAX = int(settings.GIF_FRAMES_MAX)

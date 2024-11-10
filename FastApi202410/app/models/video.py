@@ -3,7 +3,7 @@ from sqlalchemy import (Column, Integer, String, Text, DateTime,
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
-from app.db.base import Base
+from app.db.session import Base
 
 class Video(Base):
     
