@@ -1443,3 +1443,2704 @@ fastapi.exceptions.HTTPException: 500: Database update failed: (sqlite3.Integrit
 [parameters: ('__del/여친타락', '{"size": 0, "titles": "__del/\\uc55e\\uc73c\\ub85c\\uc758_\\ub108\\uc5d0\\uac8c___del/\\uc5ec\\uce5c\\ud0c0\\ub77d_", "images": ["010000-00001.webp", ... (2218 characters truncated) ... -00079.webp", "03000-00080.webp", "03000-00081.webp", "0400-00001.webp", "0400-00002.webp", "0400-00003.webp", "0400-00004.webp", "0400-00005.webp"]}', 389, '["01000-0001.webp", "01000-0002.webp", "01000-0003.webp", "01000-0004.webp", "01000-0005.webp", "01000-0006.webp", "01000-0007.webp", "01000-0008.web ... (7238 characters truncated) ... 0-00079.webp", "03000-00080.webp", "03000-00081.webp", "0400-00001.webp", "0400-00002.webp", "0400-00003.webp", "0400-00004.webp", "0400-00005.webp"]', '2024-11-08 15:12:05.020542', 6380)]
 (Background on this error at: https://sqlalche.me/e/20/gkpj)
 
+2024-11-08 21:59:45,659 - multipart.multipart - DEBUG - Calling on_field_start with no data
+2024-11-08 21:59:45,660 - multipart.multipart - DEBUG - Calling on_field_name with data[0:8]
+2024-11-08 21:59:45,660 - multipart.multipart - DEBUG - Calling on_field_data with data[9:12]
+2024-11-08 21:59:45,661 - multipart.multipart - DEBUG - Calling on_field_end with no data
+2024-11-08 21:59:45,661 - multipart.multipart - DEBUG - Calling on_field_start with no data
+2024-11-08 21:59:45,661 - multipart.multipart - DEBUG - Calling on_field_name with data[13:21]
+2024-11-08 21:59:45,661 - multipart.multipart - DEBUG - Calling on_field_data with data[22:31]
+2024-11-08 21:59:45,661 - multipart.multipart - DEBUG - Calling on_field_end with no data
+2024-11-08 21:59:45,662 - multipart.multipart - DEBUG - Calling on_end with no data
+2024-11-08 21:59:46,069 - passlib.handlers.bcrypt - DEBUG - detected 'bcrypt' backend, version '4.0.1'
+2024-11-08 21:59:46,071 - passlib.handlers.bcrypt - DEBUG - 'bcrypt' backend lacks $2$ support, enabling workaround
+2024-11-08 21:59:54,840 - multipart.multipart - DEBUG - Calling on_field_start with no data
+2024-11-08 21:59:54,841 - multipart.multipart - DEBUG - Calling on_field_name with data[0:8]
+2024-11-08 21:59:54,841 - multipart.multipart - DEBUG - Calling on_field_data with data[9:12]
+2024-11-08 21:59:54,841 - multipart.multipart - DEBUG - Calling on_field_end with no data
+2024-11-08 21:59:54,841 - multipart.multipart - DEBUG - Calling on_field_start with no data
+2024-11-08 21:59:54,842 - multipart.multipart - DEBUG - Calling on_field_name with data[13:21]
+2024-11-08 21:59:54,842 - multipart.multipart - DEBUG - Calling on_field_data with data[22:30]
+2024-11-08 21:59:54,842 - multipart.multipart - DEBUG - Calling on_field_end with no data
+2024-11-08 21:59:54,842 - multipart.multipart - DEBUG - Calling on_end with no data
+2024-11-09 06:57:23,498 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: list index out of range
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 430, in merge_manga_folder
+    volume, volumes = get_volume(manga, img, volume_zfill, volumes)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 314, in get_volume
+    volume = int(volumes[-1][:volume_zfill]) + 1
+                 ~~~~~~~^^^^
+IndexError: list index out of range
+
+2024-11-09 06:57:23,500 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: list index out of range
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 430, in merge_manga_folder
+    volume, volumes = get_volume(manga, img, volume_zfill, volumes)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 314, in get_volume
+    volume = int(volumes[-1][:volume_zfill]) + 1
+                 ~~~~~~~^^^^
+IndexError: list index out of range
+
+2024-11-09 07:00:28,194 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: cannot access local variable 'volume' where it is not associated with a value
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 433, in merge_manga_folder
+    volume, volumes = get_volume(manga, img, volume_zfill, volumes)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 318, in get_volume
+    volume1 = f"{str(volume).zfill(2)[:2]}"
+                     ^^^^^^
+UnboundLocalError: cannot access local variable 'volume' where it is not associated with a value
+
+2024-11-09 07:00:28,196 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: cannot access local variable 'volume' where it is not associated with a value
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 433, in merge_manga_folder
+    volume, volumes = get_volume(manga, img, volume_zfill, volumes)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 318, in get_volume
+    volume1 = f"{str(volume).zfill(2)[:2]}"
+                     ^^^^^^
+UnboundLocalError: cannot access local variable 'volume' where it is not associated with a value
+
+2024-11-09 07:19:59,113 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-09 07:19:59,115 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-09 07:23:36,739 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-09 07:23:36,740 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-09 07:27:35,646 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 430, in merge_manga_folder
+    volume, volumes = get_volume(manga, img, volume_zfill, volumes)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 313, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 07:27:35,647 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 430, in merge_manga_folder
+    volume, volumes = get_volume(manga, img, volume_zfill, volumes)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 313, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 07:28:33,817 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 429, in merge_manga_folder
+    volume, volumes = get_volume(manga, img, volume_zfill, volumes)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 313, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 07:28:33,818 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 429, in merge_manga_folder
+    volume, volumes = get_volume(manga, img, volume_zfill, volumes)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 313, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 07:30:05,230 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 429, in merge_manga_folder
+    volume, volumes = get_volume(manga, img, volume_zfill, volumes)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 313, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 07:30:05,232 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 429, in merge_manga_folder
+    volume, volumes = get_volume(manga, img, volume_zfill, volumes)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 313, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 07:30:37,524 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 429, in merge_manga_folder
+    volume, volumes = get_volume(manga, img, volume_zfill, volumes)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 313, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 07:30:37,526 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 429, in merge_manga_folder
+    volume, volumes = get_volume(manga, img, volume_zfill, volumes)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 313, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 07:32:06,453 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 430, in merge_manga_folder
+    volume, volumes = get_volume(manga, img, volume_zfill, volumes)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 313, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 07:32:06,454 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 430, in merge_manga_folder
+    volume, volumes = get_volume(manga, img, volume_zfill, volumes)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 313, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 07:32:44,024 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 431, in merge_manga_folder
+    volume, volumes = get_volume(manga, img, volume_zfill, volumes)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 313, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 07:32:44,026 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 431, in merge_manga_folder
+    volume, volumes = get_volume(manga, img, volume_zfill, volumes)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 313, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 07:33:08,094 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 431, in merge_manga_folder
+    volume, volumes = get_volume(manga, img, volume_zfill, volumes)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 313, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 07:33:08,096 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 431, in merge_manga_folder
+    volume, volumes = get_volume(manga, img, volume_zfill, volumes)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 313, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 07:36:10,908 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 431, in merge_manga_folder
+    volume, volumes = get_volume(manga, img, volume_zfill, volumes)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 313, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 07:36:10,909 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 431, in merge_manga_folder
+    volume, volumes = get_volume(manga, img, volume_zfill, volumes)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 313, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 07:38:20,815 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 432, in merge_manga_folder
+    volume, volumes = get_volume(manga, img, volume_zfill, volumes)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 314, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 07:38:20,817 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 432, in merge_manga_folder
+    volume, volumes = get_volume(manga, img, volume_zfill, volumes)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 314, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 07:39:12,566 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 433, in merge_manga_folder
+    volume, volumes = get_volume(manga, img, volume_zfill, volumes)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 315, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 07:39:12,568 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 433, in merge_manga_folder
+    volume, volumes = get_volume(manga, img, volume_zfill, volumes)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 315, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 07:40:19,270 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 434, in merge_manga_folder
+    volume, volumes = get_volume(manga, img, volume_zfill, volumes)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 316, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 07:40:19,271 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 434, in merge_manga_folder
+    volume, volumes = get_volume(manga, img, volume_zfill, volumes)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 316, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 07:41:00,807 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 435, in merge_manga_folder
+    volume, volumes = get_volume(manga, img, volume_zfill, volumes)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 317, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 07:41:00,808 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 435, in merge_manga_folder
+    volume, volumes = get_volume(manga, img, volume_zfill, volumes)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 317, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 07:41:47,091 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 435, in merge_manga_folder
+    volume, volumes = get_volume(manga, img, volume_zfill, volumes)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 317, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 07:41:47,093 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 435, in merge_manga_folder
+    volume, volumes = get_volume(manga, img, volume_zfill, volumes)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 317, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 07:50:06,520 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 441, in merge_manga_folder
+    volume, volumes = get_volume(manga, img, volume_zfill, volumes)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 317, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 07:50:06,521 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 441, in merge_manga_folder
+    volume, volumes = get_volume(manga, img, volume_zfill, volumes)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 317, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 07:55:38,737 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 445, in merge_manga_folder
+    volume, volumes = get_volume(manga, img, volume_zfill, volumes)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 317, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 07:55:38,738 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 445, in merge_manga_folder
+    volume, volumes = get_volume(manga, img, volume_zfill, volumes)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 317, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 07:56:37,514 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 445, in merge_manga_folder
+    volume, _ = get_volume(manga, img, volume_zfill, volumes)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 317, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 07:56:37,515 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 445, in merge_manga_folder
+    volume, _ = get_volume(manga, img, volume_zfill, volumes)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 317, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 07:58:54,862 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 445, in merge_manga_folder
+    volume, _ = get_volume(manga, img, volume_zfill, volumes)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 317, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 07:58:54,863 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 445, in merge_manga_folder
+    volume, _ = get_volume(manga, img, volume_zfill, volumes)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 317, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 08:02:46,752 - multipart.multipart - DEBUG - Calling on_field_start with no data
+2024-11-09 08:02:46,752 - multipart.multipart - DEBUG - Calling on_field_name with data[0:8]
+2024-11-09 08:02:46,753 - multipart.multipart - DEBUG - Calling on_field_data with data[9:12]
+2024-11-09 08:02:46,754 - multipart.multipart - DEBUG - Calling on_field_end with no data
+2024-11-09 08:02:46,754 - multipart.multipart - DEBUG - Calling on_field_start with no data
+2024-11-09 08:02:46,755 - multipart.multipart - DEBUG - Calling on_field_name with data[13:21]
+2024-11-09 08:02:46,755 - multipart.multipart - DEBUG - Calling on_field_data with data[22:30]
+2024-11-09 08:02:46,756 - multipart.multipart - DEBUG - Calling on_field_end with no data
+2024-11-09 08:02:46,756 - multipart.multipart - DEBUG - Calling on_end with no data
+2024-11-09 08:02:46,830 - passlib.handlers.bcrypt - DEBUG - detected 'bcrypt' backend, version '4.0.1'
+2024-11-09 08:02:46,831 - passlib.handlers.bcrypt - DEBUG - 'bcrypt' backend lacks $2$ support, enabling workaround
+2024-11-09 08:02:54,329 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 443, in merge_manga_folder
+    volume, _ = get_volume(manga, img, volume_zfill, volumes)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 317, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 08:02:54,331 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 443, in merge_manga_folder
+    volume, _ = get_volume(manga, img, volume_zfill, volumes)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 317, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 08:06:46,579 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: cannot access local variable 'volume_images' where it is not associated with a value
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 460, in merge_manga_folder
+    volume_images += new_filename
+    ^^^^^^^^^^^^^
+UnboundLocalError: cannot access local variable 'volume_images' where it is not associated with a value
+
+2024-11-09 08:06:46,580 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: cannot access local variable 'volume_images' where it is not associated with a value
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 460, in merge_manga_folder
+    volume_images += new_filename
+    ^^^^^^^^^^^^^
+UnboundLocalError: cannot access local variable 'volume_images' where it is not associated with a value
+
+2024-11-09 08:11:39,898 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: cannot access local variable 'volume_images' where it is not associated with a value
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 460, in merge_manga_folder
+    volume_images += new_filename
+    ^^^^^^^^^^^^^
+UnboundLocalError: cannot access local variable 'volume_images' where it is not associated with a value
+
+2024-11-09 08:11:39,899 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: cannot access local variable 'volume_images' where it is not associated with a value
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 460, in merge_manga_folder
+    volume_images += new_filename
+    ^^^^^^^^^^^^^
+UnboundLocalError: cannot access local variable 'volume_images' where it is not associated with a value
+
+2024-11-09 08:12:38,291 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: cannot access local variable 'volume_images' where it is not associated with a value
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 460, in merge_manga_folder
+    volume_images += new_filename
+    ^^^^^^^^^^^^^
+UnboundLocalError: cannot access local variable 'volume_images' where it is not associated with a value
+
+2024-11-09 08:12:38,292 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: cannot access local variable 'volume_images' where it is not associated with a value
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 460, in merge_manga_folder
+    volume_images += new_filename
+    ^^^^^^^^^^^^^
+UnboundLocalError: cannot access local variable 'volume_images' where it is not associated with a value
+
+2024-11-09 08:13:14,409 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: cannot access local variable 'volume_images' where it is not associated with a value
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 460, in merge_manga_folder
+    volume_images += new_filename
+    ^^^^^^^^^^^^^
+UnboundLocalError: cannot access local variable 'volume_images' where it is not associated with a value
+
+2024-11-09 08:13:14,410 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: cannot access local variable 'volume_images' where it is not associated with a value
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 460, in merge_manga_folder
+    volume_images += new_filename
+    ^^^^^^^^^^^^^
+UnboundLocalError: cannot access local variable 'volume_images' where it is not associated with a value
+
+2024-11-09 08:13:25,216 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 445, in merge_manga_folder
+    volume = get_volume(manga, img, volume_zfill, volumes)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 317, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 08:13:25,217 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 445, in merge_manga_folder
+    volume = get_volume(manga, img, volume_zfill, volumes)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 317, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 08:13:50,906 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 445, in merge_manga_folder
+    volume = get_volume(manga, img, volume_zfill, volumes)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 317, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 08:13:50,908 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 445, in merge_manga_folder
+    volume = get_volume(manga, img, volume_zfill, volumes)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 317, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 08:16:32,617 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 445, in merge_manga_folder
+    volume = get_volume(manga, img, volume_zfill, volumes)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 317, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 08:16:32,619 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 445, in merge_manga_folder
+    volume = get_volume(manga, img, volume_zfill, volumes)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 317, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 08:16:33,992 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 445, in merge_manga_folder
+    volume = get_volume(manga, img, volume_zfill, volumes)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 317, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 08:16:33,994 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 445, in merge_manga_folder
+    volume = get_volume(manga, img, volume_zfill, volumes)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 317, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 08:17:21,378 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 445, in merge_manga_folder
+    volume = get_volume(manga, img, volume_zfill, volumes)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 317, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 08:17:21,379 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'int' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 445, in merge_manga_folder
+    volume = get_volume(manga, img, volume_zfill, volumes)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 317, in get_volume
+    volume1 = f"{volume[:volume_zfill]}"
+                 ~~~~~~^^^^^^^^^^^^^^^
+TypeError: 'int' object is not subscriptable
+
+2024-11-09 08:18:07,539 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-09 08:18:07,539 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-09 08:19:21,757 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-09 08:19:21,758 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-09 08:28:12,997 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: name 'volume_images' is not defined
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 488, in merge_manga_folder
+    tags['images'] = volume_images
+                     ^^^^^^^^^^^^^
+NameError: name 'volume_images' is not defined
+
+2024-11-09 08:28:13,009 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: name 'volume_images' is not defined
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 488, in merge_manga_folder
+    tags['images'] = volume_images
+                     ^^^^^^^^^^^^^
+NameError: name 'volume_images' is not defined
+
+2024-11-09 08:28:36,664 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: name 'volume_images' is not defined
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 488, in merge_manga_folder
+    tags['images'] = volume_images
+                     ^^^^^^^^^^^^^
+NameError: name 'volume_images' is not defined
+
+2024-11-09 08:28:36,677 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: name 'volume_images' is not defined
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 488, in merge_manga_folder
+    tags['images'] = volume_images
+                     ^^^^^^^^^^^^^
+NameError: name 'volume_images' is not defined
+
+2024-11-09 08:32:34,671 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: name 'volume_images' is not defined
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 489, in merge_manga_folder
+    tags['images'] = volume_images
+                     ^^^^^^^^^^^^^
+NameError: name 'volume_images' is not defined
+
+2024-11-09 08:32:34,684 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: name 'volume_images' is not defined
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 489, in merge_manga_folder
+    tags['images'] = volume_images
+                     ^^^^^^^^^^^^^
+NameError: name 'volume_images' is not defined
+
+2024-11-09 08:33:05,469 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: name 'volume_images' is not defined
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 491, in merge_manga_folder
+    tags['images'] = volume_images
+                     ^^^^^^^^^^^^^
+NameError: name 'volume_images' is not defined
+
+2024-11-09 08:33:05,481 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: name 'volume_images' is not defined
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 491, in merge_manga_folder
+    tags['images'] = volume_images
+                     ^^^^^^^^^^^^^
+NameError: name 'volume_images' is not defined
+
+2024-11-09 08:33:39,544 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: name 'volume_images' is not defined
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 491, in merge_manga_folder
+    tags['images'] = volume_images
+                     ^^^^^^^^^^^^^
+NameError: name 'volume_images' is not defined
+
+2024-11-09 08:33:39,556 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: name 'volume_images' is not defined
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 491, in merge_manga_folder
+    tags['images'] = volume_images
+                     ^^^^^^^^^^^^^
+NameError: name 'volume_images' is not defined
+
+2024-11-09 08:34:53,115 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: name 'volume_images' is not defined
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 494, in merge_manga_folder
+    tags['images'] = volume_images
+                     ^^^^^^^^^^^^^
+NameError: name 'volume_images' is not defined
+
+2024-11-09 08:34:53,127 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: name 'volume_images' is not defined
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 494, in merge_manga_folder
+    tags['images'] = volume_images
+                     ^^^^^^^^^^^^^
+NameError: name 'volume_images' is not defined
+
+2024-11-09 08:35:50,417 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: name 'volume_images' is not defined
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 494, in merge_manga_folder
+    tags['images'] = volume_images
+                     ^^^^^^^^^^^^^
+NameError: name 'volume_images' is not defined
+
+2024-11-09 08:35:50,429 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: name 'volume_images' is not defined
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 494, in merge_manga_folder
+    tags['images'] = volume_images
+                     ^^^^^^^^^^^^^
+NameError: name 'volume_images' is not defined
+
+2024-11-09 08:46:14,258 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: name 'volume_images' is not defined
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 495, in merge_manga_folder
+    tags['images'] = volume_images
+                     ^^^^^^^^^^^^^
+NameError: name 'volume_images' is not defined
+
+2024-11-09 08:46:14,271 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: name 'volume_images' is not defined
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 495, in merge_manga_folder
+    tags['images'] = volume_images
+                     ^^^^^^^^^^^^^
+NameError: name 'volume_images' is not defined
+
+2024-11-09 08:46:59,182 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: name 'volume_images' is not defined
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 495, in merge_manga_folder
+    tags['images'] = volume_images
+                     ^^^^^^^^^^^^^
+NameError: name 'volume_images' is not defined
+
+2024-11-09 08:46:59,194 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: name 'volume_images' is not defined
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 495, in merge_manga_folder
+    tags['images'] = volume_images
+                     ^^^^^^^^^^^^^
+NameError: name 'volume_images' is not defined
+
+2024-11-09 08:47:32,775 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: name 'volume_images' is not defined
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 495, in merge_manga_folder
+    tags['images'] = volume_images
+                     ^^^^^^^^^^^^^
+NameError: name 'volume_images' is not defined
+
+2024-11-09 08:47:32,787 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: name 'volume_images' is not defined
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 495, in merge_manga_folder
+    tags['images'] = volume_images
+                     ^^^^^^^^^^^^^
+NameError: name 'volume_images' is not defined
+
+2024-11-09 08:49:37,586 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: name 'volume_images' is not defined
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 494, in merge_manga_folder
+    tags['images'] = volume_images
+                     ^^^^^^^^^^^^^
+NameError: name 'volume_images' is not defined
+
+2024-11-09 08:49:37,599 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: name 'volume_images' is not defined
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 494, in merge_manga_folder
+    tags['images'] = volume_images
+                     ^^^^^^^^^^^^^
+NameError: name 'volume_images' is not defined
+
+2024-11-09 08:52:42,989 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: name 'volume_images' is not defined
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 494, in merge_manga_folder
+    tags['images'] = volume_images
+                     ^^^^^^^^^^^^^
+NameError: name 'volume_images' is not defined
+
+2024-11-09 08:52:43,002 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: name 'volume_images' is not defined
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 494, in merge_manga_folder
+    tags['images'] = volume_images
+                     ^^^^^^^^^^^^^
+NameError: name 'volume_images' is not defined
+
+2024-11-09 08:54:57,095 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: name 'volume_images' is not defined
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 494, in merge_manga_folder
+    tags['images'] = volume_images
+                     ^^^^^^^^^^^^^
+NameError: name 'volume_images' is not defined
+
+2024-11-09 08:54:57,108 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: name 'volume_images' is not defined
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 494, in merge_manga_folder
+    tags['images'] = volume_images
+                     ^^^^^^^^^^^^^
+NameError: name 'volume_images' is not defined
+
+2024-11-09 09:00:01,507 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: cannot access local variable 'volume2' where it is not associated with a value
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 447, in merge_manga_folder
+    volume = get_volume(manga, img, volume_zfill, volumes)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 319, in get_volume
+    if volume2:
+       ^^^^^^^
+UnboundLocalError: cannot access local variable 'volume2' where it is not associated with a value
+
+2024-11-09 09:00:01,509 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: cannot access local variable 'volume2' where it is not associated with a value
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 447, in merge_manga_folder
+    volume = get_volume(manga, img, volume_zfill, volumes)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 319, in get_volume
+    if volume2:
+       ^^^^^^^
+UnboundLocalError: cannot access local variable 'volume2' where it is not associated with a value
+
+2024-11-09 09:01:54,009 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: cannot access local variable 'volume2' where it is not associated with a value
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 447, in merge_manga_folder
+    volume = get_volume(manga, img, volume_zfill, volumes)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 319, in get_volume
+    if volume2:
+       ^^^^^^^
+UnboundLocalError: cannot access local variable 'volume2' where it is not associated with a value
+
+2024-11-09 09:01:54,010 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: cannot access local variable 'volume2' where it is not associated with a value
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 447, in merge_manga_folder
+    volume = get_volume(manga, img, volume_zfill, volumes)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 319, in get_volume
+    if volume2:
+       ^^^^^^^
+UnboundLocalError: cannot access local variable 'volume2' where it is not associated with a value
+
+2024-11-09 09:03:40,039 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: cannot access local variable 'volume2' where it is not associated with a value
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 447, in merge_manga_folder
+    volume = get_volume(manga, img, volume_zfill, volumes)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 319, in get_volume
+    if volume2:
+       ^^^^^^^
+UnboundLocalError: cannot access local variable 'volume2' where it is not associated with a value
+
+2024-11-09 09:03:40,040 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: cannot access local variable 'volume2' where it is not associated with a value
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 447, in merge_manga_folder
+    volume = get_volume(manga, img, volume_zfill, volumes)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 319, in get_volume
+    if volume2:
+       ^^^^^^^
+UnboundLocalError: cannot access local variable 'volume2' where it is not associated with a value
+
+2024-11-09 17:55:58,698 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 499, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-09 17:55:58,699 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 499, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-09 17:56:02,300 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 499, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-09 17:56:02,301 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 499, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-09 17:56:59,564 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 501, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-09 17:56:59,566 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 501, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-09 17:58:49,836 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 503, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-09 17:58:49,837 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 503, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-09 18:04:07,022 - multipart.multipart - DEBUG - Calling on_field_start with no data
+2024-11-09 18:04:07,023 - multipart.multipart - DEBUG - Calling on_field_name with data[0:8]
+2024-11-09 18:04:07,023 - multipart.multipart - DEBUG - Calling on_field_data with data[9:12]
+2024-11-09 18:04:07,024 - multipart.multipart - DEBUG - Calling on_field_end with no data
+2024-11-09 18:04:07,024 - multipart.multipart - DEBUG - Calling on_field_start with no data
+2024-11-09 18:04:07,025 - multipart.multipart - DEBUG - Calling on_field_name with data[13:21]
+2024-11-09 18:04:07,025 - multipart.multipart - DEBUG - Calling on_field_data with data[22:30]
+2024-11-09 18:04:07,025 - multipart.multipart - DEBUG - Calling on_field_end with no data
+2024-11-09 18:04:07,026 - multipart.multipart - DEBUG - Calling on_end with no data
+2024-11-09 18:04:07,092 - passlib.handlers.bcrypt - DEBUG - detected 'bcrypt' backend, version '4.0.1'
+2024-11-09 18:04:07,093 - passlib.handlers.bcrypt - DEBUG - 'bcrypt' backend lacks $2$ support, enabling workaround
+2024-11-09 18:04:13,246 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 503, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-09 18:04:13,250 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 503, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-09 19:54:17,557 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 591, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-09 19:54:17,558 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 591, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-09 19:55:31,365 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 591, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-09 19:55:31,366 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 591, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-09 19:56:58,864 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 591, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-09 19:56:58,866 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 591, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-09 19:57:33,432 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 591, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-09 19:57:33,433 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 591, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-09 19:58:28,915 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 592, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-09 19:58:28,916 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 592, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-09 19:59:36,469 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 593, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-09 19:59:36,470 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 593, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-09 20:00:49,619 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'text'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 557, in merge_manga_folder
+    title = get_title(title_original)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 526, in get_title
+    if len(texts['text']) > 0:
+           ~~~~~^^^^^^^^
+KeyError: 'text'
+
+2024-11-09 20:00:49,621 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'text'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 557, in merge_manga_folder
+    title = get_title(title_original)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 526, in get_title
+    if len(texts['text']) > 0:
+           ~~~~~^^^^^^^^
+KeyError: 'text'
+
+2024-11-09 20:01:23,121 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'text'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 557, in merge_manga_folder
+    title = get_title(title_original)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 526, in get_title
+    if len(texts['text']) > 0:
+           ~~~~~^^^^^^^^
+KeyError: 'text'
+
+2024-11-09 20:01:23,123 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'text'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 557, in merge_manga_folder
+    title = get_title(title_original)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 526, in get_title
+    if len(texts['text']) > 0:
+           ~~~~~^^^^^^^^
+KeyError: 'text'
+
+2024-11-09 20:01:55,145 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 593, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-09 20:01:55,146 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 593, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-09 20:04:19,607 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 593, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-09 20:04:19,609 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 593, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-09 20:04:36,060 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 593, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-09 20:04:36,061 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 593, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-09 20:08:38,393 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 593, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-09 20:08:38,395 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 593, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-09 20:09:46,547 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 593, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-09 20:09:46,548 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 593, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-09 20:15:35,622 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 593, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-09 20:15:35,623 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 593, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-09 20:15:46,562 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 593, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-09 20:15:46,563 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 593, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-09 20:16:21,578 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 593, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-09 20:16:21,579 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 593, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-09 20:17:13,309 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 593, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-09 20:17:13,310 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 593, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-09 20:26:37,460 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 593, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-09 20:26:37,462 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 593, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 00:23:17,244 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 616, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 00:23:17,245 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 616, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 04:02:49,147 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 623, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 04:02:49,149 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 623, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 04:06:34,868 - multipart.multipart - DEBUG - Calling on_field_start with no data
+2024-11-10 04:06:34,869 - multipart.multipart - DEBUG - Calling on_field_name with data[0:8]
+2024-11-10 04:06:34,869 - multipart.multipart - DEBUG - Calling on_field_data with data[9:12]
+2024-11-10 04:06:34,870 - multipart.multipart - DEBUG - Calling on_field_end with no data
+2024-11-10 04:06:34,870 - multipart.multipart - DEBUG - Calling on_field_start with no data
+2024-11-10 04:06:34,870 - multipart.multipart - DEBUG - Calling on_field_name with data[13:21]
+2024-11-10 04:06:34,871 - multipart.multipart - DEBUG - Calling on_field_data with data[22:30]
+2024-11-10 04:06:34,872 - multipart.multipart - DEBUG - Calling on_field_end with no data
+2024-11-10 04:06:34,872 - multipart.multipart - DEBUG - Calling on_end with no data
+2024-11-10 04:06:34,939 - passlib.handlers.bcrypt - DEBUG - detected 'bcrypt' backend, version '4.0.1'
+2024-11-10 04:06:34,939 - passlib.handlers.bcrypt - DEBUG - 'bcrypt' backend lacks $2$ support, enabling workaround
+2024-11-10 04:06:46,418 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 623, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 04:06:46,420 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 623, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 04:11:56,715 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 625, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 04:11:56,716 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 625, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 04:11:56,723 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 625, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 04:11:56,724 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 625, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 04:11:58,907 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 625, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 04:11:58,909 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 625, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 04:12:50,726 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 625, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 04:12:50,727 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 625, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 04:15:19,081 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 625, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 04:15:19,083 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 625, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 04:15:49,524 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 625, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 04:15:49,525 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 625, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 04:16:06,113 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 625, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 04:16:06,114 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 625, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 04:18:08,140 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 634, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 04:18:08,141 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 634, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 04:20:01,831 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 634, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 04:20:01,832 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 634, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 04:20:32,509 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 634, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 04:20:32,511 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 634, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 04:20:55,466 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 634, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 04:20:55,467 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 634, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 04:21:19,514 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 634, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 04:21:19,515 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 634, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 04:22:05,950 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 634, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 04:22:05,951 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 634, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 04:23:24,192 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 634, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 04:23:24,193 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 634, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 04:25:02,435 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 634, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 04:25:02,436 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 634, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 04:30:10,197 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 636, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 04:30:10,198 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 636, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 04:34:13,710 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 637, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 04:34:13,711 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 637, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 15:48:48,025 - multipart.multipart - DEBUG - Calling on_field_start with no data
+2024-11-10 15:48:48,026 - multipart.multipart - DEBUG - Calling on_field_name with data[0:8]
+2024-11-10 15:48:48,026 - multipart.multipart - DEBUG - Calling on_field_data with data[9:12]
+2024-11-10 15:48:48,027 - multipart.multipart - DEBUG - Calling on_field_end with no data
+2024-11-10 15:48:48,027 - multipart.multipart - DEBUG - Calling on_field_start with no data
+2024-11-10 15:48:48,028 - multipart.multipart - DEBUG - Calling on_field_name with data[13:21]
+2024-11-10 15:48:48,029 - multipart.multipart - DEBUG - Calling on_field_data with data[22:30]
+2024-11-10 15:48:48,029 - multipart.multipart - DEBUG - Calling on_field_end with no data
+2024-11-10 15:48:48,030 - multipart.multipart - DEBUG - Calling on_end with no data
+2024-11-10 15:48:48,075 - passlib.handlers.bcrypt - DEBUG - detected 'bcrypt' backend, version '4.0.1'
+2024-11-10 15:48:48,076 - passlib.handlers.bcrypt - DEBUG - 'bcrypt' backend lacks $2$ support, enabling workaround
+2024-11-10 15:49:00,662 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 637, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 15:49:00,663 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 637, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 16:21:57,297 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 653, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 16:21:57,298 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 653, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 19:01:09,465 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 696, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 19:01:09,466 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 696, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 19:01:29,110 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 696, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 19:01:29,111 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 696, in merge_manga_folder
+    tags['titles'] = tags['titles'] + manga.folder_name + '_'
+                     ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 19:28:39,468 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 689, in merge_manga_folder
+    tags['titles'] = tags['titles'] + title + '_'
+                  ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 19:28:39,469 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'titles'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 689, in merge_manga_folder
+    tags['titles'] = tags['titles'] + title + '_'
+                  ~~~~^^^^^^^^^^
+KeyError: 'titles'
+
+2024-11-10 19:30:30,227 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'images'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 755, in merge_manga_folder
+    tags_db['images'] = tags['images']
+                        ~~~~^^^^^^^^^^
+KeyError: 'images'
+
+2024-11-10 19:30:30,229 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'images'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 755, in merge_manga_folder
+    tags_db['images'] = tags['images']
+                        ~~~~^^^^^^^^^^
+KeyError: 'images'
+
+2024-11-10 19:31:06,936 - app.api.api_v1.endpoints.manga - ERROR - OS error during merge: [Errno 2] No such file or directory: '/home/manga/__del/2023_03_1Tier_웹툰_속_걸레년들/del_2023_03_1Tier_웹툰_속_걸레년들_1_01.jpg'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 718, in merge_manga_folder
+    shutil.copy2(src, dst)
+  File "/usr/lib/python3.12/shutil.py", line 475, in copy2
+    copyfile(src, dst, follow_symlinks=follow_symlinks)
+  File "/usr/lib/python3.12/shutil.py", line 260, in copyfile
+    with open(src, 'rb') as fsrc:
+         ^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/manga/__del/2023_03_1Tier_웹툰_속_걸레년들/01.jpg'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 726, in merge_manga_folder
+    os.remove(os.path.join(dest_path, image))
+FileNotFoundError: [Errno 2] No such file or directory: '/home/manga/__del/2023_03_1Tier_웹툰_속_걸레년들/del_2023_03_1Tier_웹툰_속_걸레년들_1_01.jpg'
+
+2024-11-10 19:32:13,440 - app.api.api_v1.endpoints.manga - ERROR - OS error during merge: [Errno 2] No such file or directory: '/home/manga/__del/Ahiru_to_Akane_아히루와_아카네/del_Ahiru_to_Akane_아히루와_아카네_1_01.jpg'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 718, in merge_manga_folder
+    shutil.copy2(src, dst)
+  File "/usr/lib/python3.12/shutil.py", line 475, in copy2
+    copyfile(src, dst, follow_symlinks=follow_symlinks)
+  File "/usr/lib/python3.12/shutil.py", line 240, in copyfile
+    raise SameFileError("{!r} and {!r} are the same file".format(src, dst))
+shutil.SameFileError: '/home/manga/__del/Ahiru_to_Akane_아히루와_아카네/del_Ahiru_to_Akane_아히루와_아카네_1_02.jpg' and '/home/manga/__del/Ahiru_to_Akane_아히루와_아카네/del_Ahiru_to_Akane_아히루와_아카네_1_02.jpg' are the same file
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 726, in merge_manga_folder
+    os.remove(os.path.join(dest_path, image))
+FileNotFoundError: [Errno 2] No such file or directory: '/home/manga/__del/Ahiru_to_Akane_아히루와_아카네/del_Ahiru_to_Akane_아히루와_아카네_1_01.jpg'
+
+2024-11-10 19:32:35,385 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: cannot access local variable 'new_name' where it is not associated with a value
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 702, in merge_manga_folder
+    title = get_unique_name(get_title(title_original)[:50], titles)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 667, in get_unique_name
+    new_name = f"{new_name}-{counter}" if counter > 0 else new_name
+                  ^^^^^^^^
+UnboundLocalError: cannot access local variable 'new_name' where it is not associated with a value
+
+2024-11-10 19:32:35,386 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: cannot access local variable 'new_name' where it is not associated with a value
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 702, in merge_manga_folder
+    title = get_unique_name(get_title(title_original)[:50], titles)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 667, in get_unique_name
+    new_name = f"{new_name}-{counter}" if counter > 0 else new_name
+                  ^^^^^^^^
+UnboundLocalError: cannot access local variable 'new_name' where it is not associated with a value
+
+2024-11-10 19:33:22,561 - app.api.api_v1.endpoints.manga - ERROR - OS error during merge: [Errno 2] No such file or directory: '/home/manga/__del/Ahhyun_박아현/del_Ahhyun_박아현_1_1.jpg'
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 718, in merge_manga_folder
+    shutil.copy2(src, dst)
+  File "/usr/lib/python3.12/shutil.py", line 475, in copy2
+    copyfile(src, dst, follow_symlinks=follow_symlinks)
+  File "/usr/lib/python3.12/shutil.py", line 260, in copyfile
+    with open(src, 'rb') as fsrc:
+         ^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/manga/__del/Ahhyun_박아현/2.jpg'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 726, in merge_manga_folder
+    os.remove(os.path.join(dest_path, image))
+FileNotFoundError: [Errno 2] No such file or directory: '/home/manga/__del/Ahhyun_박아현/del_Ahhyun_박아현_1_1.jpg'
+
+2024-11-10 19:36:46,893 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 19:36:46,894 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 19:37:06,017 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 19:37:06,018 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 19:38:17,933 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 19:38:17,934 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 19:40:32,762 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 19:40:32,763 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 19:43:44,904 - app.api.api_v1.endpoints.manga - ERROR - Value error during merge: max() iterable argument is empty
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 690, in merge_manga_folder
+    title = get_unique_name(get_title(manga.folder_name.split('_')[1])[:50], titles)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 596, in get_title
+    max_length = max(_length)
+                 ^^^^^^^^^^^^
+ValueError: max() iterable argument is empty
+
+2024-11-10 19:44:30,427 - app.api.api_v1.endpoints.manga - ERROR - Value error during merge: max() iterable argument is empty
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 188, in manga_action
+    result = merge_manga_folder(mangas, target_folder_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 691, in merge_manga_folder
+    title = get_unique_name(get_title(title_original)[:50], titles)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/kds/k202410/FastApi202410/app/utils/manga.py", line 596, in get_title
+    max_length = max(_length)
+                 ^^^^^^^^^^^^
+ValueError: max() iterable argument is empty
+
+2024-11-10 19:44:54,008 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 19:44:54,009 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 19:45:09,637 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 19:45:09,638 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 19:45:26,764 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 19:45:26,766 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 19:46:25,231 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 19:46:25,232 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 19:47:15,560 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 19:47:15,560 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 19:49:22,774 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 19:49:22,775 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 19:50:36,826 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 19:50:36,827 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 19:51:01,896 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 19:51:01,897 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 19:53:50,566 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 19:53:50,567 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 19:54:11,487 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 19:54:11,488 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 19:54:12,543 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 19:54:12,544 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 19:54:52,784 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 19:54:52,786 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 20:00:57,326 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 20:00:57,327 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 20:01:47,107 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 20:01:47,108 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 20:05:14,083 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 20:05:14,084 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 20:07:03,729 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 20:07:03,730 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 20:09:03,769 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 20:09:03,770 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 20:10:20,808 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 20:10:20,809 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 20:12:22,206 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 20:12:22,207 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 20:24:22,802 - multipart.multipart - DEBUG - Calling on_field_start with no data
+2024-11-10 20:24:22,803 - multipart.multipart - DEBUG - Calling on_field_name with data[0:10]
+2024-11-10 20:24:22,804 - multipart.multipart - DEBUG - Calling on_field_data with data[11:19]
+2024-11-10 20:24:22,804 - multipart.multipart - DEBUG - Calling on_field_end with no data
+2024-11-10 20:24:22,805 - multipart.multipart - DEBUG - Calling on_field_start with no data
+2024-11-10 20:24:22,805 - multipart.multipart - DEBUG - Calling on_field_name with data[20:28]
+2024-11-10 20:24:22,806 - multipart.multipart - DEBUG - Calling on_field_data with data[29:32]
+2024-11-10 20:24:22,806 - multipart.multipart - DEBUG - Calling on_field_end with no data
+2024-11-10 20:24:22,807 - multipart.multipart - DEBUG - Calling on_field_start with no data
+2024-11-10 20:24:22,807 - multipart.multipart - DEBUG - Calling on_field_name with data[33:41]
+2024-11-10 20:24:22,808 - multipart.multipart - DEBUG - Calling on_field_data with data[42:50]
+2024-11-10 20:24:22,808 - multipart.multipart - DEBUG - Calling on_field_end with no data
+2024-11-10 20:24:22,809 - multipart.multipart - DEBUG - Calling on_end with no data
+2024-11-10 20:24:22,816 - passlib.handlers.bcrypt - DEBUG - detected 'bcrypt' backend, version '4.0.1'
+2024-11-10 20:24:22,817 - passlib.handlers.bcrypt - DEBUG - 'bcrypt' backend lacks $2$ support, enabling workaround
+2024-11-10 20:26:14,364 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 20:26:14,365 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 20:28:24,860 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 20:28:24,861 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 20:29:12,441 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 20:29:12,442 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 191, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 20:47:42,460 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 197, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 20:47:42,460 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 197, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 21:04:58,395 - app.api.api_v1.endpoints.manga - ERROR - Unexpected error during merge: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 195, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+
+2024-11-10 21:04:58,396 - app.api.api_v1.endpoints.manga - ERROR - Unhandled exception: 'NoneType' object is not subscriptable
+Traceback (most recent call last):
+  File "/home/kds/k202410/FastApi202410/app/api/api_v1/endpoints/manga.py", line 195, in manga_action
+    failures = [result['success']] if not result['success'] else []
+                                          ~~~~~~^^^^^^^^^^^
+TypeError: 'NoneType' object is not subscriptable
+

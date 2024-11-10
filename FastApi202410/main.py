@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request
-from app.api.api_v1.endpoints import users, auth, manga
+from app.api.api_v1.endpoints import users, auth, manga, video
 from app.core.config import settings
 from app.db.base import Base
 from app.db.session import engine
@@ -52,6 +52,17 @@ app.include_router(
     prefix=f"{settings.API_V1_STR}/manga",
     tags=["manga"]
 )
+app.include_router(
+    video.router,
+    prefix=f"{settings.API_V1_STR}/video",
+    tags=["video"]
+)
+
+
+
+
+
+
 # 로깅 설정
 logging.basicConfig(
     level=logging.DEBUG,

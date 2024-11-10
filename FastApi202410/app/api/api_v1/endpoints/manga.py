@@ -35,7 +35,11 @@ def bulk_update_manga(
     inserted_manga = MangaCRUD.bulk_insert_manga(db, manga_data)     # 데이터베이스에 망가 데이터 삽입
     print('insert:', len(inserted_manga))
     if genre_name:
-        pass
+        genre_db = MangaCRUD.get_genre_by_name(db, genre_name)
+        for manga in genre_db:
+            if manga.folder_name not in [manga['folder_name'] for manga in manga_data]:
+                MangaCRUD.delete_manga_models(db, manga)
+                print(f'{manga.folder_name} deleted')       
     else:
         delete_count = MangaCRUD.bulk_delete_nonexistent_manga(db, manga_data) # 파일시스템에 존재하지 않는 망가 데이터 삭제
         print('bulk_delete:', delete_count)
@@ -60,7 +64,13 @@ def read_mangas(
     - order: 정렬 방향 (asc, desc)
     """
     # 허용된 정렬 필드 검증
-    allowed_sort_fields = ["id", "rating", "create_date", "update_date"]
+    allowed_sort_fields = [
+            "id", 
+            "rating", 
+            "create_date", 
+            "update_date", 
+            "file_date", 
+        ]
     if sort_by not in allowed_sort_fields:
         raise HTTPException(
             status_code=400,
@@ -68,7 +78,7 @@ def read_mangas(
         )
     
     # 허용된 정렬 방향 검증
-    if order not in ["asc", "desc"]:
+    if order not in ["asc", "desc", "random"]:
         raise HTTPException(
             status_code=400,
             detail="Invalid order value. Must be either 'asc' or 'desc'"
@@ -209,7 +219,7 @@ def manga_action(
                                 manga = db.merge(manga)
                                 MangaCRUD.delete_manga_models(db, manga)
                                 print(f"Deleting manga {manga.id}")
-                            time.sleep(10)
+                            time.sleep(1)
                             mangas[0] = db.merge(mangas[0])
                             MangaCRUD.update_manga_models(db, mangas[0])
                             db.commit()

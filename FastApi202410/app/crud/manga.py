@@ -47,7 +47,9 @@ class MangaCRUD:
         """
         return db.query(Manga).filter(Manga.folder_name == folder_name).first()
     
-    
+    @staticmethod
+    def get_genre_by_name(db: Session, genre_name: str) -> Optional[Manga]:
+        return db.query(Manga).filter(Manga.folder_name.like(f"{genre_name}/%")).all()
     
     @staticmethod
     def bulk_update_manga(db: Session, mangas: List[Dict]):
@@ -67,12 +69,15 @@ class MangaCRUD:
         for manga_data in mangas:
             manga_db = MangaCRUD.get_manga_by_folder_name(db, manga_data["folder_name"])
             # print(manga_db)
-            if manga_db and manga_data["page"] != manga_db.page:
+            # if manga_db and manga_data["page"] != manga_db.page:
+            if manga_db and manga_data["tags"] != manga_db.tags:
                 # print(f"업데이트할 manga 찾음: {manga_data['folder_name']}")
+                tags_db = json.loads(manga_db.tags)
+                tags_db['size'] = manga_data["tags"]["size"]
                 manga_updates.append({
                     "id": manga_db.id,
                     "page": len(manga_data["images_name"]),
-                    "tags": json.dumps(manga_data["tags"]),
+                    "tags": json.dumps(tags_db),
                     "images_name": json.dumps(manga_data["images_name"]),
                     "update_date": datetime.now(KST),
                     "file_date": manga_data["file_date"]
@@ -189,12 +194,24 @@ class MangaCRUD:
         if search:
             search = search.replace(" ", "_")
             search_term = f"%{search}%"
-            conditions.append(Manga.folder_name.ilike(search_term) | Manga.tags.ilike(search_term))
+            
+            tags_filter = []
+            for item in query.all():
+                tag_titles = ''
+                tags = json.loads(item[0].tags)
+                try:
+                    for tag in tags['titles']:
+                        tag_titles += tag + '_'
+                    if search_term in tag_titles:
+                        tags_filter.append(item[0])
+                except:
+                    pass
+            conditions.append(Manga.folder_name.ilike(search_term) | or_(*tags_filter))
 
         # print(folders)
         # 폴더 조건 추가
         if folders:
-            querys = [Manga.folder_name.ilike(f"{folder}%") for folder in folders if isinstance(folder, str)]
+            querys = [Manga.folder_name.ilike(f"{folder}/%") for folder in folders if isinstance(folder, str)]
             conditions.append(or_(*querys))
 
         # 조건이 있는 경우에만 필터 적용
@@ -205,18 +222,30 @@ class MangaCRUD:
         query = query.group_by(Manga.id)
                     
         # 정렬 적용
-        if sort_by == "rating":
+        if sort_by == "file_date":
+            if order == "asc":
+                query = query.order_by(asc(Manga.file_date))
+            elif order == "desc":
+                query = query.order_by(desc(Manga.file_date))
+            else:
+                query = query.order_by(func.random())
+                
+        elif sort_by == "rating":
             # 평점 기준 정렬
             if order == "asc": 
                 query = query.order_by(asc('avg_rating'), asc(Manga.id))
-            else:
+            elif order == "desc":
                 query = query.order_by(desc('avg_rating'), desc(Manga.id))
+            else:
+                query = query.order_by(func.random())
         else:
             # 다른 필드 기준 정렬
             if order == "asc":
                 query = query.order_by(asc(getattr(Manga, sort_by)))
-            else:
+            elif order == "desc":
                 query = query.order_by(desc(getattr(Manga, sort_by)))
+            else:
+                query = query.order_by(func.random())
         
         # 페이지네이션 적용 및 결과 추출
         results = query.offset(skip).limit(limit).all()
@@ -268,7 +297,7 @@ class MangaCRUD:
             conditions.append(Manga.folder_name.ilike(search_term) | Manga.tags.ilike(search_term))
         
         if folders:
-            querys = [Manga.folder_name.ilike(f"%{folder}%") for folder in folders if isinstance(folder, str)]
+            querys = [Manga.folder_name.ilike(f"%{folder}/%") for folder in folders if isinstance(folder, str)]
             conditions.append(or_(*querys))
         
         # 조건이 있는 경우에만 필터 적용
