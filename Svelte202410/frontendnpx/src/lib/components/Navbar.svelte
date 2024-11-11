@@ -1,13 +1,17 @@
 <script>
-    import { page } from '$app/stores';  // Svelte의 페이지 스토어 추가
+    import { onMount } from 'svelte';
+    import { page } from '$app/stores';  
     import { createEventDispatcher } from 'svelte';
     import { searchStore } from '$lib/stores/galleryStore';
 
-    let isOpen = false;
     const dispatch = createEventDispatcher();
+    
+    let isOpen = false; // 초기값 설정
+    let isGalleryPage = false; // 초기값 설정
     
     function toggleMenu() {
         isOpen = !isOpen;
+        localStorage.setItem('menuOpen', isOpen); // 상태를 로컬 스토리지에 저장
     }
     
     function handleSearch(event) {
@@ -17,7 +21,7 @@
     
     let searchTerm = '';
     let searchTimeout;
-    let isGalleryPage = true; // 또는 현재 페이지 확인 로직
+    // let isGalleryPage = true; // 또는 현재 페이지 확인 로직
 
     function debounceSearch() {
         clearTimeout(searchTimeout);
@@ -26,7 +30,11 @@
         }, 300);
     }
 
-    $: isGalleryPage = $page.url.pathname === '/gallery';
+    // $: isGalleryPage = $page.url.pathname === '/gallery';
+    onMount(() => {
+        isOpen = localStorage.getItem('menuOpen') === 'true'; // 클라이언트에서 상태 읽기
+        isGalleryPage = $page.url.pathname === '/gallery';
+    });
 </script>
 
 <nav>
@@ -59,6 +67,7 @@
                 <li><a href="/">홈</a></li>
                 <li><a href="/gallery">갤러리</a></li>
                 <li><a href="/about">소개</a></li>
+                <li><a href="/video">video</a></li>
                 <li><a href="/contact">연락처</a></li>
             </ul>
         </div>

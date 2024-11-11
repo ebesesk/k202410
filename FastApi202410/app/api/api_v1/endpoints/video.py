@@ -107,7 +107,11 @@ def get_search(db: Session=Depends(get_db),
                page: int = 0,
                size: int = 10,
                keyword:str=''):
-    keyword = json.loads(keyword)
+    if keyword:
+        keyword = json.loads(keyword)
+    else:
+        keyword = {'etc': "요약"}
+    keyword = {'etc': "요약"}
     print(keyword)
     if ('etc' in keyword) and (len(keyword['etc']) > 0):
         keyword['etc'] = keyword['etc'].strip().split(',')
@@ -121,10 +125,12 @@ def get_search(db: Session=Depends(get_db),
     print(keyword)
     total, video_list = search_video(db=db, keyword = keyword, skip=page*size, limit=size)
     # total, video_list = search_video(db=db, keyword = keyword, skip=page*size, limit=size)
+    print(total, video_list)
     return {
         'total': total,
         'video_list': video_list
     }
+    
 
 # @router.post("/vote", status_code=status.HTTP_204_NO_CONTENT)
 # def video_vote(_video_vote: VideoVote,

@@ -5,9 +5,9 @@
     import { goto } from '$app/navigation';
     import { redirect } from '@sveltejs/kit';
     import Navbar from '$lib/components/Navbar.svelte';
-
+    import fastapi from "$lib/api"
     let isAuthenticated = false;
-    const supabase = createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_ANON_KEY);
+    // const supabase = createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_ANON_KEY);
 
     // JWT 토큰 검증 함수
     function checkTokenExpiration() {
@@ -107,28 +107,23 @@
             const formData = new URLSearchParams();
             formData.append('username', id);
             formData.append('password', password);
-
-            const response = await fetch('https://api2410.ebesesk.synology.me/auth/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
+            console.log('Form Data:', formData.toString());
+            fastapi('login', '/auth/login', formData, 
+                (response) => {
+                    if (response.access_token) {
+                        localStorage.setItem('accessToken', response.access_token);
+                        isAuthenticated = true;
+                        
+                        // 토큰 유효성 확인 시작
+                        checkTokenExpiration();
+                        goto('/about');
+                    }
                 },
-                body: formData
-            });
-
-            const result = await response.json();
-
-            if (!response.ok) {
-                throw new Error(result.detail || '로그인 실패');
-            }
-
-            const accessToken = result.access_token;
-            localStorage.setItem('accessToken', accessToken);
-            isAuthenticated = true;
-            
-            // 토큰 유효성 확인 시작
-            checkTokenExpiration();
-            await goto('/about');
+                (error) => {
+                    console.error('로그인 에러:', error);
+                    errorMsg = '로그인에 실패했습니다.';
+                }
+            );
         } catch (error) {
             console.error('로그인 에러:', error);
             errorMsg = error.message;

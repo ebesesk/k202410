@@ -20,8 +20,8 @@ import time
 
 router = APIRouter()
 # 로거 설정
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+# logger = logging.getLogger(__name__)
+# logger.setLevel(logging.DEBUG)
 
 @router.post("/bulk-update")    # 파일시스템의 망가 데이터를 데이터베이스에 업데이트 합니다.
 def bulk_update_manga(
@@ -63,6 +63,7 @@ def read_mangas(
     - sort_by: 정렬 기준 (id, rating, create_date, update_date)
     - order: 정렬 방향 (asc, desc)
     """
+    print('folders:', folders)
     # 허용된 정렬 필드 검증
     allowed_sort_fields = [
             "id", 

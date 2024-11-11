@@ -297,15 +297,15 @@ def search_video(db: Session, keyword, skip:int=0, limit:int=0):
 
 
     _video_list = db.query(Video).filter(and_(*q))
-    dislike_list = db.query(Video).join(video_dislike)  # dislike 추출
-    _video_list = _video_list.except_(dislike_list)     # dislike except
+    # dislike_list = db.query(Video).join(video_dislike)  # dislike 추출
+    # _video_list = _video_list.except_(dislike_list)     # dislike except
     if len(q_except) > 0:                               # or_ 빈리스트 입력되면 DB모두 선택 0보다 클경우만 
         except_list = db.query(Video).filter(or_(*q_except))
         _video_list = _video_list.except_(except_list)
-    if 'vote' in keyword and keyword['vote']:
-        _video_list = _video_list.join(video_voter)
-    if 'dislike' in keyword and keyword['dislike']:
-        _video_list = db.query(Video).join(video_dislike)
+    # if 'vote' in keyword and keyword['vote']:
+    #     _video_list = _video_list.join(video_voter)
+    # if 'dislike' in keyword and keyword['dislike']:
+    #     _video_list = db.query(Video).join(video_dislike)
     
     if 'random' in keyword and keyword['random']:
         _video_list = _video_list.order_by(func.random())
