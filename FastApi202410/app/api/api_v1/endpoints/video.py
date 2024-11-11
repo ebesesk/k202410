@@ -16,7 +16,7 @@ from app.schemas.video import (Video_info, Video_info_list, Video_update, Video_
                            Video_dbids, Scanreturn)
 # from models import Video
 # from db.repository.users import create_new_user
-from app.utils import video 
+from app.utils import video as video_util
 from app.core.config import settings
 from sqlalchemy.orm import Session
 # from .stream_mp4 import range_requests_response
@@ -108,6 +108,7 @@ def get_search(db: Session=Depends(get_db),
                size: int = 10,
                keyword:str=''):
     keyword = json.loads(keyword)
+    print(keyword)
     if ('etc' in keyword) and (len(keyword['etc']) > 0):
         keyword['etc'] = keyword['etc'].strip().split(',')
         keyword['etc'] = [i.strip() for i in keyword['etc']]

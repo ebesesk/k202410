@@ -59,8 +59,8 @@ class Video_update(BaseModel):
     ad_finish: int | None = None
     star: int | None = None
     
-    date_posted: date | None = None
-    date_modified: date | None = None
+    date_posted: datetime | None = None
+    date_modified: datetime | None = None
 
 class Video_create(BaseModel):
     id: int
@@ -70,7 +70,7 @@ class Video_create(BaseModel):
     showtime: int | None = None
     bitrate: int | None = None
     filesize: int | None = None
-    cdate: date | None = None
+    cdate: datetime | None = None
     
     display_quality: str | None = None
     country: str | None = None
@@ -98,8 +98,8 @@ class Video_create(BaseModel):
     ad_finish: int | None = None
     star: int | None = None
     
-    date_posted: date | None = None
-    date_modified: date | None = None
+    date_posted: datetime | None = None
+    date_modified: datetime | None = None
 
 
 
@@ -111,7 +111,7 @@ class Video_info(BaseModel):
     showtime: int | None = None
     bitrate: int | None = None
     filesize: int | None = None
-    cdate: date | None = None
+    cdate: datetime | None = None
     
     display_quality: str | None = None
     country: str | None = None
@@ -139,8 +139,8 @@ class Video_info(BaseModel):
     ad_finish: int | None = None
     star: int | None = None
     
-    date_posted: date | None = None
-    date_modified: date | None = None
+    date_posted: datetime | None = None
+    date_modified: datetime | None = None
     
     
     class Config:
