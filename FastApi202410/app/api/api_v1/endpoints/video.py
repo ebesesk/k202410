@@ -87,6 +87,7 @@ def file_scan(db: Session=Depends(get_db),
 @router.get("/keywords", response_model=Video_etckey)
 def get_keyword_db(db: Session = Depends(get_db),
                    current_user: User = Depends(get_current_user)):
+    
     keywords = []
     for key in get_keyword(db):
         for i in key:
@@ -94,6 +95,7 @@ def get_keyword_db(db: Session = Depends(get_db),
                 keywords.append(i.strip())
                 print(i.strip())
     keywords = list(set(keywords))
+    print('keywords', keywords)
     for i in keywords:
         print(i)
     return {'keywords': keywords}
@@ -107,11 +109,17 @@ def get_search(db: Session=Depends(get_db),
                page: int = 0,
                size: int = 10,
                keyword:str=''):
-    if keyword:
-        keyword = json.loads(keyword)
-    else:
-        keyword = {'etc': "요약"}
-    keyword = {'etc': "요약"}
+    if isinstance(keyword, str):
+        try:
+            # 문자열을 딕셔너리로 변환
+            keyword = json.loads(keyword)
+            print('딕셔너리로 변환')
+        except json.JSONDecodeError:
+            print("문자열을 딕셔너리로 변환하는 중 오류 발생:", e)
+            return {"error": "Invalid keyword format"}
+    # keyword = json.loads(keyword)
+    print(type(keyword))
+    # keyword = {'etc': "요약"}
     print(keyword)
     if ('etc' in keyword) and (len(keyword['etc']) > 0):
         keyword['etc'] = keyword['etc'].strip().split(',')
@@ -122,10 +130,10 @@ def get_search(db: Session=Depends(get_db),
     for k in keyword_copy:
         if type(keyword[k]) == list and len(keyword[k]) == 0 :
             del keyword[k]
-    print(keyword)
+    # print(keyword)
     total, video_list = search_video(db=db, keyword = keyword, skip=page*size, limit=size)
     # total, video_list = search_video(db=db, keyword = keyword, skip=page*size, limit=size)
-    print(total, video_list)
+    print(total, video_list, page)
     return {
         'total': total,
         'video_list': video_list

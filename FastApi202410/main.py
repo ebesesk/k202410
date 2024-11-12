@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request
-from app.api.api_v1.endpoints import users, auth, manga, video
+from app.api.api_v1.endpoints import users, auth, manga, video, question, answer
 from app.core.config import settings
 from app.db.base import Base
 from app.db.session import engine
@@ -25,12 +25,15 @@ origins = [
     # "https://k202410.ebesesk.synology.me/",
     # "https://k202410api.ebesesk.synology.me/",
     # "https://ebesesk.synology.me/",
-    ]
+    "https://k2410.ebesesk.synology.me/",  # 허용할 출처 추가
+    "https://k2410api.ebesesk.synology.me/",  # 허용할 출처 추가
+    "https://ebesesk.synology.me/",  # 허용할 출처 추가
+]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    # allow_origins=origins,
+    # allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -56,6 +59,16 @@ app.include_router(
     video.router,
     prefix=f"{settings.API_V1_STR}/video",
     tags=["video"]
+)
+app.include_router(
+    question.router,
+    prefix=f"{settings.API_V1_STR}/question",
+    tags=["question"]
+)
+app.include_router(
+    answer.router,
+    prefix=f"{settings.API_V1_STR}/answer",
+    tags=["answer"]
 )
 
 

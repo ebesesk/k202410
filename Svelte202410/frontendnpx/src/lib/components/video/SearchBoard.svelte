@@ -12,24 +12,26 @@
     let content
     
     function post_question(event) {
-    event.preventDefault()
-    let url = "/question/create"
-    let params = {
-        subject: '#쿼리#' + subject,
-        content: content
-    }
-    fastapi('post', url, params,
-        (json) => {
-            get_question_list()
-        },
-        (json_error) => {
-        error = json_error
-        }
-      )
-    }
+      event.preventDefault()
+      let url = "/question/create"
+      console.log('subject', subject)
+      console.log('content', content)
+      let params = {
+          subject: '#쿼리#' + subject,
+          content: content
+      }
+      fastapi('post', url, params,
+          (json) => {
+              get_question_list()
+          },
+          (json_error) => {
+          error = json_error
+          }
+        )
+      }
     
     function get_question_list() {
-      let url = "/api/question/list"  
+      let url = "/question/list"  
       let params = {
         page: 0,
         size: 50,
@@ -45,7 +47,7 @@
     
     function update_question(event) {
       event.preventDefault()
-      let url = "/api/question/update"
+      let url = "/question/update"
       let params = {
         question_id: question_id,
         subject: subject,
@@ -63,7 +65,7 @@
     
     function delete_question(_question_id) {
       if(window.confirm('정말로 삭제하시겠습니까?')) {
-        let url = "/api/question/delete"
+        let url = "/question/delete"
         let params = {
           question_id: _question_id
         }
@@ -88,7 +90,7 @@
         let _etc = q.etc.filter(value => value !== '')
         _etc = q.etc.join(',')
         q.etc = _etc
-        console.log(q)
+        console.log('q', q)
         return q
       }else {
         return q
@@ -101,7 +103,8 @@
       etcToString(JSON.parse(q))
       q = etcToString(JSON.parse(q))
       $videoPage = 0
-      $keyword = JSON.stringify(q)
+      // $keyword = JSON.stringify(q)
+      $keyword = q
     }
     </script>
     
@@ -122,7 +125,7 @@
     <div class="row pt-1">
       {#each question_list as question, index}
       <div class="col content">
-        <button type="button" class="btn btn-outline-dark subject" on:click={runQuery(question.content)}>
+        <button type="button" class="btn btn-outline-dark subject" on:click={() => {runQuery(question.content)}}>
             <b>{question.subject.replace('#쿼리#', '')}</b>
         </button>
         <button class="badge text-bg-danger bg-sm del" on:click={delete_question(question.id)}>D</button>

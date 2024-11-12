@@ -1,6 +1,8 @@
 <script>
     import fastapi from "$lib/api"
     import { videoPage, keyword } from "$lib/stores/videoStore"
+    
+    
     let none
     let keywords = []
     let video = {
@@ -17,8 +19,9 @@
     
   
     function onSearch() {
-      let video_json = JSON.stringify(video)
-      console.log(video_json)
+      let video_json = video
+      // let video_json = JSON.parse(video)
+      console.log('video_json', video_json)
       $keyword = video_json
       $videoPage = 0
     }
@@ -50,7 +53,7 @@
 
 function get_keywords() {
   fastapi ('get', '/video/keywords', {}, (json) => {
-    keywords = json.keywords
+    keywords = JSON.stringify(keywords)
     console.log(keywords)
   })
 }

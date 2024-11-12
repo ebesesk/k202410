@@ -2,7 +2,7 @@ import { writable } from 'svelte/store';
 import { persistStore } from '$lib/persistStore';
 
 
-export const videoPage = writable(0);
+export const videoPage = writable(1);
 export const keyword = writable("{'etc': ['요약']}");
 // // 초기값을 빈 배열로 설정
 // export const galleries = writable([]);

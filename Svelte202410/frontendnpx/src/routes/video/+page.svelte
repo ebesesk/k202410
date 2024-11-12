@@ -1,4 +1,6 @@
 <script>
+  import 'bootstrap/dist/css/bootstrap.min.css';
+  import 'bootstrap';
   import fastapi from "$lib/api";
   import { onMount } from 'svelte';
   import { browser } from '$app/environment';
@@ -10,36 +12,39 @@
   import SearchBoard from "$lib/components/video/SearchBoard.svelte";
 
   let video_list = [];
-  let size = 20;
+  let size = 30;
   let total = 0;
-  let imageUrls = {};
+  // let total_page = 0; // 전체 페이지 수를 저장할 변수
   let webpUrls = {};
   let gifUrls = {};
+
+  let videoInfo;
+  let info;
+
+  function inputInfo(v) {
+    videoInfo = v
+  }
 
   $: total_page = Math.ceil(total / size);
   $: $videoPage, $keyword, search_video();
 
+  // 비디오 검색 함수
   function search_video() {
-    if (!$keyword) {
-        $keyword = { etc: "요약" };
-    }
     let params = {
-        page: $videoPage,
+        page: $videoPage - 1,  // API 호출 시 현재 페이지에서 1을 빼서 전송
         size: size,
         keyword: JSON.stringify($keyword)
     };
     fastapi('get', '/video/search', params, (json) => {
         video_list = json.video_list;
         total = json.total;
-
-        // total이 0일 경우 total_page도 0이 되어야 함
         total_page = Math.ceil(total / size);
 
         video_list.forEach(video => {
             saveFetchImage(video);
         });
     });
-}
+  }
 
   async function saveFetchImage(video) {
       let webpUrl = toWebp(video.dbid);
@@ -82,8 +87,13 @@
   }
 
   function handlePageChange(newPage) {
-      $videoPage = newPage; // 페이지 변경 시 페이지 스토어 업데이트
-      search_video(); // 새로운 페이지에 대한 비디오 검색
+    console.log("Page changed to:", newPage); // 디버깅용
+    videoPage.set(newPage);
+}
+
+  let isOffcanvasOpen = false; // Offcanvas의 열림 상태를 관리하는 변수
+  function toggleOffcanvas() {
+      isOffcanvasOpen = !isOffcanvasOpen; // 상태를 반전시킴
   }
 
   onMount(() => {
@@ -93,17 +103,17 @@
               window.location.href = '/';
               return;
           }
-          search_video();
+          search_video(); // 초기 비디오 검색
       }
   });
 </script>
 
 <div class="container"><SearchBoard/></div>
 
-<!-- 
+
 
 <div class="col btn-offcanvas">
-  <button class="btn btn-sm btn-light card-btn btn-offcanvas" 
+  <button class="btn btn-sm btn-light card-btn btn-offcanvas float-end" 
           type="button" 
           data-bs-toggle="offcanvas" 
           data-bs-target="#offcanvasRight" 
@@ -114,17 +124,20 @@
 
 <Modal2>
   <Info {videoInfo} bind:this={info}/>
-</Modal2> -->
+</Modal2>
 
 
 
 <div class="pagination-container">
   {#if total_page > 1}
-      <Pagination
-          totalPages={total_page}
-          currentPage={$videoPage}
-          on:pageChange={(e) => handlePageChange(e.detail)}
-      />
+    <Pagination 
+      totalPages={total_page} 
+      currentPage={$videoPage - 1} 
+      on:pageChange={(e) => {
+        handlePageChange(e.detail + 1);  // 이벤트로 받은 값에 1을 더해서 store에 저장
+        search_video();
+      }}
+    />
   {/if}
 </div>
 
@@ -152,9 +165,14 @@
 </div>
 
 <style>
-  .pagination-container {
-      margin: 20px 0; /* 페이지네이션의 여백 설정 */
-  }
+  	.pagination-container {
+        display: flex;
+        justify-content: center;  /* 가운데 정렬 */
+        align-items: center;
+        width: 100%;
+        padding: 1rem 0;
+        margin: 1rem 0;
+    }
 .container-fluid {
   justify-content: center;
   padding: 0x;
@@ -220,4 +238,21 @@
     height: auto; /* 높이를 자동으로 조정하여 비율 유지 */
     object-fit: cover; /* 이미지 비율 유지 */
   }
+
+  .offcanvas {
+      position: fixed; /* 고정 위치로 설정 */
+      top: 0;
+      right: 0; /* 우측에서 나오도록 설정 */
+      width: 450px; /* 원하는 너비 설정 */
+      height: 100%; /* 전체 높이 사용 */
+      background-color: white; /* 배경색 설정 */
+      transition: transform 0.3s ease; /* 애니메이션 효과 */
+      transform: translateX(100%); /* 기본적으로 화면 밖에 위치 */
+      z-index: 1050; /* 다른 요소 위에 표시 */
+  }
+
+  .offcanvas.open {
+      transform: translateX(0); /* 열릴 때 화면 안으로 이동 */
+  }
 </style>
+

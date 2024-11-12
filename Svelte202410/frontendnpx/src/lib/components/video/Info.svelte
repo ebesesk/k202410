@@ -147,40 +147,40 @@
             
             <br>
             <label>
-              <input type="checkbox" bind:value={videoInfo.school_uniform} bind:checked={videoInfo.school_uniform}>교복 &nbsp;
+              <input type="checkbox" bind:checked={videoInfo.school_uniform}>교복 &nbsp;
             </label>
             <label>
-              <input type="checkbox" bind:value={videoInfo.hip} bind:checked={videoInfo.hip}>엉덩이 &nbsp;
+              <input type="checkbox" bind:checked={videoInfo.hip}>엉덩이 &nbsp;
             </label>
             <label>
-              <input type="checkbox" bind:value={videoInfo.group} bind:checked={videoInfo.group}>단체 &nbsp;
+              <input type="checkbox" bind:checked={videoInfo.group}>단체 &nbsp;
             </label>
             <label>
-              <input type="checkbox" bind:value={videoInfo.pregnant} bind:checked={videoInfo.pregnant}>임신 &nbsp;
+              <input type="checkbox" bind:checked={videoInfo.pregnant}>임신 &nbsp;
             </label>
             <label>
-              <input type="checkbox" bind:value={videoInfo.conversation} bind:checked={videoInfo.conversation}>대화 &nbsp;
+              <input type="checkbox" bind:checked={videoInfo.conversation}>대화 &nbsp;
             </label>
             <label>
-              <input type="checkbox" bind:value={videoInfo.lesbian} bind:checked={videoInfo.lesbian}>레즈 &nbsp;
+              <input type="checkbox" bind:checked={videoInfo.lesbian}>레즈 &nbsp;
             </label>
             <label>
-              <input type="checkbox" bind:value={videoInfo.ani} bind:checked={videoInfo.ani}>에니 &nbsp;
+              <input type="checkbox" bind:checked={videoInfo.ani}>에니 &nbsp;
             </label>
             <label>
-              <input type="checkbox" bind:value={videoInfo.oral} bind:checked={videoInfo.oral}>입 &nbsp;
+              <input type="checkbox" bind:checked={videoInfo.oral}>입 &nbsp;
             </label>
             <label>
-              <input type="checkbox" bind:value={videoInfo.masturbation} bind:checked={videoInfo.masturbation}>자위 &nbsp;
+              <input type="checkbox" bind:checked={videoInfo.masturbation}>자위 &nbsp;
             </label>
             <label>
-              <input type="checkbox" bind:value={videoInfo.massage} bind:checked={videoInfo.massage}>마사지 &nbsp;
+              <input type="checkbox" bind:checked={videoInfo.massage}>마사지 &nbsp;
             </label>
             <label>
-              <input type="checkbox" bind:value={videoInfo.uniform} bind:checked={videoInfo.uniform}>회사 &nbsp;
+              <input type="checkbox" bind:checked={videoInfo.uniform}>회사 &nbsp;
             </label>
             <label>
-              <input type="checkbox" bind:value={videoInfo.family} bind:checked={videoInfo.family}>family  &nbsp;
+              <input type="checkbox" bind:checked={videoInfo.family}>family  &nbsp;
             </label>
             <br>
             <label>

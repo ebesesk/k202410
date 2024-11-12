@@ -65,7 +65,7 @@
             console.error('Token refresh error:', error);
             localStorage.removeItem('accessToken');
             isAuthenticated = false;
-            goto('/login');
+            goto('/');
         }
     }
 
