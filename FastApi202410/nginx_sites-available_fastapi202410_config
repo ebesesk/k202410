@@ -1,0 +1,155 @@
+server {
+        listen 1021 default_server;
+        listen [::]:1021 default_server;
+        server_name api2410.ebesesk.synology.me;
+        #charset utf-8;
+
+        location / {
+                #include proxy_params;
+                #limit_except GET POST {
+                #        deny all;
+                #}
+                #add_header 'Access-Control-Allow-Origin' '*';
+                #try_files $uri $uri/ /;  # 요청된 파일이 없으면 index.html 반환
+                proxy_pass http://localhost:8000;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection upgrade;
+                proxy_set_header Host $host;
+                proxy_set_header Accept-Encoding gzip;
+                proxy_set_header X-Forwarded-Proto $scheme;
+
+                # SvelteKit의 클라이언트 사이드 라우팅을 위한 설정
+                #try_files $uri $uri/ /index.html;
+
+                # CORS 헤더 추가
+                add_header 'Access-Control-Allow-Origin' 'https://k2410.ebesesk.synology.me' always;
+                add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS' always;
+                add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type' always;
+
+                # 프리플라이트 요청에 대한 응답 설정
+                if ($request_method = 'OPTIONS') {
+                        add_header 'Access-Control-Allow-Origin' 'https://k2410.ebesesk.synology.me' always;
+                        add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS' always;
+                        add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type' always;
+                        add_header 'Access-Control-Max-Age' 86400 always;
+                        return 204;
+                }
+        }
+
+        # 이미지 파일 제공 설정
+        location /images/ {
+                auth_request /auth/nginxauth;
+                alias /home/manga/;
+
+                #try_file $uri $uri/ =404;
+
+                #proxy_pass http://localhost:8000;
+                # 클라이언트의 Authorization 헤더를 FastAPI 인증 엔드포인트로 전달
+                proxy_set_header Authorization $http_authorization;
+                #autoindex on;  # 디버깅용으로, 실제 사용 시 제거 가능
+
+                # 모든 요청에 대해 CORS 헤더 추가
+                add_header 'Access-Control-Allow-Origin' 'https://k2410.ebesesk.synology.me' always;
+                add_header 'Access-Control-Allow-Methods' 'GET, OPTIONS' always;
+                add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type' always;
+
+                # 프리플라이트 요청에 대한 응답 설정
+                if ($request_method = 'OPTIONS') {
+                        add_header 'Access-Control-Allow-Origin' 'https://k2410.ebesesk.synology.me' always;
+                        add_header 'Access-Control-Allow-Methods' 'GET, OPTIONS' always;
+                        add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type' always;
+                        add_header 'Access-Control-Max-Age' 86400 always;
+                        return 204;
+                }
+        }
+         # 이미지 파일 제공 설정
+        location /videoimg/ {
+                auth_request /auth/nginxauth;
+                alias /home/yadong/;
+
+                #try_file $uri $uri/ =404;
+
+                #proxy_pass http://localhost:8000;
+                # 클라이언트의 Authorization 헤더를 FastAPI 인증 엔드포인트로 전달
+                proxy_set_header Authorization $http_authorization;
+                #autoindex on;  # 디버깅용으로, 실제 사용 시 제거 가능
+
+                # 모든 요청에 대해 CORS 헤더 추가
+                add_header 'Access-Control-Allow-Origin' 'https://k2410.ebesesk.synology.me' always;
+                add_header 'Access-Control-Allow-Methods' 'GET, OPTIONS' always;
+                add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type' always;
+
+                # 프리플라이트 요청에 대한 응답 설정
+                if ($request_method = 'OPTIONS') {
+                        add_header 'Access-Control-Allow-Origin' 'https://k2410.ebesesk.synology.me' always;
+                        add_header 'Access-Control-Allow-Methods' 'GET, OPTIONS' always;
+                        add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type' always;
+                        add_header 'Access-Control-Max-Age' 86400 always;
+                        return 204;
+                }
+        }
+
+        # 기존 설정에 추가
+        # 동영상 스트리밍 설정
+        location /videos/ {
+                auth_request /auth/nginxauth;
+                alias /home/yadong/;  # 실제 동영상 파일 경로
+
+                # 스트리밍 최적화 설정
+                mp4;
+                mp4_buffer_size 1m;
+                mp4_max_buffer_size 5m;
+    
+                # 청크 전송 설정
+                sendfile on;
+                sendfile_max_chunk 1m;
+                tcp_nopush on;
+    
+                 # 클라이언트 버퍼링 설정
+                proxy_buffering on;
+                proxy_buffer_size 1m;
+                proxy_buffers 8 1m;
+    
+                # 토큰 검증을 위한 헤더 전달
+                proxy_set_header Authorization $http_authorization;
+    
+                # CORS 설정
+                add_header 'Access-Control-Allow-Origin' 'https://k2410.ebesesk.synology.me' always;
+                add_header 'Access-Control-Allow-Methods' 'GET, OPTIONS' always;
+                add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type, Range' always;
+                add_header 'Access-Control-Expose-Headers' 'Content-Length,Content-Range' always;
+
+                # 프리플라이트 요청 처리
+                if ($request_method = 'OPTIONS') {
+                        add_header 'Access-Control-Allow-Origin' 'https://k2410.ebesesk.synology.me' always;
+                        add_header 'Access-Control-Allow-Methods' 'GET, OPTIONS' always;
+                        add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type, Range' always;
+                        add_header 'Access-Control-Max-Age' 86400 always;
+                        return 204;
+                }
+
+                # 캐시 설정
+                expires -1;
+                add_header Cache-Control 'no-cache, no-store';
+        }
+
+        # JWT 검증 요청을 FastAPI의 /auth 엔드포인트로 전달
+        location = /auth/nginxauth {
+                internal;
+                proxy_pass http://localhost:8000/auth/nginxauth;
+                proxy_set_header Host $host;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection upgrade;
+                proxy_set_header Accept-Encoding gzip;
+                proxy_set_header X-Forwarded-Proto $scheme;
+
+                #proxy_method   GET;
+                #proxy_pass http://localhost:8000/auth/nginxauth;
+                #proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                #proxy_set_header X-Forwarded-Proto $scheme;
+
+
+        }
+}
