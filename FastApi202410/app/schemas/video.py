@@ -141,7 +141,7 @@ class Video_info(BaseModel):
     
     date_posted: datetime | None = None
     date_modified: datetime | None = None
-    
+    rating_average: float | None
     
     class Config:
         from_attributes = True
@@ -161,3 +161,6 @@ class Video_etckey(BaseModel):
     keywords: list[str]
 # class VideoItems(BaseModel):
 #     Video_list: list[VideoItem] = []
+
+class VideoRatingCreate(BaseModel):
+    rating: int  # 평점 (예: 1~5)

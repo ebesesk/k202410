@@ -9,6 +9,7 @@ from zoneinfo import ZoneInfo  # 새로운 import 추가
 from sqlalchemy import func, asc, desc
 from app.schemas.manga import MangaResponse
 from app.models.rating import UserMangaRating
+from app.models.user import User
 import time
 
 KST = ZoneInfo("Asia/Seoul")  # KST 정의
@@ -49,6 +50,7 @@ class MangaCRUD:
     
     @staticmethod
     def get_genre_by_name(db: Session, genre_name: str) -> Optional[Manga]:
+        
         return db.query(Manga).filter(Manga.folder_name.like(f"{genre_name}/%")).all()
     
     @staticmethod
@@ -173,6 +175,7 @@ class MangaCRUD:
     @staticmethod
     def get_mangas_with_pagination(
             db: Session,
+            user:User,
             skip: int = 0,
             limit: int = 10,
             sort_by: str = "id",
@@ -229,6 +232,14 @@ class MangaCRUD:
                 query = query.order_by(desc(Manga.file_date))
             else:
                 query = query.order_by(func.random())
+        
+        elif sort_by == "page":
+            if order == "asc":
+                query = query.order_by(asc(Manga.page))
+            elif order == "desc":
+                query = query.order_by(desc(Manga.page))
+            else:
+                query = query.order_by(func.random())
                 
         elif sort_by == "rating":
             # 평점 기준 정렬
@@ -246,7 +257,8 @@ class MangaCRUD:
                 query = query.order_by(desc(getattr(Manga, sort_by)))
             else:
                 query = query.order_by(func.random())
-        
+        print(query.count(), '=======')
+        total = query.count()
         # 페이지네이션 적용 및 결과 추출
         results = query.offset(skip).limit(limit).all()
     
@@ -266,7 +278,7 @@ class MangaCRUD:
                 avg_rating = next((r[1] for r in results if r[0].id == manga.id), None)
                 manga.rating_average = float(avg_rating) if avg_rating else 0.0
             
-        return mangas
+        return mangas, total
 
     
 
@@ -303,7 +315,7 @@ class MangaCRUD:
         # 조건이 있는 경우에만 필터 적용
         if conditions:
             query = query.filter(and_(*conditions))
-        
+        print(query.count(), '======')
         return query.count()
 
     

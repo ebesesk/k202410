@@ -1,6 +1,8 @@
 <script>
 
     import fastapi from "$lib/api"
+    import { userpoints, username } from "$lib/store";
+    import { onMount } from 'svelte';
     
     function post_videoinfo(event) {
       event.preventDefault()
@@ -28,15 +30,60 @@
         age: [],
         pussy: [],
         etc: "",
-      }
+        rating_average:"",
+    }
+    
+    let videoAuthUrl = '';
+    let isLoading = false;
+    onMount(async () => {
+        await saveFetchVideo(videoInfo);
+    });
+    
+    // videoInfo가 변경될 때마다 URL 업데이트
+    $: if (videoInfo?.dbid) {
+      isLoading = true;
+      saveFetchVideo(videoInfo);
+    }
+    async function saveFetchVideo(videoInfo) {
+        let dbidurl = '/videos/' + encodeURIComponent(videoInfo.dbid)
+        videoAuthUrl = await fetchVideo(dbidurl);
+        isLoading = false;
+        // console.log('videoAuthUrl', videoAuthUrl)
+    } 
+  
+
+  function fetchVideo(dbidurl) {
+    if (dbidurl) {
+      // let videoUrl = encodeURIComponent('/videos/' + videoInfo.dbid)
+        return new Promise((resolve, reject) => {
+            fastapi('get', dbidurl, { isImage: true },
+                (url) => {
+                    resolve(url);
+                },
+                (err) => {
+                    console.error(`Error fetching image:`, err);
+                    reject(err);
+                }
+            );
+        });
+    }
+  }
       
-      
-      </script> 
+</script> 
       
       <b>{videoInfo.id}</b> <br> 
       
       <div class="ratio ratio-16x9">
-        <video controls muted src="{encodeURIComponent('/video/' + videoInfo.dbid)}" async></video>
+        {#if isLoading}
+        <div class="loading-container">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <div class="mt-2">비디오 로딩중...</div>
+        </div>
+        {:else if videoAuthUrl}
+          <video controls muted src={videoAuthUrl} async></video>
+        {/if}
       </div>
       
       <div class="videoinfo" style="font-size:smaller; white-space: normal; word-break: break-all;">
@@ -47,7 +94,7 @@
         # {parseInt(videoInfo.bitrate/1000)}kbps # {parseInt(videoInfo.filesize/1000000)}MB
         # 수정 날자: {videoInfo.date_modified}  # 작성 날자: {videoInfo.date_posted}  # cdate: {videoInfo.cdate}<br>
         
-        
+      {#if $username == 'kds'}
       <form method="post">
         화질 : &nbsp;
         <label>
@@ -203,16 +250,25 @@
             <label>
               <input type="text" bind:value={videoInfo.etc} placeholder="{videoInfo.etc}"/>
             </label>
-          </form>
-          <br>
-          <button class="btn btn-small btn-light" on:click={post_videoinfo}>등록</button>
-          <button class="btn btn-small btn-light" on:click={getVideoInfo}>원본</button>    
-          <!-- <button class="btn btn-small btn-light" on:click={() => {videoInfo = JSON.parse(JSON.stringify(videoOrigin))}}>수정전</button>     -->
-          
-        </div>
+        </form>
+        <br>
+        <button class="btn btn-small btn-light" on:click={post_videoinfo}>등록</button>
+        <button class="btn btn-small btn-light" on:click={getVideoInfo}>원본</button>    
+        <!-- <button class="btn btn-small btn-light" on:click={() => {videoInfo = JSON.parse(JSON.stringify(videoOrigin))}}>수정전</button>     -->
+        {/if}
+        
+      </div>
     
     
     <style>
+      .loading-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        background-color: #f8f9fa;
+      }
       .btn.btn-small {
         font-size: small;
       }

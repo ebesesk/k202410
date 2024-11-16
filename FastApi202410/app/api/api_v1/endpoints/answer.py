@@ -28,7 +28,10 @@ def answer_create(question_id: int,
 
 
 @router.get("/detail/{answer_id}", response_model=Answer)
-def answer_detail(answer_id: int, db: Session = Depends(get_db)):
+def answer_detail(answer_id: int,
+                  db: Session = Depends(get_db),
+                  current_user: User = Depends(get_current_user),
+                  ):
     answer = crud.get_answer(db, answer_id=answer_id)
     return answer
 

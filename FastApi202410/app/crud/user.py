@@ -33,6 +33,7 @@ class UserCRUD:
     @staticmethod
     def authenticate_user(db: Session, username: str, password: str) -> Optional[User]:
         user = db.query(User).filter(User.username == username).first()
+        print(user.points)
         if not user or not verify_password(password, user.hashed_password):
             return None
         return user

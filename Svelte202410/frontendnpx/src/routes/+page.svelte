@@ -1,8 +1,10 @@
 <script>
     import { onMount } from 'svelte';
+    import { access_token, username, userpoints, is_login } from "$lib/store"
     import { browser } from '$app/environment';
     import { createClient } from '@supabase/supabase-js';
     import { goto } from '$app/navigation';
+    import { get } from 'svelte/store'; 
     import { redirect } from '@sveltejs/kit';
     import Navbar from '$lib/components/Navbar.svelte';
     import fastapi from "$lib/api"
@@ -13,7 +15,7 @@
     function checkTokenExpiration() {
         if (!browser) return false;
 
-        const token = localStorage.getItem('accessToken');
+        const token = get(access_token);
         if (!token) return false;
 
         try {
@@ -27,8 +29,10 @@
             
             if (currentTime >= expirationTime) {
                 // 토큰이 만료된 경우
-                localStorage.removeItem('accessToken');
-                isAuthenticated = false;
+                access_token.set('');
+                username.set('');
+                userpoints.set(0);
+                is_login.set(false);
                 return false;
             } else if (expirationTime - currentTime <= refreshThreshold) {
                 // 만료 10분 전이면 토큰 갱신 시도
@@ -38,8 +42,10 @@
             return true;
         } catch (error) {
             console.error('Token validation error:', error);
-            localStorage.removeItem('accessToken');
-            isAuthenticated = false;
+            access_token.set('');
+            username.set('');
+            userpoints.set(0);
+            is_login.set(false);
             return false;
         }
     }
@@ -50,21 +56,26 @@
             const response = await fetch('https://api2410.ebesesk.synology.me/auth/refresh', {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                    'Authorization': `Bearer ${get(access_token)}`
                 }
             });
 
             if (response.ok) {
                 const result = await response.json();
-                localStorage.setItem('accessToken', result.access_token);
-                isAuthenticated = true;
+                access_token.set(result.access_token);
+                username.set(result.username);
+                userpoints.set(result.userpoints);
+                is_login.set(true);
+                // console.log('result', result)
             } else {
                 throw new Error('Token refresh failed');
             }
         } catch (error) {
             console.error('Token refresh error:', error);
-            localStorage.removeItem('accessToken');
-            isAuthenticated = false;
+            access_token.set('');
+            username.set('');
+            userpoints.set(0);
+            is_login.set(false);
             goto('/');
         }
     }
@@ -75,16 +86,16 @@
     onMount(() => {
         if (browser) {
             // 초기 토큰 확인
-            isAuthenticated = checkTokenExpiration();
+            $is_login = checkTokenExpiration();
 
-            if (isAuthenticated) {
+            if ($is_login) {
                 goto('/about');
             }
 
             // 주기적 토큰 확인 설정
             tokenCheckInterval = setInterval(() => {
-                isAuthenticated = checkTokenExpiration();
-                if (!isAuthenticated) {
+                $is_login = checkTokenExpiration();
+                if (!$is_login) {
                     goto('/login');
                 }
             }, 60000); // 1분마다 체크
@@ -107,21 +118,25 @@
             const formData = new URLSearchParams();
             formData.append('username', id);
             formData.append('password', password);
-            console.log('Form Data:', formData.toString());
+            
             fastapi('login', '/auth/login', formData, 
-                (response) => {
+                async (response) => {
                     if (response.access_token) {
-                        localStorage.setItem('accessToken', response.access_token);
-                        isAuthenticated = true;
+                        access_token.set(response.access_token);
+                        username.set(response.username);
+                        userpoints.set(response.userpoints);
+                        is_login.set(true);
                         
-                        // 토큰 유효성 확인 시작
-                        checkTokenExpiration();
-                        goto('/about');
+                        localStorage.setItem('accessToken', response.access_token);
+                        localStorage.setItem('username', response.username);
+                        localStorage.setItem('userpoints', response.userpoints);
+                        
+                        await goto('/about');  // 명시적으로 /about으로 이동
                     }
                 },
                 (error) => {
                     console.error('로그인 에러:', error);
-                    errorMsg = '로그인에 실패했습니다.';
+                    errorMsg = '로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.';
                 }
             );
         } catch (error) {

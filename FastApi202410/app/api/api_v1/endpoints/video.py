@@ -8,12 +8,13 @@ from app.utils.dependencies import get_current_user, get_db
 from app.models.user import User
 from sqlalchemy.orm import Session
 
-
+from app.crud.rating import RatingCRUD
 from app.crud.video import (get_all_videos, get_video_list, get_video_id, 
                          input_videoinfo, del_dbid, search_video, get_keyword,
                          )
 from app.schemas.video import (Video_info, Video_info_list, Video_update, Video_etckey,
-                           Video_dbids, Scanreturn)
+                           Video_dbids, Scanreturn, VideoRatingCreate)
+from app.schemas.rating import VideoRatingResponse
 # from models import Video
 # from db.repository.users import create_new_user
 from app.utils import video as video_util
@@ -93,14 +94,22 @@ def get_keyword_db(db: Session = Depends(get_db),
         for i in key:
             if (i.strip() not in keywords) and (i.strip() != ''):
                 keywords.append(i.strip())
-                print(i.strip())
+                # print(i.strip())
     keywords = list(set(keywords))
-    print('keywords', keywords)
-    for i in keywords:
-        print(i)
+    # print('keywords', keywords)
+    # for i in keywords:
+    #     print(i)
     return {'keywords': keywords}
 
-
+@router.post("/{video_id}/view")
+def increment_video_view(
+    video_id: int,
+    db: Session = Depends(get_db)
+):
+    view_count = RatingCRUD.increment_view_count_video(db, video_id)
+    if view_count is None:
+        raise HTTPException(status_code=404, detail="Video not found")
+    return {"video_id": video_id, "view_count": view_count}
 
 # Search.svelte
 @router.get("/search", response_model=Video_info_list)
@@ -113,14 +122,12 @@ def get_search(db: Session=Depends(get_db),
         try:
             # 문자열을 딕셔너리로 변환
             keyword = json.loads(keyword)
-            print('딕셔너리로 변환')
-        except json.JSONDecodeError:
+            # print('딕셔너리로 변환')
+        except json.JSONDecodeError as e:
             print("문자열을 딕셔너리로 변환하는 중 오류 발생:", e)
-            return {"error": "Invalid keyword format"}
-    # keyword = json.loads(keyword)
-    print(type(keyword))
-    # keyword = {'etc': "요약"}
-    print(keyword)
+            keyword = {'etc':"test"}
+            # return {"error": "Invalid keyword format"}
+
     if ('etc' in keyword) and (len(keyword['etc']) > 0):
         keyword['etc'] = keyword['etc'].strip().split(',')
         keyword['etc'] = [i.strip() for i in keyword['etc']]
@@ -130,15 +137,49 @@ def get_search(db: Session=Depends(get_db),
     for k in keyword_copy:
         if type(keyword[k]) == list and len(keyword[k]) == 0 :
             del keyword[k]
-    # print(keyword)
-    total, video_list = search_video(db=db, keyword = keyword, skip=page*size, limit=size)
+    print(keyword)
+    total, video_list = search_video(db=db, keyword = keyword, user=current_user, skip=page*size, limit=size)
     # total, video_list = search_video(db=db, keyword = keyword, skip=page*size, limit=size)
-    print(total, video_list, page)
+    # print(total, video_list, page)
+    # for video in video_list:
+    #     print(video.__dict__)
+
     return {
         'total': total,
         'video_list': video_list
     }
     
+@router.post("/{video_id}/rate")
+def rate_video(
+    video_id: int,
+    rating_data: VideoRatingCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """비디오에 평점을 부여합니다."""
+    video = get_video_id(db=db, video_id=video_id)
+    if not video:
+        raise HTTPException(status_code=404, detail="Video not found")
+    
+    RatingCRUD.add_or_update_video_rating(
+        db, current_user.id, video_id, rating_data.rating
+    )
+    return {"message": "Rating added successfully"}
+
+@router.get("/{video_id}/rating", response_model=VideoRatingResponse)
+def get_video_rating(video_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    """비디오의 평점을 가져옵니다."""
+    rating = RatingCRUD.get_video_rating(db=db, user_id=current_user.id, video_id=video_id)
+    # print('current_user.id:', current_user.id, 'video_id:', video_id, {"rating": rating})
+
+    if rating is None:
+        # 평점이 없을 경우 기본값을 설정하거나 적절한 응답을 반환
+        return {"rating":0}
+    else:
+        # print(VideoRatingResponse(rating))
+        print(rating.video_id, rating.rating)
+        # Pydantic 모델로 변환하여 반환
+        return {'rating':rating.rating}
 
 # @router.post("/vote", status_code=status.HTTP_204_NO_CONTENT)
 # def video_vote(_video_vote: VideoVote,

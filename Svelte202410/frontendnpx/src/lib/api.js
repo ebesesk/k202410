@@ -1,6 +1,7 @@
 // import qs from "qs"
-import { access_token, username, is_login } from "./store"
+import { access_token, username, userpoints, is_login } from "$lib/store"
 import { get } from 'svelte/store'
+import { goto } from '$app/navigation';
 import qs from "qs"
 
 const fastapi = (operation, url, params, success_callback, failure_callback) => {
@@ -11,7 +12,7 @@ const fastapi = (operation, url, params, success_callback, failure_callback) => 
     let _url = params?.isImage ? (import.meta.env.VITE_API_URL + url) : (import.meta.env.VITE_API_URL + url);
 
     // 로그인 요청에 대한 처리
-    if (operation === 'login') {
+    if (method === 'login') {
         method = 'post';
         content_type = 'application/x-www-form-urlencoded';
         body = params; // qs는 params 데이터를 'application/x-www-form-urlencoded' 형식으로 변환
@@ -20,13 +21,15 @@ const fastapi = (operation, url, params, success_callback, failure_callback) => 
     // GET 요청의 파라미터 처리 수정
     if (method === 'get') {
         const searchParams = new URLSearchParams();
-        Object.entries(params).forEach(([key, value]) => {
-            if (Array.isArray(value)) {
-                value.forEach(item => searchParams.append(key, item));
-            } else {
-                searchParams.append(key, value);
-            }
-        });
+        if (params) {
+            Object.entries(params).forEach(([key, value]) => {
+                if (Array.isArray(value)) {
+                    value.forEach(item => searchParams.append(key, item));
+                } else {
+                    searchParams.append(key, value);
+                }
+            });
+        }
         _url += "?" + searchParams.toString();
     }
 
@@ -38,7 +41,20 @@ const fastapi = (operation, url, params, success_callback, failure_callback) => 
         }
     };
 
-    const token = localStorage.getItem('accessToken'); // 'access_token'이 아닌 'accessToken'
+    // DELETE 메서드 처리
+    if (method === 'delete') {
+        // DELETE 요청의 경우 body를 설정하지 않음
+        options.body = undefined; // DELETE 요청에서는 body가 필요하지 않음
+    }
+
+    // PUT 메서드 처리
+    if (method === 'put') {
+        // PUT 요청의 경우 body를 설정
+        options.body = body; // PUT 요청에서는 body가 필요함
+    }
+
+    const token = get(access_token);  // 'access_token'이 아닌 'accessToken'
+    // const token = localStorage.getItem('accessToken'); // 'access_token'이 아닌 'accessToken'
     if (token) {
         options.headers["Authorization"] = "Bearer " + token;
     }
@@ -75,8 +91,9 @@ const fastapi = (operation, url, params, success_callback, failure_callback) => 
                         access_token.set('');
                         username.set('');
                         is_login.set(false);
-                        alert("로그인이 필요합니다.");
-                        window.location.href = '/';
+                        goto('/')
+                        // alert("로그인이 필요합니다.");
+                        // window.location.href = '/';
                     } else {
                         if (failure_callback) {
                             failure_callback(json);
@@ -86,10 +103,39 @@ const fastapi = (operation, url, params, success_callback, failure_callback) => 
                     }
                 })
                 .catch(error => {
-                    alert(JSON.stringify(error));
+                    console.log(JSON.stringify(error));
                 });
         });
 };
 
 
 export default fastapi
+
+
+export async function logout() {
+    
+    try {
+        // 로그아웃 API 호출 (필요한 경우)
+        const response = await fetch('https://api2410.ebesesk.synology.me/auth/logout', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${get(access_token)}`
+            }
+        });
+        
+        if (response.ok) {
+            // 로컬 스토리지에서 액세스 토큰 삭제
+            access_token.set('');
+            username.set('');
+            userpoints.set(0);
+            is_login.set(false);
+            return true; // 성공적으로 로그아웃
+        } else {
+            console.error('로그아웃 실패:', response.statusText);
+            return false; // 로그아웃 실패
+        }
+    } catch (error) {
+        console.error('로그아웃 중 오류 발생:', error);
+        return false; // 로그아웃 중 오류
+    }
+}

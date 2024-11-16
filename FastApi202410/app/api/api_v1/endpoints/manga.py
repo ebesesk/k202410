@@ -63,7 +63,7 @@ def read_mangas(
     - sort_by: 정렬 기준 (id, rating, create_date, update_date)
     - order: 정렬 방향 (asc, desc)
     """
-    print('folders:', folders)
+    # print('folders:', folders)
     # 허용된 정렬 필드 검증
     allowed_sort_fields = [
             "id", 
@@ -71,7 +71,9 @@ def read_mangas(
             "create_date", 
             "update_date", 
             "file_date", 
+            "page"
         ]
+    print('sort_by', sort_by)
     if sort_by not in allowed_sort_fields:
         raise HTTPException(
             status_code=400,
@@ -87,33 +89,41 @@ def read_mangas(
     
     skip = (page - 1) * size
     
-    mangas = MangaCRUD.get_mangas_with_pagination(
+    ###########################################
+    # 500포인트 미만 이토준지만 볼수있음 
+    if current_user.points < 500:       
+        search = "이토준지"
+        folders = ["__이토준지"]
+    ###########################################
+    
+    mangas, total = MangaCRUD.get_mangas_with_pagination(
         db,
+        user=current_user,
         skip=skip,
         limit=size,
         sort_by=sort_by,
         order=order,
         search=search,
         user_id=current_user.id if current_user else None,
-        folders=folders
+        folders=folders     # genre
     )
     
-    total = MangaCRUD.get_total_manga_count(
-        db, 
-        search=search,
-        folders=folders
-    )
+    # total = MangaCRUD.get_total_manga_count(
+    #     db, 
+    #     search=search,
+    #     folders=folders
+    # )
     
     total_pages = ceil(total / size)
-    genres = get_genres_list()
-    # print(PaginatedMangaResponse(
-    #         items=mangas,
-    #         total=total,
-    #         page=page,
-    #         size=size,
-    #         pages=total_pages,
-    #         genres=genres
-    #     ))
+    
+    ###################################################
+    # 포인트 500미만 사용사 genre(folders) 이토준지만####
+    if current_user.points < 500:
+        genres = ['__이토준지']
+    else:
+        genres = get_genres_list()
+    ###################################################    
+    print(mangas)
     return PaginatedMangaResponse(
         items=mangas,
         total=total,
@@ -174,10 +184,10 @@ def manga_action(
                 # 성공한 경우만 DB 업데이트
                 successful_mangas = [r['manga'] for r in result if r['success']]
                 # logger.info(f"Updating {len(successful_mangas)} manga records in DB")
-                print('successful_mangas:', successful_mangas)
-                for manga in successful_mangas:
-                    print('manga.id:', manga.id)
-                    print('manga.folder_name:', manga.folder_name)
+                # print('successful_mangas:', successful_mangas)
+                # for manga in successful_mangas:
+                #     print('manga.id:', manga.id)
+                #     print('manga.folder_name:', manga.folder_name)
                 MangaCRUD.update_mangas_models(db, successful_mangas)
                 # logger.info(f"Update successful")
                 return result
@@ -262,17 +272,13 @@ def manga_action(
                 
             
             except ValueError as e:
-                logger.error(f"Value error during merge: {str(e)}\n{traceback.format_exc()}")
                 raise HTTPException(status_code=400, detail=str(e))
             except OSError as e:
-                logger.error(f"OS error during merge: {str(e)}\n{traceback.format_exc()}")
                 raise HTTPException(status_code=500, detail=f"File system error: {str(e)}")
             except Exception as e:
-                logger.error(f"Unexpected error during merge: {str(e)}\n{traceback.format_exc()}")
                 raise
 
         else:
-            logger.error(f"Invalid action requested: {action}")
             raise HTTPException(
                 status_code=400,
                 detail=f"Invalid action: {action}"
@@ -281,13 +287,21 @@ def manga_action(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Unhandled exception: {str(e)}\n{traceback.format_exc()}")
         raise HTTPException(
             status_code=500,
             detail=f"An unexpected error occurred: {str(e)}"
         )
     
 
+@router.post("/{manga_id}/view")
+def increment_manga_view(
+        manga_id: int,
+        db: Session = Depends(get_db)
+    ):
+    view_count = RatingCRUD.increment_view_count_manga(db, manga_id)
+    if view_count is None:
+        raise HTTPException(status_code=404, detail="Video not found")
+    return {"manga_id": manga_id, "view_count": view_count}
 
 
 
@@ -356,19 +370,19 @@ def delete_manga_rating(
         
     return {"message": "Rating deleted successfully"}
 
-@router.post("/{manga_id}/view")
-def record_view(
-        manga_id: int,
-        db: Session = Depends(get_db),
-        current_user: User = Depends(get_current_user)
-    ):
-    """망가 조회 기록을 저장합니다."""
-    manga = MangaCRUD.get_manga_by_id(db, manga_id)
-    if not manga:
-        raise HTTPException(status_code=404, detail="Manga not found")
+# @router.post("/{manga_id}/view")
+# def record_view(
+#         manga_id: int,
+#         db: Session = Depends(get_db),
+#         current_user: User = Depends(get_current_user)
+#     ):
+#     """망가 조회 기록을 저장합니다."""
+#     manga = MangaCRUD.get_manga_by_id(db, manga_id)
+#     if not manga:
+#         raise HTTPException(status_code=404, detail="Manga not found")
     
-    RatingCRUD.add_view_history(db, current_user.id, manga_id)
-    return {"message": "View recorded successfully"}
+#     RatingCRUD.add_view_history(db, current_user.id, manga_id)
+#     return {"message": "View recorded successfully"}
 
 @router.get("/user-ratings/")
 def get_user_ratings(
@@ -412,7 +426,8 @@ def rate_manga(
 @router.post("/bulk-insert")
 def bulk_insert_manga(
     base_folder_path: str=settings.IMAGE_DIRECTORY, 
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
     ):
     
     manga_data = list_images_from_folders(base_folder_path)            

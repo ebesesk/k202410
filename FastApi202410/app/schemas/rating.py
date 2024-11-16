@@ -46,3 +46,14 @@ class MangaRecommendation(BaseModel):
 class RecommendationResponse(BaseModel):
     recommendations: List[MangaRecommendation]
     total: int
+    
+class VideoRatingBase(BaseModel):
+    id: int
+    rating: int
+    video_id: int
+    user_id: int
+
+class VideoRatingResponse(BaseModel):
+    rating: int
+    class Config:
+        from_attributes = True  # ORM 모델 변환을 위해 추가

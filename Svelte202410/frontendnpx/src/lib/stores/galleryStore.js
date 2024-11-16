@@ -10,6 +10,9 @@ export const genres = writable([]);
 export const folderStates = writable({}); // 폴더별 on/off 상태
 export const selectedMangaStore = writable([]); // 선택된 만화 목록
 export const searchStore = writable(''); // 검색어
+export const sortType = writable('id');
+export const orderType  = writable('desc');
+
 
 // 브라우저 환경에서만 로컬 스토리지를 사용하도록 수정
 if (typeof window !== 'undefined') {

@@ -8,7 +8,7 @@ import cv2
 import ffmpeg
 from app.core.config import settings
 from app.crud import video as video_crud
-
+import time
 
 GIF_FRAMES_MAX = int(settings.GIF_FRAMES_MAX)
 GIF_FRAMES_MIN = int(settings.GIF_FRAMES_MIN)
@@ -58,10 +58,13 @@ def createDirectory(directory):
 
     
 def scan_hddvideofile():
+    # print(VIDEO_DIR)
     folders = [i for i in os.listdir(VIDEO_DIR)]
+    # print(folders)
     folders.remove('_waste')
     scann_files = []
     for i in folders:
+        # print(i)
         _folder = VIDEO_DIR + '/' + i + '/'
         _file = os.listdir(_folder)
         for j in os.listdir(_folder):
@@ -111,7 +114,7 @@ def get_createDate_ffmpeg(src):
     try:
         vmeta = ffmpeg.probe(src)
         dest = WASTE_DIR + '/' + src[src.rfind('/')+1:]
-    except ffmpeg._run.Error:
+    except:
         dest = WASTE_DIR + '/' + src[src.rfind('/')+1:]
         # shutil.move(src, dest)
         return "not video file"
@@ -275,11 +278,11 @@ def cut_longfilename(detect_files):
     return renamefiles
 
 def add_dbids(db, detect_files):
-    # Dbid 클래스로 인스턴스 생성
-    dbids = [Dbid(i.replace(VIDEO_DIR + '/', '')) for i in detect_files]
-    # 결과 result 선언
+    """새로 발견된 파일들을 DB에 추가하고 필요한 작업을 수행"""
+    dbids = [Dbid(f.replace(VIDEO_DIR + '/', '')) for f in detect_files]
+    
     result = {
-        'OverflowError':[],
+        'OverflowError': [],
         'NotImplementedError': [],
         'FileNotFoundError': [],
         '알수없는에러': [],
@@ -288,115 +291,130 @@ def add_dbids(db, detect_files):
         'make_gif': [],
         'make_webp': []
     }
+
     for dbid in dbids:
-        # integv 파일 검사
-        print('파일검사: ', dbid.file, ' ', dbid.type)
-        validate = check_corruptd_video(dbid.file, dbid.type)    # 비디오 검사
-        if validate == 'OverflowError':
-            result['OverflowError'].append(dbid.file)
-        if validate == 'NotImplementedError':
-            result['NotImplementedError'].append(dbid.file)
-        if validate == 'FileNotFoundError':
-            result['FileNotFoundError'].append(dbid.file)
+        # 파일 유효성 검사
+        print(f'파일검사: {dbid.file} ({dbid.type})')
+        validation = check_corruptd_video(dbid.file, dbid.type)
         
-        # showtime 추출 gif 컷수 계산
-        d = get_createDate_ffmpeg(dbid.file)
-        dbid.showtime = d['showtime']
-        
-        # 정보에 cdate생성일자 있으면 넣기
-        if d['cdate'] != None:
-            dbid.cdate = d['cdate']
-        if dbid.type in ['ts', 'TS']:
-            r = cnv_tsTomp4(dbid)          # ts => mp4 변환 ts파일 삭제
-            result['converted'].append(r)   # result(dict) 추가
-            dbid = Dbid(r)      # 바뀐 mp4파일명으로 인스턴스 다시생성
-        video_dbid = get_vmeta_ffmpeg(dbid.file)    # mp4파일로 meta정보 다시 추출
-        dbid.width = video_dbid['width']
-        dbid.height = video_dbid['height']
-        dbid.showtime = video_dbid['showtime']
-        dbid.bitrate = video_dbid['bitrate']
-        dbid.filesize = video_dbid['filesize']
-        if 'cdate' in video_dbid:
-            dbid.cdate = video_dbid['cdate']
-        if not os.path.isdir(dbid.gifdir):  # gif 경로 디렉토리 만들기
-            os.mkdir(dbid.gifdir)
-        if not os.path.isdir(dbid.webpdir): # webp 경로 디렉토 만들기
-            os.mkdir(dbid.webpdir)
-        # 세로가 길면 회선해서 이미지 제작
-        if (video_dbid['width'] > video_dbid['height']):
+        if validation in ['OverflowError', 'NotImplementedError', 'FileNotFoundError']:
+            result[validation].append(dbid.file)
+            continue
+
+        # 메타데이터 추출
+        metadata = get_createDate_ffmpeg(dbid.file)
+        dbid.showtime = metadata['showtime']
+        if metadata['cdate']:
+            dbid.cdate = metadata['cdate']
+
+        # TS 파일 변환
+        if dbid.type.lower() == 'ts':
+            converted = cnv_tsTomp4(dbid)
+            result['converted'].append(converted)
+            dbid = Dbid(converted)
+
+        # 비디오 메타데이터 추출 및 설정
+        video_meta = get_vmeta_ffmpeg(dbid.file)
+        for key in ['width', 'height', 'showtime', 'bitrate', 'filesize']:
+            setattr(dbid, key, video_meta[key])
+        if 'cdate' in video_meta:
+            dbid.cdate = video_meta['cdate']
+
+        # 디렉토리 생성
+        os.makedirs(dbid.gifdir, exist_ok=True)
+        os.makedirs(dbid.webpdir, exist_ok=True)
+
+        # GIF/WEBP 생성
+        if video_meta['width'] > video_meta['height']:
             result['make_gif'].append(make_gif(dbid))
             result['make_webp'].append(make_webp(dbid))
         else:
             result['make_gif'].append(make_rotate_gif(dbid))
             result['make_webp'].append(make_rotate_webp(dbid))
-        
-        video_dbid['dbid'] = dbid.dbid
-        # db에 추가된 파일정보 저장
-        video_crud.create_new_video(db=db, _video=video_dbid)
+
+        # DB에 저장
+        video_meta['dbid'] = dbid.dbid
+        video_crud.create_new_video(db, video_meta)
         result['db_추가'].append(dbid.dbid)
-        
+
     return result
 
 
 
 def scan_files(db):
-    import time
+    """영상 파일들을 스캔하고 필요한 작업을 수행하는 메인 함수"""
     start = time.time()
-    videos = video_crud.get_all_videos(db=db)
-    # print(videos)
-    _db = [i.dbid for i in videos]
+
+    # 현재 DB에 있는 비디오 목록 가져오기
+    videos = video_crud.get_all_videos(db)
+    # print('db_len:', len(videos))
+    db_files = [Dbid(v.dbid).file for v in videos]
     
-    _db_files = [Dbid(i).file for i in _db]
-    _hdd_files = scan_hddvideofile()
+    # 실제 HDD의 비디오 파일들과 비교
+    hdd_files = scan_hddvideofile()
+    # print('hdd_files:', len(hdd_files))
+    detect_files = set(hdd_files) - set(db_files)  # 새로 추가된 파일
+    del_dbs = set(db_files) - set(hdd_files)       # 삭제된 파일
+
+    # GIF/WEBP 관련 경로 가져오기
+    db_dbids = [v.dbid for v in videos]
+    gifs = scan_gif([Dbid(d).gifdir for d in db_dbids])
+    webps = scan_webp([Dbid(d).webpdir for d in db_dbids]) 
+
+    # 삭제할 GIF/WEBP 파일 찾기
+    db_gifs = [Dbid(d).gif for d in db_dbids]
+    db_webps = [Dbid(d).webp for d in db_dbids]
     
-    detect_files = set(_hdd_files) - set(_db_files)     # 추가파일
-    del_dbs = set(_db_files) - set(_hdd_files)          # db삭제
-    _db_dir = [Dbid(i).dir for i in _db]
-    _db_gif = [Dbid(i).gif for i in _db]
-    _db_gifdir = [Dbid(i).gifdir for i in _db]
-    _db_webp = [Dbid(i).webp for i in _db]
-    _db_webpdir = [Dbid(i).webpdir for i in _db]
+    del_gifs = set(gifs) - set(db_gifs)
+    del_gifs.update([Dbid(f.replace(VIDEO_DIR+'/', '')).gif for f in del_dbs])
+    # print('db_update:', len(del_gifs))
+    del_webps = set(webps) - set(db_webps)
+    del_webps.update([Dbid(f.replace(VIDEO_DIR+'/', '')).webp for f in del_dbs])
+    # print('db_update:', len(del_webps))
+
+    # 필요한 정리 작업 수행
+    if del_dbs:
+        # print('db_delete:', len(del_dbs))
+        for db_file in del_dbs:
+            video_crud.del_dbid(db, db_file.replace(VIDEO_DIR+'/', ''))
     
-    gifs = scan_gif(list(set(_db_gifdir)))
-    webps = scan_webp(list(set(_db_webpdir)))
-    # gif 삭제
-    del_gif = set(list(set(gifs) - set(_db_gif)) + [Dbid(i.replace(VIDEO_DIR+'/', '')).gif for i in del_dbs])
-    # webp 삭제
-    del_webp = set(list(set(webps) - set(_db_webp)) + [Dbid(i.replace(VIDEO_DIR+'/', '')).webp for i in del_dbs])
-    # make_gif = set(_db_gif) - set(gifs)                  # gif 만들기
-    # make_gif = set(_db_webp) - set(webps)                  # gif 만들기
-    
-    if len(del_dbs) > 0:
-        for i in del_dbs:
-            video_crud.del_dbid(db=db, dbid=i.replace(VIDEO_DIR+'/', ''))
-    if len(del_gif) > 0:
-        for i in del_gif:
-            os.remove(i)
-    if len(del_webp) > 0:
-        for i in del_webp:
-            os.remove(i)
-    
-    print("time: ", time.time() - start)
-    
-    
-    # 긴파일이름 짧게 수정
-    if len(detect_files) > 0:
+    if del_gifs:
+        # print('os.remove:', len(del_gifs))
+        for gif in del_gifs:
+            os.remove(gif)
+            
+    if del_webps:
+        # print('os.remove:', len(del_webps))
+        for webp in del_webps:
+            os.remove(webp)
+
+    print(f"Scan completed in {time.time() - start:.2f} seconds")
+
+    # 새로 발견된 파일 처리
+    if detect_files:
         detect_files = cut_longfilename(detect_files)
-        
         result = add_dbids(db, detect_files)
-        result.update({'delet_gif': del_gif,
-                       'delet_webp': del_webp,
-                       'delet_dbids': del_dbs,
-                       'detect_files': detect_files,})
-    
+        result.update({
+            'delet_gif': del_gifs,
+            'delet_webp': del_webps, 
+            'delet_dbids': del_dbs,
+            'detect_files': detect_files
+        })
+        # print(result)
         return result
-    else:
-        return {'delete_gif': del_gif,
-                'delete_webp': del_webp,
-                'delete_dbids': del_dbs,
-                'detect_files': detect_files,}
-    
-    
+    # print({
+    #     'delete_gif': del_gifs,
+    #     'delete_webp': del_webps,
+    #     'delete_dbids': del_dbs, 
+    #     'detect_files': detect_files
+    # })    
+    return {
+        'delete_gif': del_gifs,
+        'delete_webp': del_webps,
+        'delete_dbids': del_dbs, 
+        'detect_files': detect_files
+    }
+
     
     
     

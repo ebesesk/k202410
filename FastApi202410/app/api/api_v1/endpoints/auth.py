@@ -30,15 +30,18 @@ async def login(
     UserCRUD.update_user_status(db, user.id, True)  # 로그인 시 is_active를 True로 설정
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
-    )
+            data={"sub": user.username}, expires_delta=access_token_expires
+        )
+    
     return {"access_token": access_token, 
             "token_type": "bearer",
             "username": user.username,
-            "userpoints": user.points}
+            "userpoints": user.points,}
 
 @router.post("/logout")
-def logout_user(current_user: User = Depends(get_current_active_user), db: Session = Depends(get_db)):
+def logout_user(db: Session = Depends(get_db),
+                current_user: User = Depends(get_current_active_user), 
+                ):
     UserCRUD.update_user_status(db, current_user.id, False)  # 로그아웃 시 is_active를 False로 설정
     return {"message": "Successfully logged out"}
 

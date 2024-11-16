@@ -1,13 +1,24 @@
 <script>
     import { page } from '$app/stores';  // Svelte의 페이지 스토어 추가
-    import { createEventDispatcher } from 'svelte';
+    import { onMount } from 'svelte';
     import { searchStore } from '$lib/stores/galleryStore';
-
+    import fastapi from '$lib/api'
+    import { goto } from '$app/navigation';
+    import { access_token, username, userpoints } from '$lib/store'
+    import { get } from 'svelte/store'; 
     let isOpen = false;
-    const dispatch = createEventDispatcher();
+    // import { clearLoginData } from '$lib/store';
+    // const dispatch = createEventDispatcher();
+
+
     
+
     function toggleMenu() {
         isOpen = !isOpen;
+    }
+
+    function closeMenu() {
+        isOpen = false;
     }
     
     function handleSearch(event) {
@@ -26,6 +37,33 @@
         }, 300);
     }
 
+    function handleLogout() {
+        fastapi('post', '/auth/logout', {}, 
+            (json) => {
+                // 로그아웃 성공
+                access_token.set('');
+                username.set('');
+                userpoints.set(0);
+                is_login.set(false);
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('username');
+                localStorage.removeItem('userpoints');
+                goto('/');
+            },
+            (err) => {
+                // 로그아웃 실패
+                console.error('로그아웃 실패:', err);
+                // 실패해도 로컬 상태는 초기화
+                access_token.set('');
+                username.set('');
+                userpoints.set(0);
+                is_login.set(false);
+                localStorage.clear();
+                goto('/');
+            }
+        );
+    }
+
     $: isGalleryPage = $page.url.pathname === '/gallery';
 </script>
 
@@ -33,18 +71,19 @@
     <div class="nav-container">
         <div class="left-section">
             <div class="logo">
-                <a href="/">K2410</a>
+                <a href="/" on:click={closeMenu}>K2410</a>
+                <button on:click={handleLogout}>{$username}:{$userpoints} logout</button>
             </div>
             
             {#if isGalleryPage}
                 <div class="search-container">
                     <input 
-                    type="text" 
-                    bind:value={searchTerm}
-                    on:input={debounceSearch}
-                    on:search={handleSearch}
-                    placeholder="제목 또는 태그로 검색... ({$searchStore || ''})"
-                    class="search-input"
+                        type="text" 
+                        bind:value={searchTerm}
+                        on:input={debounceSearch}
+                        on:search={handleSearch}
+                        placeholder="제목 또는 태그로 검색... ({$searchStore || ''})"
+                        class="search-input"
                     />
                 </div>
             {/if}
@@ -56,11 +95,11 @@
             </button>
 
             <ul class={`nav-links ${isOpen ? 'active' : ''}`}>
-                <li><a href="/">홈</a></li>
-                <li><a href="/gallery">갤러리</a></li>
-                <li><a href="/about">소개</a></li>
-                <li><a href="/video">video</a></li>
-                <li><a href="/contact">연락처</a></li>
+                <li><a href="/" on:click={closeMenu}>홈</a></li>
+                <li><a href="/gallery" on:click={closeMenu}>갤러리</a></li>
+                <li><a href="/movie" on:click={closeMenu}>movie</a></li>
+                <li><a href="/about" on:click={closeMenu}>소개</a></li>
+                <li><a href="/users" on:click={closeMenu}>유저</a></li>
             </ul>
         </div>
     </div>

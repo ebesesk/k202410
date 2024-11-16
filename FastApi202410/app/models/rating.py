@@ -26,3 +26,14 @@ class UserMangaHistory(Base):
     
     user = relationship("User", back_populates="history")
     manga = relationship("Manga", back_populates="history")
+    
+class VideoRating(Base):
+    __tablename__ = "video_ratings"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    video_id = Column(Integer, ForeignKey("video.id"))
+    rating = Column(Integer)
+
+    user = relationship("User", back_populates="video_ratings")
+    video = relationship("Video", back_populates="video_ratings")

@@ -1,5 +1,5 @@
 from sqlalchemy import (Column, Integer, String, Text, DateTime, 
-                        ForeignKey, Boolean, Date, Table, MetaData)
+                        ForeignKey, Boolean, Date, Table, MetaData, Float)
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -47,3 +47,11 @@ class Video(Base):
     
     date_posted = Column(Date)
     date_modified = Column(Date)
+    
+    
+    rating_sum = Column(Float, default=0.0)  # 평점 합계
+    rating_count = Column(Integer, default=0)  # 평점 개수
+    rating_average = Column(Float, default=0.0)  # 평균 평점
+    view_count = Column(Integer, default=0)  # 조회 수
+    
+    video_ratings = relationship("VideoRating", back_populates="video")

@@ -3,14 +3,16 @@ import sqlalchemy
 from sqlalchemy import or_, and_, not_, except_, func
 from sqlalchemy.orm import Session
 from app.schemas import video as video_schema
-
+from app.models.user import User
 from app.models.video import Video
-
+from app.models.rating import VideoRating
 # def join_Video_voter(db: Session):
 #     return db.query(Video).join(video_voter).all()
 
+
+
 def get_video_id(db:Session, video_id:int):
-    return db.query(Video).get(video_id)
+    return db.query(Video).filter(Video.id == video_id).first()
 
 def get_all_videos(db: Session):
     # print(db.query(Video).all())
@@ -45,7 +47,8 @@ def get_video_list(db: Session, skip:int=0, limit:int=0, keyword:str=""):
     total = _video_list.count()
     video_list = _video_list.offset(skip).limit(limit).all()
     return total, video_list
-    
+ 
+ 
 # def vote_video(db: Session, db_video: Video, db_user:User):
 #     db_video.voter.append(db_user)
 #     db.commit()
@@ -66,7 +69,7 @@ def get_keyword(db:Session):
     return db.query(Video.etc).filter(Video.etc.is_not(None)).all()
     
     
-def search_video(db: Session, keyword, skip:int=0, limit:int=0):
+def search_video(db: Session, keyword,  user:User, skip:int=0, limit:int=0,):
     # print(keyword)
     q = []
     q_except = []
@@ -133,6 +136,9 @@ def search_video(db: Session, keyword, skip:int=0, limit:int=0):
 
     if ('age' in keyword) and (len(keyword['age']) > 0):
         _q = []
+        if user.username != 'kds':  # <=======================
+            keyword['age'].remove('어림')
+            keyword['age'].remove('학생')
         for value in keyword['age']:
             if value=='not':
                 _q.append(Video.age.is_(None))
@@ -208,9 +214,10 @@ def search_video(db: Session, keyword, skip:int=0, limit:int=0):
         q.append(or_(*_q))
         
         
-    
     if 'school_uniform' in keyword:
-        if keyword['school_uniform'] == True:
+        if user.username != 'kds':  # <===================
+            keyword['school_uniform'] == False
+        elif keyword['school_uniform'] == True:
             q.append(Video.school_uniform == True)
         elif keyword['school_uniform'] == False:
             # q.append(Video.school_uniform != True)
@@ -281,9 +288,10 @@ def search_video(db: Session, keyword, skip:int=0, limit:int=0):
         elif keyword['massage'] == False:
             q.append(Video.massage.isnot(True))
     
-    
     if 'uniform' in keyword:
-        if keyword['uniform'] == True:
+        if user.username != 'kds':  # <===================
+            keyword['uniform'] == False
+        elif keyword['uniform'] == True:
             q.append(Video.uniform == True)
         elif keyword['uniform'] == False:
             q.append(Video.uniform.isnot(True))
@@ -295,10 +303,34 @@ def search_video(db: Session, keyword, skip:int=0, limit:int=0):
         elif keyword['family'] == False:
             q.append(Video.family.isnot(True))
 
-
-    _video_list = db.query(Video).filter(and_(*q))
+    # print(keyword)
+    _video_list = (
+        db.query(
+            Video,
+            func.avg(VideoRating.rating).label("average_rating")  # 평균 평점 추가
+        )
+        .outerjoin(VideoRating, Video.id == VideoRating.video_id)  # 아우터 조인
+        .group_by(Video.id)  # 비디오 ID로 그룹화
+    )
+    
+    if user.points >= 500 and user.points < 1000:  # <===================  
+        keys = ['sod', 'FC2', '일본']
+        q = [Video.dbid.ilike(f"%{key}%") for key in keys] 
+        _video_list = db.query(Video).filter(or_(*q))
+    elif user.points < 500:  # <===================  
+        q = Video.dbid.ilike("%test2%")
+        _video_list = db.query(Video).filter(q)
+    else:
+        _video_list = db.query(Video).filter(and_(*q))
     # dislike_list = db.query(Video).join(video_dislike)  # dislike 추출
     # _video_list = _video_list.except_(dislike_list)     # dislike except
+    # print(user.username)
+    if user.username != 'kds':  # <===================    
+        q_except.append(Video.dbid.ilike("%은아%"))
+        q_except.append(Video.dbid.ilike("%교복%"))
+        q_except.append(Video.dbid.ilike("%어린%"))
+        q_except.append(Video.dbid.ilike("%학생%"))
+        q_except.append(Video.dbid.ilike("%00000/%"))
     if len(q_except) > 0:                               # or_ 빈리스트 입력되면 DB모두 선택 0보다 클경우만 
         except_list = db.query(Video).filter(or_(*q_except))
         _video_list = _video_list.except_(except_list)
@@ -306,20 +338,25 @@ def search_video(db: Session, keyword, skip:int=0, limit:int=0):
     #     _video_list = _video_list.join(video_voter)
     # if 'dislike' in keyword and keyword['dislike']:
     #     _video_list = db.query(Video).join(video_dislike)
-    
+    print('keyword', keyword)
     if 'random' in keyword and keyword['random']:
         _video_list = _video_list.order_by(func.random())
-        total = _video_list.count()
-        video_list = _video_list.offset(skip).limit(limit).all()
-        print(total)
+        # total = _video_list.count() 
+        # video_list = _video_list.offset(skip).limit(limit).all()
+        # print(total)
         # print(video_list[0].school_uniform, '-3-3-3-3-3-3-')
-        return total, video_list    
+        # return total, video_list    
+    elif'vote' in keyword and keyword['vote']:
+        _video_list = _video_list.order_by(Video.rating_average.desc())
+    else:    
+        _video_list = _video_list.order_by(Video.date_posted.desc())
         
-    _video_list = _video_list.order_by(Video.date_posted.desc())
     total = _video_list.count()
     video_list = _video_list.offset(skip).limit(limit).all()
-    print(total)
-    # print(video_list[0].school_uniform, '-3-3-3-3-3-3-')
+        # print(total)
+        # print(video_list[0].school_uniform, '-3-3-3-3-3-3-')
+    # for v in video_list:
+    #     print(v.dbid)
     return total, video_list
 
 

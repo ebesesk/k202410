@@ -2,12 +2,13 @@
     import { onMount } from 'svelte';
     import { browser } from '$app/environment';
     import { goto } from '$app/navigation';
+    import { access_token, is_login } from '$lib/store';
+    import { get } from 'svelte/store';
     
-    let isAuthenticated = false;
-
+    let isAuthenticated = $is_login;
     onMount(() => {
         if (browser) {
-            const token = localStorage.getItem('accessToken');
+            const token = get(access_token);
             if (!token) {
                 goto('/');
             }

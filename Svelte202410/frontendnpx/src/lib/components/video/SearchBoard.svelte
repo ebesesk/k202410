@@ -1,24 +1,46 @@
 <script>
     import fastapi from "$lib/api";
+    import {userpoints, username, is_login} from "$lib/store"
     import { videoPage, keyword } from "$lib/stores/videoStore";
     import moment from "moment";
+    import { onMount } from 'svelte';
+    // import { browser } from '$app/environment';
     moment.locale('ko')
     
-    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    // const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    // const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
     
+    let tooltipList = [];
+    // let subject;
+    // let content;
+    // let query = "";
+    // let question_list = [];
+
+    onMount(async () => {
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+        tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+        
+        if ($is_login) {
+            await get_question_list();  // onMount에서만 호출
+        }
+    });
+
+
+
+
+
     // export let onSearch
-    let subject
-    let content
+    let subject;
+    let content;
     
     function post_question(event) {
       event.preventDefault()
       let url = "/question/create"
-      console.log('subject', subject)
-      console.log('content', content)
+      // console.log('subject', subject)
+      // console.log('content', content)
       let params = {
           subject: '#쿼리#' + subject,
-          content: content
+          content: content,
       }
       fastapi('post', url, params,
           (json) => {
@@ -39,12 +61,12 @@
       }
       fastapi('get', url, params, (json) => {
         question_list = json.question_list
-        console.log(question_list)
-        console.log(question_list[0])
+        
+        // console.log(question_list)
+        // console.log(question_list[0])
         }
       )
     } 
-    
     function update_question(event) {
       event.preventDefault()
       let url = "/question/update"
@@ -90,7 +112,7 @@
         let _etc = q.etc.filter(value => value !== '')
         _etc = q.etc.join(',')
         q.etc = _etc
-        console.log('q', q)
+        // console.log('q', q)
         return q
       }else {
         return q
@@ -107,7 +129,7 @@
       $keyword = q
     }
     </script>
-    
+    {#if $username == 'kds'}
     <div class="row up">
       <div class="col">
         <div class="input-group input-group-sm pt-1 maker">
@@ -119,11 +141,25 @@
         </div>
       </div>
     </div>
-    
+    {/if}
       
     
     <div class="row pt-1">
+      {#if $username == 'kds'}
       {#each question_list as question, index}
+      {#if question.subject.startsWith('#쿼리#')}
+      <div class="col content">
+        <button type="button" class="btn btn-outline-dark subject" on:click={() => {runQuery(question.content)}}>
+            <b>{question.subject.replace('#쿼리#', '')}</b>
+        </button>
+        <button class="badge text-bg-danger bg-sm del" on:click={delete_question(question.id)}>D</button>
+      </div>
+      {/if}
+      {/each}
+      {/if}
+
+      {#if $username != 'kds'}
+      {#each [{content:"{'etc':['test2']}", subject:'test'}] as question, index}
       <div class="col content">
         <button type="button" class="btn btn-outline-dark subject" on:click={() => {runQuery(question.content)}}>
             <b>{question.subject.replace('#쿼리#', '')}</b>
@@ -131,6 +167,7 @@
         <button class="badge text-bg-danger bg-sm del" on:click={delete_question(question.id)}>D</button>
       </div>
       {/each}
+      {/if}
     </div>  
     
     
