@@ -7,10 +7,11 @@ from app.db.session import SessionLocal
 from app.crud.user import UserCRUD
 from app.schemas.user import TokenData
 from app.schemas.user import User
+from typing import Generator
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/auth/login")
 
-def get_db() -> Session:
+def get_db() -> Generator:
     db = SessionLocal()
     try:
         yield db
