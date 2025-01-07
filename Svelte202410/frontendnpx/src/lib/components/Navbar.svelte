@@ -96,7 +96,10 @@
 
             <ul class={`nav-links ${isOpen ? 'active' : ''}`}>
                 <li><a href="/" on:click={closeMenu}>홈</a></li>
+                <li><a href="https://asil.kr/asil/index.jsp" target="_blank" rel="noopener noreferrer" on:click={closeMenu}>아실</a></li>
                 <li><a href="/gallery" on:click={closeMenu}>갤러리</a></li>
+                <li><a href="/realestate" on:click={closeMenu}>부동산</a></li>
+                <li><a href="/stock" on:click={closeMenu}>주식</a></li>
                 <li><a href="/movie" on:click={closeMenu}>movie</a></li>
                 <li><a href="/about" on:click={closeMenu}>소개</a></li>
                 <li><a href="/users" on:click={closeMenu}>유저</a></li>

@@ -1,6 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from app.utils.dependencies import get_db, get_current_user_with_grade, get_current_user
+from app.utils.dependencies import (
+    get_db,
+    get_current_user_with_grade,
+    get_current_user
+)
 from app.schemas.manga import MangaCreate, PaginatedMangaResponse
 # from app.crud.manga import create_manga#, get_manga_list
 from app.utils.manga import list_images_from_folders, get_genres_list, move_manga_folder, merge_manga_folder
@@ -73,7 +77,7 @@ def read_mangas(
             "file_date", 
             "page"
         ]
-    print('sort_by', sort_by)
+    # print('sort_by', sort_by)
     if sort_by not in allowed_sort_fields:
         raise HTTPException(
             status_code=400,
@@ -123,7 +127,8 @@ def read_mangas(
     else:
         genres = get_genres_list()
     ###################################################    
-    print(mangas)
+    # print(mangas)
+    print('total_pages:', total_pages)
     return PaginatedMangaResponse(
         items=mangas,
         total=total,

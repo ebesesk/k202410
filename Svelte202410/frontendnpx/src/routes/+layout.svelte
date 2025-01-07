@@ -5,7 +5,7 @@
 	import fastapi from '$lib/api';
 	import { get } from 'svelte/store';
 	import { onMount } from 'svelte';
-
+    
 	// 토큰 유효성 검사 및 사용자 정보 가져오기 새로고침후 사용자정보 지워지는 문제 해결
 	onMount(async () => {
         const token = get(access_token);

@@ -5,8 +5,10 @@ from starlette import status
 # from . import schema, crud
 from app.crud import question as crud
 from app.schemas.question import QuestionList, Question, QuestionCreate, QuestionDelete, QuestionUpdate
-from app.utils.dependencies import get_current_user, get_db
-
+from app.utils.dependencies import (
+    get_current_user,
+    get_db
+)   
 from app.models.user import User
 
 router = APIRouter()

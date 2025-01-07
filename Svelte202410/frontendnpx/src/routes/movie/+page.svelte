@@ -55,8 +55,10 @@
   $: total_page = Math.ceil(total / size);
   $: $videoPage, $keyword;
 
+  
   // 비디오 검색 함수
   function search_video() {
+    isLoading = true;
     let params = {
         page: $videoPage - 1,  // API 호출 시 현재 페이지에서 1을 빼서 전송
         size: size,
@@ -72,13 +74,16 @@
             // fetchVideoRating(video.id); // 비디오 별점 가져오기
         });
     });
+    
   }
-
+  let isLoading = false;
   async function saveFetchImage(video) {
+      isLoading = true;
       let webpUrl = toWebp(video.dbid);
       let gifUrl = toGif(video.dbid);
       webpUrls[video.id] = await fetchImage(webpUrl);
       gifUrls[video.id] = await fetchImage(gifUrl);
+      isLoading = false;
   }
 
   function fetchImage(imgUrl) {
@@ -217,7 +222,15 @@
       {#each video_list as video}
       <div class="card" style="flex: 1 1 calc(100% - 10px); margin: 5px; max-width: 300px;">
           <button class="btn btn-sm btn-light" on:click={changeImage(video)}>
+            {#if isLoading}
+              <div class="d-flex justify-content-center align-items-center" style="height: 160px;">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">로딩중...</span>
+                </div>
+              </div>
+            {:else}
               <img src="{webpUrls[video.id] || ''}" class="card-img-top" alt="..." id={video.id}>
+            {/if}
           </button>
           <div class="card-body list-unstyled">
               <p class="card-text">

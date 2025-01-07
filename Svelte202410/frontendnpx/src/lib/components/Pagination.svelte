@@ -2,7 +2,7 @@
     import { createEventDispatcher } from 'svelte';
     import { currentPage } from '$lib/stores/galleryStore';
     
-    export let totalPages = 1;
+    export let totalPages //= 1;
     
     const dispatch = createEventDispatcher();
     

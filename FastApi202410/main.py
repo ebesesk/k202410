@@ -26,8 +26,12 @@ origins = [
     # "https://k202410api.ebesesk.synology.me/",
     # "https://ebesesk.synology.me/",
     "https://k2410.ebesesk.synology.me/",  # 허용할 출처 추가
-    "https://k2410api.ebesesk.synology.me/",  # 허용할 출처 추가
     "https://ebesesk.synology.me/",  # 허용할 출처 추가
+    "http://localhost:8001",
+    "http://localhost:8002",
+    "https://api2410.ebesesk.synology.me/",
+    "https://api2410.ebesesk.synology.me/realestate",
+    "https://api2410.ebesesk.synology.me/stock",
 ]
 
 app.add_middleware(

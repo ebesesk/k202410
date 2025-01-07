@@ -76,3 +76,12 @@ class UserCRUD:
         elif points >= 100:
             return GradeEnum.SILVER
         return GradeEnum.BRONZE
+
+    @staticmethod
+    def change_password(db: Session, user_id: int, new_password: str):
+        user = db.query(User).filter(User.id == user_id).first()
+        if user:
+            user.hashed_password = get_password_hash(new_password)
+            db.commit()
+            return True
+        return False

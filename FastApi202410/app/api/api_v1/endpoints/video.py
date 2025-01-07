@@ -3,8 +3,11 @@ from typing import List, Dict
 from pathlib import Path
 import json
 
-
-from app.utils.dependencies import get_current_user, get_db
+    
+from app.utils.dependencies import (
+    get_current_user,
+    get_db
+)
 from app.models.user import User
 from sqlalchemy.orm import Session
 

@@ -1,46 +1,59 @@
-// import qs from "qs"
 import { access_token, username, userpoints, is_login } from "$lib/store"
 import { get } from 'svelte/store'
 import { goto } from '$app/navigation';
 import qs from "qs"
 
 const fastapi = (operation, url, params, success_callback, failure_callback) => {
+    // params = params || {};
+    // console.log('params:', params);
     let method = operation;
     let content_type = "application/json";
     let body = JSON.stringify(params);
-
-    let _url = params?.isImage ? (import.meta.env.VITE_API_URL + url) : (import.meta.env.VITE_API_URL + url);
-
-    // 로그인 요청에 대한 처리
+    let _url = import.meta.env.VITE_API_URL + url;
+    // let _url = params?.isImage ? (import.meta.env.VITE_API_URL + url) : (import.meta.env.VITE_API_URL + url);
+    // GET 요청의 파라미터 처리 수정
+    // console.log('body:', body);
     if (method === 'login') {
         method = 'post';
         content_type = 'application/x-www-form-urlencoded';
         body = params; // qs는 params 데이터를 'application/x-www-form-urlencoded' 형식으로 변환
     }
-
-    // GET 요청의 파라미터 처리 수정
-    if (method === 'get') {
-        const searchParams = new URLSearchParams();
-        if (params) {
-            Object.entries(params).forEach(([key, value]) => {
-                if (Array.isArray(value)) {
-                    value.forEach(item => searchParams.append(key, item));
-                } else {
-                    searchParams.append(key, value);
-                }
-            });
-        }
-        _url += "?" + searchParams.toString();
-    }
-
     let options = {
         method: method,
         headers: {
             "Content-Type": content_type,
-            "Accept": params?.isImage ? 'image/*' : 'application/json'
+            "Accept": params?.isImage ? 'image/*' : 'application/json',
         }
     };
-
+    // if (method === 'get' && params.key) {
+    //     options.headers["X-API-KEY"] = params.key;
+    //     delete params.key;
+    //     if (Object.keys(params).length > 0) {
+    //         _url += "?" + new URLSearchParams(params);
+    //     }
+    // }
+    if (method === 'get') {
+        if (params?.key) {
+            options.headers["X-API-KEY"] = params.key;
+            delete params.key;
+        }
+        // params가 존재하고 비어있지 않을 때만 URL에 추가
+        if (params && Object.keys(params).length > 0) {
+            _url += "?" + new URLSearchParams(params);
+        }
+        // console.log('get_accno_t0424:', _url)
+        // console.log('get_accno_t0424:', options.headers)
+    }
+    // console.log('body:', body);
+    const token = get(access_token);  // 'access_token'이 아닌 'accessToken'
+    if (token) {
+        // console.log('token:', token);
+        options.headers["Authorization"] = "Bearer " + token;
+    }
+    // console.log(options);
+    // 로그인 요청에 대한 처리
+    
+    
     // DELETE 메서드 처리
     if (method === 'delete') {
         // DELETE 요청의 경우 body를 설정하지 않음
@@ -52,12 +65,10 @@ const fastapi = (operation, url, params, success_callback, failure_callback) => 
         // PUT 요청의 경우 body를 설정
         options.body = body; // PUT 요청에서는 body가 필요함
     }
-
-    const token = get(access_token);  // 'access_token'이 아닌 'accessToken'
+    
+    
+    
     // const token = localStorage.getItem('accessToken'); // 'access_token'이 아닌 'accessToken'
-    if (token) {
-        options.headers["Authorization"] = "Bearer " + token;
-    }
 
     if (method !== 'get') {
         options['body'] = body;

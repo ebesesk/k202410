@@ -3,7 +3,12 @@ from sqlalchemy.orm import Session
 from typing import List
 from app.crud.user import UserCRUD
 from app.schemas.user import UserCreate, UserResponse
-from app.utils.dependencies import get_db, get_current_user_with_grade, get_current_user
+from app.utils.dependencies import (
+    get_db,
+    get_current_user,
+    get_current_active_user,
+    get_current_user_with_grade
+)
 from app.models.user import GradeEnum, User
 from starlette import status
 
