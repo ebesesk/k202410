@@ -43,22 +43,24 @@ async def send_stock_data(websocket, username: str, tr_cd: str, code: str):
     
     try:
         with open(file_path, "r", encoding="utf-8") as f:
-            while True:  # 무한 루프로 파일 반복 읽기
-                f.seek(0)  # 파일 포인터를 처음으로 되돌림
+            while True:
+                f.seek(0)
                 for line in f:
                     try:
                         data = json.loads(line)
-                        # 요청한 tr_cd와 종목 코드의 데이터만 전송
                         if data["header"]["tr_cd"] == tr_cd and data["header"]["tr_key"] == code:
                             print(f"전송 데이터: {data}")
                             await websocket.send_json(data)
-                            await asyncio.sleep(0.3)  # 1초 간격으로 전송
+                            await asyncio.sleep(0.3)
                         else:
                             print(f"전송 데이터: {data}")
                             await websocket.send_json(data)
-                            await asyncio.sleep(0.3)  # 1초 간격으로 전송
+                            await asyncio.sleep(0.3)
                     except json.JSONDecodeError:
-                        continue  # 잘못된 JSON 라인은 건너뜀
+                        continue
+                    except WebSocketDisconnect:
+                        print(f"Client {username} disconnected")
+                        return
                     
     except Exception as e:
         print(f"데이터 전송 오류: {str(e)}")
@@ -66,12 +68,15 @@ async def send_stock_data(websocket, username: str, tr_cd: str, code: str):
 
 async def handle_websocket(websocket, username: str, tr_cd: str, code: str):
     try:
-        # websocket.accept() 제거 - 이미 accept된 상태
+        # 인증된 연결에 대해 데이터 전송 시작
         await send_stock_data(websocket, username, tr_cd, code)
         
     except Exception as e:
         print(f"WebSocket 처리 오류: {str(e)}")
-        
+        await websocket.send_json({
+            'type': 'error',
+            'message': str(e)
+        })
         
         
         

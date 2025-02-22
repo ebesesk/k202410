@@ -47,6 +47,7 @@
         
         return pages;
     }
+    
 </script>
 
 <nav class="pagination" aria-label="Pagination">
@@ -94,13 +95,23 @@
     }
 
     .page-button {
-        padding: 0.5rem 1rem;
+        padding: 0 0 0 0;
+        margin: 0;
         border: 1px solid #ddd;
         background: white;
         cursor: pointer;
-        border-radius: 4px;
-        min-width: 2.5rem;
+        border-radius: 3px;
+        min-width: 1.5rem;  /* 너비 축소 */
+        height: 1.5rem;    /* 높이 추가 */
+        font-size: 11px;   /* 글자 크기 축소 */
         text-align: center;
+        line-height: 1.5rem;  /* 세로 중앙 정렬 */
+        /* 폰트 굵기 */
+        font-weight: 500;
+        /* 문자 가운데 정렬 */
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .page-button:hover:not(:disabled) {

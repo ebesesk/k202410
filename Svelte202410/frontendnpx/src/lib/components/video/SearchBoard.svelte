@@ -198,8 +198,13 @@
     }
     .col.content {
       display: flex;
-      white-space: nowrap;
+      /* white-space: nowrap; */
       font-size: xx-small;
+      height: 1.4rem;
+      align-items: center;
+      justify-content: center;
+      padding: 0 0 0 0;
+      margin: 0 0 0 0;
     }
     .subject {
       font-weight: bold;
@@ -213,7 +218,15 @@
       justify-self: end;
       align-self:baseline;
       cursor: pointer;
-      
+      border: 1px solid #ddd;
+      font-size: 5px;
+      font-weight: 500;
+    }
+    
+    button {
+      font-size: 9px;
+      padding: 3px;
+      margin: 3px;
     }
     /* button.badge {
       font-size: xx-small;

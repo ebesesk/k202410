@@ -23,7 +23,7 @@ async def login(
         form_data: OAuth2PasswordRequestForm = Depends(),
         db: Session = Depends(get_db)
     ):
-    # print(form_data.username, form_data.password)
+    print(form_data.username, form_data.password)
     user = UserCRUD.authenticate_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
@@ -80,11 +80,11 @@ async def verify_token(token: str = Depends(oauth2_scheme),
 # 비밀번호 변경 
 @router.post("/change_password")
 async def change_password(
-    current_password: str,
-    new_password: str,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user)
-):
+        current_password: str,
+        new_password: str,
+        db: Session = Depends(get_db),
+        current_user: User = Depends(get_current_active_user)
+    ):
     try:
         # 현재 비밀번호 확인
         user = UserCRUD.authenticate_user(
@@ -113,12 +113,12 @@ async def change_password(
 # 비밀번호 재설정
 @router.post("/reset_password")
 async def reset_password(
-    username: str,
-    new_password: str,
-    admin_password: str,  # 관리자 비밀번호로 인증
-    # current_user: User = Depends(get_current_active_user),
-    db: Session = Depends(get_db)
-):
+        username: str,
+        new_password: str,
+        admin_password: str,  # 관리자 비밀번호로 인증
+        # current_user: User = Depends(get_current_active_user),
+        db: Session = Depends(get_db)
+    ):
     # print(current_user.points, current_user.username)
     try:
         # 관리자 인증

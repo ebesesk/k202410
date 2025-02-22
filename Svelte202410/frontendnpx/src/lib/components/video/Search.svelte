@@ -53,7 +53,8 @@
 
 function get_keywords() {
   fastapi ('get', '/video/keywords', {}, (json) => {
-    keywords = JSON.stringify(keywords)
+    keywords = json.keywords
+    keywords = JSON.stringify(keywords).split(',')
     console.log(keywords)
   })
 }
@@ -424,7 +425,7 @@ function get_keywords() {
 .container {
   display: flex;
   flex-direction: column;
-  font-size: small;
+  font-size: 9px;
   justify-content: space-between;
   width: 100%;
   height: 400px;
@@ -467,6 +468,12 @@ button {
 .top-button > button {
   font-size: smaller;
 }
-
-
+button {
+  font-size: 9px;
+  padding: 3px;
+  margin: 3px;
+}
+label {
+  font-size: 9px;
+}
 </style>

@@ -11,6 +11,17 @@ AUTH_SERVER_URL = settings.AUTH_SERVER_URL  # 실제 서버 URL로 변경 필요
 # OAuth2 스키마 설정
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{AUTH_SERVER_URL}/auth/login")
 
+
+# DB 의존성
+from app.db.session import investment_session
+def get_investment_db():
+    db = investment_session()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
 def get_db() -> Generator:
     db = SessionLocal()
     try:
@@ -119,6 +130,10 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
 # 웹소켓 연결을 위한 토큰 검증
 async def verify_ws_token(websocket: WebSocket, token: str = None):
     """WebSocket 연결을 위한 토큰 검증"""
+    # token = websocket.headers.get('token')
+    # protocols = websocket.headers.get('sec-websocket-protocol', '').split(', ')
+    # token = next((p.split('.')[1] for p in protocols if p.startswith('token.')), None)
+    # print('verify_ws_token:', token)
     try:
         if not token:
             await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
@@ -134,3 +149,21 @@ async def verify_ws_token(websocket: WebSocket, token: str = None):
         print(f"WebSocket 인증 오류: {str(e)}")
         await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
         return None
+
+
+async def verify_token(token: str):
+    """토큰 검증 함수"""
+    try:
+        # 여기에 실제 토큰 검증 로직 구현
+        user = await auth_client.verify_token(token)
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Could not validate credentials"
+            )
+        return user
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token verification failed"
+        )

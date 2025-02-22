@@ -2,15 +2,10 @@ import { writable } from 'svelte/store'
 import { browser } from '$app/environment'
 import { persistStore } from '$lib/persistStore';
 
-export const access_token = writable('')
-export const username = writable('')
-export const is_login = writable(false)
-export const userpoints = writable(0)  // 초기값을 0으로 설정
+export const access_token = persistStore('access_token', '')
+export const username = persistStore('username', '')
+export const is_login = persistStore('is_login', false)
+export const userpoints = persistStore('userpoints', 0)  // 초기값을 0으로 설정
+// 객체를 저장할 때는 JSON으로 직렬화
+export const user = persistStore('user', JSON.stringify(null));
 
-// 브라우저 환경에서만 persistStore 초기화
-if (browser) {
-    persistStore('access_token', access_token);
-    persistStore('username', username);
-    persistStore('is_login', is_login);
-    persistStore('userpoints', userpoints);
-}

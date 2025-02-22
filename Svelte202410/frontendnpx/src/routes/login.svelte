@@ -60,9 +60,12 @@
 
 <style>
     .login-container {
-        max-width: 400px;
-        margin: 0 auto;
-        padding: 20px;
+        /* max-width: 400px; */
+        /* margin: 0 auto; */
+        padding: 90px 0 0 0;
+        margin: 100px 0 0 0;
+        align-items: center;
+        justify-content: center;
     }
 
     .form-group {

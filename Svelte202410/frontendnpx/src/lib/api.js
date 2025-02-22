@@ -13,6 +13,9 @@ const fastapi = (operation, url, params, success_callback, failure_callback) => 
     // let _url = params?.isImage ? (import.meta.env.VITE_API_URL + url) : (import.meta.env.VITE_API_URL + url);
     // GET 요청의 파라미터 처리 수정
     // console.log('body:', body);
+
+    
+    
     if (method === 'login') {
         method = 'post';
         content_type = 'application/x-www-form-urlencoded';
@@ -26,13 +29,20 @@ const fastapi = (operation, url, params, success_callback, failure_callback) => 
         }
     };
     // if (method === 'get' && params.key) {
-    //     options.headers["X-API-KEY"] = params.key;
-    //     delete params.key;
-    //     if (Object.keys(params).length > 0) {
-    //         _url += "?" + new URLSearchParams(params);
-    //     }
-    // }
+        //     options.headers["X-API-KEY"] = params.key;
+        //     delete params.key;
+        //     if (Object.keys(params).length > 0) {
+            //         _url += "?" + new URLSearchParams(params);
+            //     }
+            // }
+    if (method === 'post' && content_type !== 'application/x-www-form-urlencoded') {
+        if (params?.key) {
+            options.headers["X-API-KEY"] = params.key;
+        }
+    }
+
     if (method === 'get') {
+        // console.log('params:', params)
         if (params?.key) {
             options.headers["X-API-KEY"] = params.key;
             delete params.key;

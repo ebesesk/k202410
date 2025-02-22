@@ -64,6 +64,7 @@
         size: size,
         keyword: JSON.stringify($keyword)
     };
+    console.log('params:', params);
     fastapi('get', '/video/search', params, (json) => {
         video_list = json.video_list;
         total = json.total;
@@ -178,95 +179,113 @@
           }
       );
   };
-    
+  onMount(() => {
+      // Bootstrap CSS 추가
+      const bootstrapCSS = document.createElement('link');
+      bootstrapCSS.href = 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css';
+      bootstrapCSS.rel = 'stylesheet';
+      document.head.appendChild(bootstrapCSS);
+
+      // Bootstrap JS 추가
+      const bootstrapJS = document.createElement('script');
+      bootstrapJS.src = 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js';
+      document.body.appendChild(bootstrapJS);
+
+      // 컴포넌트가 제거될 때 부트스트랩도 제거
+      return () => {
+          bootstrapCSS.remove();
+          bootstrapJS.remove();
+      };
+  });
 
 </script>
 
-  {#if showSearchBoard && $is_login}
-    <div class="container"><SearchBoard/></div>
-  {/if}
-
-
-{#if $username == 'kds'}
-<div class="col btn-offcanvas">
-  <button class="btn btn-sm btn-light card-btn btn-offcanvas float-end" 
-          type="button" 
-          data-bs-toggle="offcanvas" 
-          data-bs-target="#offcanvasRight" 
-          aria-controls="offcanvasWithBothOptions">SideMenu</button>
-</div>
-
-<Offcanvas/>
-{/if}
-
-<Modal2>
-  <Info {videoInfo} bind:this={info}/>
-</Modal2>
-
-
-<div class="pagination-container">
-  {#if total_page > 1}
-    <Pagination 
-      totalPages={total_page} 
-      currentPage={$videoPage - 1} 
-      on:pageChange={(e) => {
-        handlePageChange(e.detail + 1);  // 이벤트로 받은 값에 1을 더해서 store에 저장
-        search_video();
-      }}
-    />
-  {/if}
-</div>
-
 <div class="container-fluid">
-  <div class="row" style="display: flex; flex-wrap: wrap; justify-content: center;">
-      {#each video_list as video}
-      <div class="card" style="flex: 1 1 calc(100% - 10px); margin: 5px; max-width: 300px;">
-          <button class="btn btn-sm btn-light" on:click={changeImage(video)}>
-            {#if isLoading}
-              <div class="d-flex justify-content-center align-items-center" style="height: 160px;">
-                <div class="spinner-border text-primary" role="status">
-                  <span class="visually-hidden">로딩중...</span>
+    {#if showSearchBoard && $is_login}
+      <div class="container"><SearchBoard/></div>
+    {/if}
+
+
+  {#if $username == 'kds'}
+  <div class="col btn-offcanvas">
+    <button class="btn btn-sm btn-light card-btn btn-offcanvas float-end" 
+            type="button" 
+            data-bs-toggle="offcanvas" 
+            data-bs-target="#offcanvasRight" 
+            aria-controls="offcanvasWithBothOptions">SideMenu</button>
+  </div>
+
+  <Offcanvas/>
+  {/if}
+
+  <Modal2>
+    <Info {videoInfo} bind:this={info}/>
+  </Modal2>
+
+
+  <div class="pagination-container">
+    {#if total_page > 1}
+      <Pagination 
+        totalPages={total_page} 
+        currentPage={$videoPage - 1} 
+        on:pageChange={(e) => {
+          handlePageChange(e.detail + 1);  // 이벤트로 받은 값에 1을 더해서 store에 저장
+          search_video();
+        }}
+      />
+    {/if}
+  </div>
+
+  <div class="container-fluid">
+    <div class="row" style="display: flex; flex-wrap: wrap; justify-content: center;">
+        {#each video_list as video}
+        <div class="card" style="flex: 1 1 calc(100% - 10px); margin: 5px; max-width: 300px;">
+            <button class="btn btn-sm btn-light" on:click={changeImage(video)}>
+              {#if isLoading}
+                <div class="d-flex justify-content-center align-items-center" style="height: 160px;">
+                  <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">로딩중...</span>
+                  </div>
                 </div>
-              </div>
-            {:else}
-              <img src="{webpUrls[video.id] || ''}" class="card-img-top" alt="..." id={video.id}>
-            {/if}
-          </button>
-          <div class="card-body list-unstyled">
-              <p class="card-text">
-                  <button type="button" 
-                    class="btn btn-light btn-sm card-btn text-bg-info"
-                    data-bs-toggle="modal" 
-                    data-bs-target="#Modal" 
-                    on:click={() => inputInfo(video)}
-                  >
-                    보기
-                  </button>
-                  <span class="badge bg-danger ms-2">{Math.round(video.rating_average*10)/10}</span> <!-- 배지로 현재 평점 표시 -->
-                  <select id="rating-{video.id}" bind:value={currentRating[video.id]} on:change={(e) => updateRating(video.id, e.target.value)} style="font-size: 0.75rem;">
-                      <option value="0">0</option>
-                      <option value="1">1</option>
-                      <option value="2">2</option>
-                      <option value="3">3</option>
-                      <option value="4">4</option>
-                      <option value="5">5</option>
-                  </select>
-                  <a class="card-title" href="{'kddddds://http://' + video.dbid}"
-                    on:click={() => incrementViewCount(video.id)} >
-                    {video.dbid.substr(0, 50)}
-                  </a>
-                  <small>
-                      # {video.etc} # {video.width}x{video.height} 
-                      # {parseInt(video.showtime / 60)}분{video.showtime % 60}초
-                      # {parseInt(video.bitrate / 1000)}kbps # {parseInt(video.filesize / 1000000)}MB
-                  </small>
-              </p>
-          </div>
-      </div>
-      {/each}
+              {:else}
+                <img src="{webpUrls[video.id] || ''}" class="card-img-top" alt="..." id={video.id}>
+              {/if}
+            </button>
+            <div class="card-body list-unstyled">
+                <p class="card-text">
+                    <button type="button" 
+                      class="btn btn-light btn-sm card-btn text-bg-info"
+                      data-bs-toggle="modal" 
+                      data-bs-target="#Modal" 
+                      on:click={() => inputInfo(video)}
+                    >
+                      보기
+                    </button>
+                    <span class="badge bg-danger ms-2">{Math.round(video.rating_average*10)/10}</span> <!-- 배지로 현재 평점 표시 -->
+                    <select id="rating-{video.id}" bind:value={currentRating[video.id]} on:change={(e) => updateRating(video.id, e.target.value)} style="font-size: 0.75rem;">
+                        <option value="0">0</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                    </select>
+                    <a class="card-title" href="{'kddddds://http://' + video.dbid}"
+                      on:click={() => incrementViewCount(video.id)} >
+                      {video.dbid.substr(0, 50)}
+                    </a>
+                    <small>
+                        # {video.etc} # {video.width}x{video.height} 
+                        # {parseInt(video.showtime / 60)}분{video.showtime % 60}초
+                        # {parseInt(video.bitrate / 1000)}kbps # {parseInt(video.filesize / 1000000)}MB
+                    </small>
+                </p>
+            </div>
+        </div>
+        {/each}
+    </div>
   </div>
 </div>
-
 <style>
   	.pagination-container {
         display: flex;
@@ -278,7 +297,7 @@
     }
 .container-fluid {
   justify-content: center;
-  padding: 0x;
+  padding: 50px 0 0 0;
   margin: 0;
   /* padding-left: 15px; */
   /* margin-right: auto; */
@@ -335,7 +354,7 @@
   select {
     margin-left: 10px;
 }
-  
+
 
 
 </style>

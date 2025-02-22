@@ -27,11 +27,23 @@ from pathlib import Path
 from datetime import datetime
 
 router = APIRouter()
- 
+# 계좌 정보 호출
+ACCNO_LIST = []
+
+
 @router.get("/")
 async def get_stock_info():
     return {"message": "증권 정보 제공 API"}
 
+# Symbol 이 nasdaq, amex, nyse 중 어디에 있는지 확인
+@router.get("/check_symbol")
+async def check_symbol(
+    symbol: str,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+    ):
+    symbol = symbol.upper()
+    return utils.check_symbol(db, symbol)
 
 # 시작: 관심종목 불러오기
 @router.get("/get_interest_stocks")
@@ -69,8 +81,11 @@ async def get_interest_stocks(
     
     global ACCNO_LIST
     if len(ACCNO_LIST) == 0:
-        # print('계좌 데이터 받기')
+        print('get_interest_stocks: 계좌 데이터 서버에서 받음')
         ACCNO_LIST = utils.get_accno_t0424(key, username, db)
+    else:
+        print('get_interest_stocks: 계좌 데이터 메모리에서 받음')
+        # print('ACCNO_LIST:', ACCNO_LIST)
     accno_codes = [i[0] for i in ACCNO_LIST[3:]]
 
 
@@ -79,6 +94,7 @@ async def get_interest_stocks(
         '_stocks': _stocks,
         'accno_codes': accno_codes,        
         'multi_price': multi_price,
+        'accno_list': ACCNO_LIST,
     }
 
     return result
@@ -96,8 +112,7 @@ async def test_redis_juga_publish(background_tasks: BackgroundTasks):
 
 
 
-# 계좌 정보 호출
-ACCNO_LIST = []
+
 @router.get("/accno")
 async def get_accno(
     request: Request,
@@ -115,191 +130,29 @@ async def get_accno(
     return {"accno_list": accno_list}
 
 
-# 종목코드로 투자 정보 조회
-@router.get("/investinfo_t3320")
-async def get_investinfo_t3320(
-    request: Request,
-    code: str,
-    db: Session = Depends(get_db),
-    current_user = Depends(get_current_user),
-    ):
-    key = request.headers.get('X-API-KEY')
-    username = current_user.get('username')
-    investinfo = utils.get_investinfo_t3320(key, username, db, code)
-    return {"investinfo": investinfo}
-
-# 종목코드로 투자 정보 조회 멀티
-@router.get("/investinfo_t3320_list")
-async def get_investinfo_t3320_list(
-    request: Request,
-    shcodes: str,
-    db: Session = Depends(get_db),
-    current_user = Depends(get_current_user),
-    ):
-    key = request.headers.get('X-API-KEY')
-    shcodes = shcodes.split(',')
-    investinfo_list = []
-    username = current_user.get('username')
-    for shcode in shcodes:
-        investinfo = utils.get_investinfo_t3320(key, username, db, shcode)
-        investinfo_list.append(investinfo)
-        time.sleep(1)
-    return {"investinfo_list": investinfo_list}
-
-# 주식종목조회 API용 gubun 0:전체,1:코스피, 2:코스닥
-@router.get("/etc_t8436")
-async def get_etc_t8436(
-    request: Request,
-    gubun: str,
-    db: Session = Depends(get_db),
-    current_user = Depends(get_current_user),
-    ):
-    key = request.headers.get('X-API-KEY')
-    username = current_user.get('username')
-    etc = utils.get_etc_t8436(key, username, db, gubun)
-    return etc
-
-# API용주식멀티현재가조회 
-@router.get("/multi_t8407")
-async def get_multi_t8407(
-    request: Request,
-    shcodes_str: str,
-    username: str = None,
-    db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
-    ):
-    key = request.headers.get('X-API-KEY')
-    if not username:
-        username = current_user.get('username')
-    multi_price_list = utils.get_multi_t8407(key, username, db, shcodes_str)
-    # # print('get_multi_t8407: ', username)
-    # for i in range(ceil(len(shcodes_str)/300)):
-    #     start = i*300
-    #     end = (i+1)*300
-    #     multi_price = utils.get_multi_t8407(key, username, db, shcodes_str[start:end])
-    #     multi_price_list.extend(multi_price['t8407OutBlock1'])
-    
-    return {'multi_price_list': multi_price_list}
-    
-@router.get("/insert_stocks_db")
-async def insert_stocks_db(
-    request: Request,
-    gubun: str,
-    db: Session = Depends(get_db),
-    current_user = Depends(get_current_user),
-    ):
-    key = request.headers.get('X-API-KEY')
-    username = current_user.get('username')
-    stocks = utils.get_etc_t8436(key, username, db, gubun)
-    for stock in stocks['t8436OutBlock']:
-        print('stock[단축코드]:', stock['단축코드'])
-        is_chcode = crud.check_stock_shcode(db, stock['단축코드'])
-        if not is_chcode:
-            crud.insert_stocks(db, stock)
-    return {"message": "종목 추가 완료"}
-
-@router.get("/search_shcode_info")
-async def search_shcode_info(
-    request: Request,
-    shcode: str,
-    db: Session = Depends(get_db),
-    current_user = Depends(get_current_user),
-    ):
-    key = request.headers.get('X-API-KEY')
-    stock = crud.search_stock_shcode(db, shcode)
-    return stock
-
-@router.get("/get_news_data")
-async def get_news_data(
-    request: Request,
-    realkey: str,   
-    db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
-    ):
-    key = request.headers.get('X-API-KEY')
-    username = current_user.get('username')
-    news_data = utils.get_news_data_t3102(key, username, db, realkey)
-    # print('news_data:', news_data)
-    return {"content": news_data}
-
-@router.get("/get_sector")
-async def get_sector(
-    request: Request,
-    db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
-    ):
-    key = request.headers.get('X-API-KEY')
-    username = current_user.get('username')
-    sector = utils.get_sector_t8425(key, username, db)
-    return {"sector": sector}
- 
-@router.post("/get_lsopenapi")
-async def get_lsopenapi(
-    key: str = Body(...),
-    path: str = Body(...),
-    tr_cd: str = Body(...),
-    kwargs: dict = Body(...),
-    # key: str = Header(None, alias="X-API-Key"),  # 헤더 파라미터 추가
-    db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
-    ):
-    '''
-    주식차트 조회
-    '''
-    username = current_user.get('username')
-    result = utils.get_lsopenapi(key, username, db, path, tr_cd, **kwargs)
-    # print('result:', result)
-    return {"result": result}
-
-@router.post("/get_chart_t8410")
-async def get_chart_t8410(
-    # request: Request,
-    # period: str,    # 2:일봉, 3:주봉, 4:월봉 5:년봉
-    key: str = Body(...),
-    path: str = Body(...),
-    tr_cd: str = Body(...),
-    kwargs: dict = Body(...),
-    db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
-    ):
-    '''
-    주식차트 조회
-    '''
-
-    username = current_user.get('username')
-    result = utils.get_chart_data(key, username, db, path, tr_cd, **kwargs)
-    str_date = utils.get_now_date_str()
-    multi_price = utils.get_multi_t8407(key, username, db, kwargs['shcode'])
-    # print('multi_price:', multi_price)
-    # 최신 데이터 업데이트 오후 15시 30분 이후 ~ 오전 00시
-    if kwargs['shcode'] == list(result.keys())[0]:
-        if multi_price[0]['시가'] != 0:
-            result[kwargs['shcode']]['data'][-1]['시가'] = multi_price[0]['시가']
-            result[kwargs['shcode']]['data'][-1]['고가'] = multi_price[0]['고가']
-            result[kwargs['shcode']]['data'][-1]['저가'] = multi_price[0]['저가']
-            result[kwargs['shcode']]['data'][-1]['종가'] = multi_price[0]['현재가']
-            result[kwargs['shcode']]['data'][-1]['거래량'] = multi_price[0]['누적거래량']
-        else:
-            result[kwargs['shcode']]['data'][-1]['종가'] = multi_price[0]['현재가']
-    return {"result": result}
-
-
 
 ###############DB 관련 API########################
 # 관심종목 추가
 @router.post("/add_interest_stock")
 async def add_interest_stock(
-    stock_input: schemas.InterestStockInput,
+    request: Request,
+    # code: str,
+    key: str = Body(...),
+    code: str = Body(...),
+    # stock_input: schemas.InterestStockCodes,
+    # key: str = Header(None, alias="X-API-KEY"),
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user)
     ):
-    print('stock_input:', stock_input)
-    key = stock_input.key
-    code = stock_input.code
+    # print('stock_input:', stock_input)
+    # # key = stock_input.key
+    # code = stock_input.code
     stock = schemas.InterestStock(
         username=current_user['username'],
         종목코드=code
     )
+    key = request.headers.get('X-API-KEY')
+    # print('key:', key)
     # 기존 관심종목 확인
     if crud.get_interest_stock(db, stock):
         raise HTTPException(
@@ -419,8 +272,8 @@ async def search_stocks(
     key = request.headers.get('X-API-KEY')
     stocks = crud.search_stocks(db, query)
     for stock in stocks:
-        print('stock:', stock.shcode, stock.shname)
-    print('stocks:', stocks)
+        print('stock:', stock.shcode, stock.shname, stock.gubun)
+   
     return {"stocks": stocks}
     
 # 토큰 발급
@@ -430,7 +283,7 @@ async def get_token(
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user)
     ):
-    print('current_user:', current_user)
+    # print('current_user:', current_user)
     key = request.headers.get('X-API-KEY')
     token = utils.get_access_token(key, current_user['username'], db)
     return {"token": token}
@@ -443,6 +296,9 @@ async def setup_ls_open_api_db(
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user)
     ):
+    '''
+    Ls Open API DB 설정
+    '''
     key = request.headers.get('X-API-KEY')
     if not (key and app_key.appkey and app_key.appsecretkey):
         raise HTTPException(
@@ -466,49 +322,53 @@ async def setup_ls_open_api_db(
     return {"message": "Ls Open API DB 설정 완료"}
 
 
-# 웹소켓 서버 테스트########################################################################################
+# # 웹소켓 서버 테스트########################################################################################
 
 
-@router.websocket("/ws/{username}/{tr_cd}/{code}")
-async def websocket_endpoint(
-    websocket: WebSocket,
-        username: str,
-        tr_cd: str,
-        code: str
-    ):
-    try:
-        await websocket.accept()  # 여기서 한 번만 accept
-        await handle_websocket(websocket, username, tr_cd, code)
-    except Exception as e:
-        print(f"WebSocket 연결 오류: {str(e)}")
-    finally:
-        try:
-            await websocket.close()
-        except:
-            pass
+# @router.websocket("/ws/{username}/{tr_cd}/{code}")
+# async def websocket_endpoint(
+#     websocket: WebSocket,
+#         username: str,
+#         tr_cd: str,
+#         code: str
+#     ):
+#     try:
+#         await websocket.accept()  # 여기서 한 번만 accept
+#         await handle_websocket(websocket, username, tr_cd, code)
+#     except Exception as e:
+#         print(f"WebSocket 연결 오류: {str(e)}")
+#     finally:
+#         try:
+#             await websocket.close()
+#         except:
+#             pass
 
 
-@router.get("/test_ws-info")
-async def get_test_websocket_info(
-    request: Request,
-    tr_cd: str,
-    code: str,
-    db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
-    ):
-    """WebSocket 연결 정보를 반환하는 엔드포인트"""
-    try:
-        username = current_user.get('username')
-        ws_url = f"/stock/ws/{username}/{tr_cd}/{code}"
-        return {
-            "status": "success",
-            "websocket_url": ws_url,
-            "username": username,
-            "tr_cd": tr_cd,
-            "code": code
-        }
-    except Exception as e:
-        return {
-            "status": "error",
-            "message": str(e)
-        }
+# @router.get("/test_ws-info")
+# async def get_test_websocket_info(
+#     # request: Request,
+#     tr_cd: str,
+#     code: str,
+#     key: str = Header(None, alias="X-API-KEY"),
+#     db: Session = Depends(get_db),
+#     current_user = Depends(get_current_user)
+#     ):
+#     """WebSocket 연결 정보를 반환하는 엔드포인트"""
+#     print('get_test_websocket_info:', tr_cd, code, key)
+#     try:
+#         username = current_user.get('username')
+#         ws_url = f"/stock/ws/{username}/{tr_cd}/{code}"
+#         return {
+#             "status": "success",
+#             "websocket_url": ws_url,
+#             "username": username,
+#             "tr_cd": tr_cd,
+#             "code": code
+#         }
+#     except Exception as e:
+#         return {
+#             "status": "error",
+#             "message": str(e)
+#         }
+        
+        

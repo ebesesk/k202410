@@ -43,13 +43,52 @@
 
 </script>
 
-<Navbar />
-<main>
-	<slot />  <!-- 여기에 page 컨텐츠가 들어감 -->
-</main>
+<div class="layout-container">
+    <Navbar />
+    <main>
+        <slot />
+    </main>
+</div>
 
 <style>
-	main {
-			margin-top: 4rem;
-	}
+    .layout-container {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+
+    main {
+        flex: 1;
+        width: 100%;
+        max-width: 1200px;
+        margin: 60px auto 0;  /* navbar 높이만큼 상단 여백 추가 */
+        box-sizing: border-box;
+        position: relative;
+    }
+
+    :global(body) {
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+        overflow-y: visible;
+        font-size: 14px;
+        line-height: 1.5;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    :global(.navbar) {
+        position: fixed;  /* fixed로 변경 */
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        background: white;  /* navbar 배경색 추가 */
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);  /* 그림자 효과 추가 */
+    }
+
+    @media (max-width: 1200px) {
+        main {
+            padding: 0 0.1rem;
+        }
+    }
 </style>

@@ -21,7 +21,7 @@ from app.utils.dependencies import get_db
 from contextlib import contextmanager
 from math import ceil
 from datetime import datetime, timedelta
-
+import pytz
 OPEN_API_KEY = settings.OPEN_API_KEY
 TOKEN_FILE = settings.TOKEN_FILE
 
@@ -50,6 +50,62 @@ def get_redis_client():
         yield client
     finally:
         client.close()
+
+def get_current_kst_time():
+    kst = pytz.timezone('Asia/Seoul')
+    return datetime.now(kst)
+
+def compare_dict(dict_1, dict_2):
+    # 키 개수 비교
+    if len(dict_1.keys()) != len(dict_2.keys()):
+        return False
+    # 키 존재 여부 비교
+    for key in dict_1:
+        if key not in dict_2:
+            return False
+    # 값 비교
+    for key in dict_1:
+        if dict_1[key] != dict_2[key]:
+            return False
+    # 차이점 찾기
+    differences = {}
+    for key in dict_1:
+        if key in dict_2:
+            if dict_1[key] != dict_2[key]:
+                differences[key] = {
+                    'dict_1_value': dict_1[key],
+                    'dict_2_value': dict_2[key]
+                }
+    
+    if differences:
+        print("차이점 발견:")
+        for key, value in differences.items():
+            print(f"{key}:")
+            print(f"  dict_1: {value['dict_1_value']}")
+            print(f"  dict_2: {value['dict_2_value']}")
+        return False
+    
+    return True
+
+def convert_to_kst(dt: datetime):
+    kst = pytz.timezone('Asia/Seoul')
+    return dt.astimezone(kst) if dt.tzinfo else kst.localize(dt)
+
+# Symbol 이 nasdaq, amex, nyse 중 어디에 있는지 확인
+def check_symbol(db: Session, symbol: str):
+    if crud.check_symbol_nasdaq(db, symbol):
+        return 'nasdaq'
+    elif crud.check_symbol_amex(db, symbol):
+        return 'amex'
+    elif crud.check_symbol_nyse(db, symbol):
+        return 'nyse'
+    elif crud.get_stock_by_code(db, symbol):
+        if crud.get_stock_by_code(db, symbol).gubun == 1:
+            return 'kospi'
+        else:
+            return 'kosdaq'
+    else:
+        return None
 
 def get_date_str(date):
     return date.strftime("%Y%m%d")
@@ -135,6 +191,7 @@ def convert_res_key(res, tr_cd):
             converted_res[block] = res[block]
     return converted_res
 
+# 토큰 조회
 def get_access_token(key, username, db):
     try:
         # Redis에서 토큰 조회
@@ -164,15 +221,16 @@ def get_access_token(key, username, db):
         return issue_access_token(key, username, db)
     
     if _time['rsp_cd'] == '00000':
+        print('get_access_token: 토큰 유효')
         return token
     elif _time['rsp_cd'] == 'IGW00121':  
         print('get_access_token: api token 만료')
         return issue_access_token(key, username, db)
     else:
-        print('get_access_token: DB에 앱키가 존재하지 않습니다.')
+        print(detail=_time['rsp_msg'])
         raise HTTPException(status_code=400, detail=_time['rsp_msg'])
 
-
+# 토큰 발급
 def issue_access_token(key: str, username: str, db: Session):
 
     AppKeyRequest = schemas.AppKeyRequest(
@@ -184,9 +242,12 @@ def issue_access_token(key: str, username: str, db: Session):
     # DB에서 앱키 조회
     app_key = crud.get_app_key(db, AppKeyRequest)
     print('app_key issue_access_token db:', app_key)
-    if app_key is None:
-        raise HTTPException(status_code=400, detail="DB에 앱키가 존재하지 않습니다.")
+    # if not app_key:
+    #     raise HTTPException(status_code=400, detail="DB에 앱키가 존재하지 않습니다.")
     try:
+        # print('app_key:', app_key.appkey)
+        # print('app_key:', app_key.appsecretkey)
+        # print('key:', key)
         APP_KEY = _decrypt(app_key.appkey, key)
         APP_SECRET = _decrypt(app_key.appsecretkey, key)    
         # print('APP_KEY success:', APP_KEY)
@@ -214,15 +275,17 @@ def issue_access_token(key: str, username: str, db: Session):
         raise HTTPException(status_code=400, detail=res.content.decode("UTF8"))
     token = json.loads(res.content.decode("UTF8"))
     
+    # 
+    write_file(TOKEN_FILE, token["access_token"])
     # Redis 연결 및 토큰 저장
     with get_redis_client() as redis_client:
         encrypt_str = _encrypt(token["access_token"], key)
         redis_client.set(f"{username}:api_token:{CNAME}", encrypt_str)
         redis_client.expire(f"{username}:api_token:{CNAME}", 60*60*24) # 24시간 후 만료
-    
+    print('issue_access_token: access_token 재발급')
     return token["access_token"]
 
-
+# 섹터 조회
 def get_sector_t8425(key, username, db):
     access_token = get_access_token(key, username, db)
     path = "/stock/sector"
@@ -243,10 +306,11 @@ def get_sector_t8425(key, username, db):
     secter = json.loads(res.content.decode('utf-8'))
     return convert_res_key(secter, 't8425')
 
+# 계좌번호 조회
 def get_accno_t0424(key, username, db):
     
     access_token = get_access_token(key, username, db)
-    print('get_accno_t0424:', '토큰 발급 완료')
+    # print('get_accno_t0424:', '토큰 발급 완료')
     path = "/stock/accno"
     url = DOMAIN + path
     headers = {
@@ -283,6 +347,7 @@ def get_accno_t0424(key, username, db):
     
     return _accno_list
 
+# 투자 정보 조회
 def get_investinfo_t3320(key, username, db, gicode):
     access_token = get_access_token(key, username, db)
     path = "/stock/investinfo"
@@ -305,6 +370,7 @@ def get_investinfo_t3320(key, username, db, gicode):
     # print('investinfo:', investinfo)
     return convert_res_key(investinfo, "t3320") 
 
+# 기타 데이터 조회
 def get_etc_t8436(key, username, db, gubun):
     access_token = get_access_token(key, username, db)
     path = "/stock/etc"
@@ -325,6 +391,7 @@ def get_etc_t8436(key, username, db, gubun):
     etc = json.loads(res.content.decode('utf-8'))
     return convert_res_key(etc, 't8430')
 
+# 뉴스 데이터 조회
 def get_news_data_t3102(key, username, db, realkey):
     access_token = get_access_token(key, username, db)
     path = "/stock/investinfo"
@@ -438,7 +505,13 @@ def get_lsopenapi(key, username, db, path, tr_cd, **kwargs):
     res = json.loads(res.content.decode('utf-8'))
     return convert_res_key(res, tr_cd)
 
+# 차트 데이터 조회
+day_sdate = None
+week_sdate = None
+month_sdate = None
 def get_chart_data(key, username, db, path, tr_cd, **kwargs):
+    
+    global day_sdate, week_sdate, month_sdate
     
     period = kwargs['gubun']
     qrycnt = int(kwargs['qrycnt'])
@@ -450,8 +523,14 @@ def get_chart_data(key, username, db, path, tr_cd, **kwargs):
 
     if period == '2':  # 일봉
         # 일봉 조회 시 최대 100개까지 조회 가능
-        qrycnt = min(100, qrycnt)
+        # qrycnt = min(500, qrycnt)
+        # print('qrycnt:==========', qrycnt)
+        qrycnt = int(qrycnt*1.54)
+        qrycnt = min(qrycnt, 500)
         sdate = (datetime.now() - timedelta(days=qrycnt)).strftime('%Y%m%d')
+        # global day_sdate
+        # # day_sdate = sdate
+        # print('sdate:==========', sdate)
         
     elif period == '3':  # 주봉
         # 주봉 qrycnt개 를 날짜로 변환
@@ -469,6 +548,7 @@ def get_chart_data(key, username, db, path, tr_cd, **kwargs):
     if sdate < '20150101':
         sdate = '20150101'
         
+    # print('sdate:==========', sdate)
     print(f'조회기간: {sdate} ~ {edate}')
     
     # kwargs 업데이트
@@ -483,21 +563,34 @@ def get_chart_data(key, username, db, path, tr_cd, **kwargs):
     redis_key = f"chart_data:{kwargs['gubun']}:{kwargs['shcode']}"
     # print('redis_key:', redis_key)
 
-    try:
+    # try:
         # raise Exception('Redis 조회 실패')
         # 캐시 조회
-        with get_redis_client() as redis_client:
-            cached_data = redis_client.get(redis_key)
-            if cached_data:
-                print('cached_data 조회 성공:', json.loads(cached_data)[kwargs['shcode']]['chartPeriod'], kwargs['shcode'])
-                # print('Redis 조회 성공', json.loads(cached_data)[code]['chartPeriod'])
+    with get_redis_client() as redis_client:
+        cached_data = redis_client.get(redis_key)
+        if cached_data:
+            print('cached_data 조회 성공:', json.loads(cached_data)[kwargs['shcode']]['chartPeriod'], kwargs['shcode'])
+            # print('Redis 조회 성공', json.loads(cached_data)[code]['chartPeriod'])
+            # print('cached_data:', len(json.loads(cached_data)[kwargs['shcode']]['data']), kwargs['qrycnt'])
+            if day_sdate == sdate and period == '2':
+                print('캐시 데이터 사용')
                 return json.loads(cached_data)
-    except Exception as e:
-        print('Redis 조회 실패:', e)
+            elif week_sdate == sdate and period == '3':
+                print('캐시 데이터 사용')
+                return json.loads(cached_data)
+            elif month_sdate == sdate and period == '4':
+                print('캐시 데이터 사용')
+                return json.loads(cached_data)
+        # else:
+        #     pass
+    # except Exception as e:
+    #     print('Redis 조회 실패:', e)
     
     # chart_data = {}
     # API 호출
     # print('OpenAPI 호출')
+    # print('kwargs:==========', kwargs)
+    time.sleep(1)
     chart_data = get_lsopenapi(key, username, db, path, tr_cd, **kwargs)
     
     try:
@@ -516,10 +609,22 @@ def get_chart_data(key, username, db, path, tr_cd, **kwargs):
                 ttl,
                 json.dumps(chart_data)
             )
+            if period == '2':
+                day_sdate = sdate
+            elif period == '3':
+                week_sdate = sdate
+            elif period == '4':
+                month_sdate = sdate
     except Exception as e:
         print('Redis 저장 실패:', e)
         
     print('API 조회 성공', chart_data[code]['chartPeriod'], code)
+    
+    # print('chart_data===============================================')
+    # from pprint import pprint
+    # # pprint(chart_data)
+    # for i in chart_data[code]['data']:
+    #     print(i['날짜'])
     
     return chart_data
 
